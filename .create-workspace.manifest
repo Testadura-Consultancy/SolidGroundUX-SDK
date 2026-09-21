@@ -1,0 +1,29 @@
+# create-workspace manifest
+# project: SolidGroundUX SDK
+# created: 2026-09-21 20:43:31
+DIR|/srv/storage/development/solidgroundux-sdk/target-root
+DIR|/srv/storage/development/solidgroundux-sdk/target-root/assets
+DIR|/srv/storage/development/solidgroundux-sdk/target-root/etc/systemd/system
+DIR|/srv/storage/development/solidgroundux-sdk/target-root/etc/update-motd.d
+DIR|/srv/storage/development/solidgroundux-sdk/target-root/usr/local/assets
+DIR|/srv/storage/development/solidgroundux-sdk/target-root/usr/local/bin
+DIR|/srv/storage/development/solidgroundux-sdk/target-root/usr/local/sbin
+DIR|/srv/storage/development/solidgroundux-sdk/target-root/usr/local/lib
+DIR|/srv/storage/development/solidgroundux-sdk/target-root/usr/local/lib/solidgroundux/globals
+DIR|/srv/storage/development/solidgroundux-sdk/target-root/usr/local/lib/solidgroundux/templates
+DIR|/srv/storage/development/solidgroundux-sdk/target-root/usr/local/libexec
+DIR|/srv/storage/development/solidgroundux-sdk/target-root/usr/local/share/doc/SolidGroundUX SDK
+DIR|/srv/storage/development/solidgroundux-sdk/target-root/var/lib/solidgroundux/releases
+DIR|/srv/storage/development/solidgroundux-sdk/target-root/var/state
+FILE|/srv/storage/development/solidgroundux-sdk/target-root/usr/local/lib/solidgroundux/templates/doc-template.sh
+FILE|/srv/storage/development/solidgroundux-sdk/target-root/usr/local/lib/solidgroundux/templates/exe-template.sh
+FILE|/srv/storage/development/solidgroundux-sdk/target-root/usr/local/lib/solidgroundux/templates/lib-template.sh
+FILE|/srv/storage/development/solidgroundux-sdk/target-root/usr/local/lib/solidgroundux/templates/wrapper-template
+FILE|/srv/storage/development/solidgroundux-sdk/SolidGroundUX SDK.code-workspace
+FILE|/srv/storage/development/solidgroundux-sdk/target-root/usr/local/assets/solidgroundux-sdk.png
+FILE|/srv/storage/development/solidgroundux-sdk/README.md
+FILE|/srv/storage/development/solidgroundux-sdk/CHANGELOG.md
+FILE|/srv/storage/development/solidgroundux-sdk/.gitignore
+FILE|/srv/storage/development/solidgroundux-sdk/.release-ignore
+FILE|/srv/storage/development/solidgroundux-sdk/target-root/usr/local/lib/solidgroundux/globals/solidgroundux-sdk-definitions.sh
+FILE|/srv/storage/development/solidgroundux-sdk/target-root/etc/update-motd.d/95-solidgroundux-sdk

@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+definitions=/usr/local/lib/solidgroundux/globals/solidgroundux-sdk-definitions.sh
+[[ -r "$definitions" ]] || exit 0
+# shellcheck source=/dev/null
+source "$definitions"
+printf '%s %s.%s\n' "$SGND_SOLIDGROUNDUX_SDK_PRODUCT" "$SGND_SOLIDGROUNDUX_SDK_VERSION" "$SGND_SOLIDGROUNDUX_SDK_BUILD"
