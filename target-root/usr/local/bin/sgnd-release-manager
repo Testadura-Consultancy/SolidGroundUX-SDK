@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+exec "/srv/storage/development/SolidGroundUX/target-root/var/lib/solidgroundux/release-manager.sh" "$@"
