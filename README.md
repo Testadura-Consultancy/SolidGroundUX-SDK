@@ -1,7 +1,7 @@
 <table>
 <tr>
 <td width="170" align="center" valign="middle">
-  <img width="96" height="96" alt="SolidGroundUX SDK logo" src="target-root/usr/local/assets/solidgroundux-sdk.png" />
+  <img width="96" height="96" alt="SolidGroundUX SDK logo" src="target-root/usr/local/assets/sdk-readmelogo.png" />
 </td>
 <td valign="middle">
   <big><big><big><strong>SolidGroundUX SDK</strong></big></big></big><br>

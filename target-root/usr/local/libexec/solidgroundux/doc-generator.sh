@@ -1481,16 +1481,24 @@ set -uo pipefail
         local name="${3:-${SGND_DOC_PROGRESS_MODULE_NAME:-}}"
         local module_current="${SGND_DOC_PROGRESS_MODULE_CURRENT:-0}"
         local module_total="${SGND_DOC_PROGRESS_MODULE_TOTAL:-0}"
+        local product="${SGND_DOC_ACTIVE_PRODUCT:-}"
+        local progress_label=""
 
         (( total > 0 )) || total=1
         (( current < 0 )) && current=0
         (( current > total )) && current="$total"
 
+        if [[ -n "$product" ]]; then
+            progress_label="$product · Module ${module_current}/${module_total}: $name"
+        else
+            progress_label="Module ${module_current}/${module_total}: $name"
+        fi
+
         sayprogress \
             --slot 0 \
             --current "$current" \
             --total "$total" \
-            --label "Module ${module_current}/${module_total}: $name" \
+            --label "$progress_label" \
             --type 5 \
             --padleft 0
             

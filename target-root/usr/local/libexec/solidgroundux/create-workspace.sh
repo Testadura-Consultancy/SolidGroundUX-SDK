@@ -171,6 +171,7 @@ set -uo pipefail
             #   - Parsed values become available in the configured target variables.
         SGND_ARGS_SPEC=(
             "project|p|value|PROJECT_NAME|Project name|"
+            "prefix||value|PROJECT_PREFIX|Project prefix|"
             "description||value|PROJECT_DESCRIPTION|Project description|"
             "product||value|PRODUCT_NAME|Product name|"
             "group||value|PROJECT_GROUP|Generated script group|"
@@ -252,6 +253,7 @@ set -uo pipefail
             PROJECT_SUBGROUP
             PROJECT_ROOT
             PROJECT_DESCRIPTION
+            PROJECT_PREFIX
         )
 
         # SGND_ON_EXIT_HANDLERS
@@ -876,9 +878,11 @@ set -uo pipefail
             sgnd_print_sectionheader "Project name and location" --maxwidth "$mxw"
             ask --label "Project name " --var PROJECT_NAME --default "$default_projectname" --labelwidth "$lw"
             PRODUCT_NAME="${PRODUCT_NAME:-$PROJECT_NAME}"
+            PROJECT_PREFIX="${PROJECT_PREFIX:-$(_project_slug)}"
             PROJECT_GROUP="${PROJECT_GROUP:-}"
             PROJECT_SUBGROUP="${PROJECT_SUBGROUP:-}"
             ask --label "Product name " --var PRODUCT_NAME --default "$PRODUCT_NAME" --labelwidth "$lw"
+            ask --label "Project prefix " --var PROJECT_PREFIX --default "$PROJECT_PREFIX" --labelwidth "$lw"
             PROJECT_DESCRIPTION="${PROJECT_DESCRIPTION:-}"
             ask --label "Description " --var PROJECT_DESCRIPTION --default "$PROJECT_DESCRIPTION" --labelwidth "$lw"
             ask --label "Group " --var PROJECT_GROUP --default "$PROJECT_GROUP" --labelwidth "$lw"
@@ -946,6 +950,7 @@ set -uo pipefail
 
             sgnd_print_labeledvalue --label "Project name"   --value "$PROJECT_NAME"
             sgnd_print_labeledvalue --label "Product name"   --value "$PRODUCT_NAME"
+            sgnd_print_labeledvalue --label "Project prefix" --value "$PROJECT_PREFIX"
             sgnd_print_labeledvalue --label "Description"    --value "${PROJECT_DESCRIPTION:--}"
             sgnd_print_labeledvalue --label "Group"          --value "$PROJECT_GROUP"
             sgnd_print_labeledvalue --label "Subgroup"       --value "${PROJECT_SUBGROUP:--}"
@@ -1074,7 +1079,7 @@ set -uo pipefail
         local title="" version="" build="" copyright="" description="" documentation_path=""
         local existed_readme=0 existed_changelog=0 existed_license=0 existed_logo=0
         slug="$(_project_slug)"; key="$(_project_key)"; definitions_file="${PROJECT_FOLDER}/target-root/usr/local/lib/solidgroundux/globals/${slug}-definitions.sh"
-        logo_name="${slug}.png"; logo_target="${asset_dir}/${logo_name}"; documentation_path="target-root/usr/local/share/doc/${PROJECT_NAME}/index.html"
+        logo_name="${PROJECT_PREFIX}-readmelogo.png"; logo_target="${asset_dir}/${logo_name}"; documentation_path="target-root/usr/local/share/doc/${PROJECT_NAME}/index.html"
         [[ -r "$definitions_file" ]] || { sayfail "Project definitions not found: $definitions_file"; return 1; }
         title="$(_definition_value "$definitions_file" "SGND_${key}_TITLE")" || return 1; version="$(_definition_value "$definitions_file" "SGND_${key}_VERSION")" || return 1
         build="$(_definition_value "$definitions_file" "SGND_${key}_BUILD")" || return 1; copyright="$(_definition_value "$definitions_file" "SGND_${key}_COPYRIGHT")" || return 1

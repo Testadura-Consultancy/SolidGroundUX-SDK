@@ -5,7 +5,7 @@
 #   Version     : 2.1
 #   Build       : 2626501
 #   Checksum    : ca5b4ad0bc0492a1ed381c81194328b1418a94eb10af0d1fbbd24714f14a01e4
-#   Source      : sdk documentation_preface.sh
+#   Source      : sdk-documentation_preface.sh
 #   Type        : documentation
 #   Group       : SDK
 #   Subgroup    : Documentation Generator
@@ -20,6 +20,12 @@
 # ==================================================================================
 # - Documentation Generator ---------------------------------------------------------------
 #
+# > Documentation-only sources may live in the canonical
+# > `usr/local/share/solidgroundux/doc-sources` directory of any product. Full recursive
+# > generation discovers them like other supported source files; their Product, Group, and
+# > Subgroup metadata controls logical placement rather than their physical directory.
+# > Product-prefixed basenames are recommended because module identity is basename-based.
+# >
 # > The Documentation Generator subgroup contains the tools used to extract, process, render,
 # > and generate SolidGroundUX documentation.
 #
@@ -39,7 +45,7 @@
 # > product and is processed first; the remaining products retain deterministic order.
 #
 # . Images
-#   doc-generation-process.png :: Documentation generation pipeline
+#   sdk-documentation-generation.png :: Documentation generation pipeline
 #
 # > For each selected product, the generator resolves its source root and applies the
 # > configured source file masks. A per-product documentation ignore file is resolved
@@ -293,6 +299,51 @@
 #
 # > This makes the documentation easy to publish, archive, review, and distribute
 # > together with a release package.
+#
+# -- Prefaces and Epilogues ---------------------------------------------------------
+#
+# > Documentation-only sources can provide introductory or closing content for a
+# > product, group, or subgroup. The renderer recognizes these sources as prefaces or
+# > epilogues and places them in the generated index around the normal content at the
+# > corresponding hierarchy level.
+#
+# > The role is primarily selected by the Metadata Purpose value:
+#
+# >     Product preface    <> First documentation entry beneath the product
+# >     Product epilogue   <> Final documentation entry beneath the product
+# >     Group preface      <> First documentation entry beneath the named Group
+# >     Group epilogue     <> Final documentation entry beneath the named Group
+# >     Subgroup preface   <> First documentation entry beneath the named Subgroup
+# >     Subgroup epilogue  <> Final documentation entry beneath the named Subgroup
+#
+# > Group and Subgroup metadata determine where group- and subgroup-level sources are
+# > placed. Product-level sources belong directly to their product. A preface is emitted
+# > before the normal modules at that level; an epilogue is emitted after them. These
+# > files therefore affect both page order and the generated navigation index.
+#
+# > Filename recognition is also supported as a compatibility fallback. The renderer
+# > recognizes conventional names based on the product, group, or subgroup name followed
+# > by a preface or epilogue suffix. Names are normalized for matching, so hyphens, spaces,
+# > and underscores in the logical name do not define the hierarchy themselves.
+#
+# > New documentation sources should make the role explicit through Purpose rather than
+# > relying on filename inference. This keeps placement independent of the physical
+# > doc-sources filename and leaves Group and Subgroup metadata as the authoritative
+# > description of where the content belongs.
+#
+# > Example group preface metadata:
+#
+# >     Group       : Deployment
+# >     Purpose     : Group preface
+#
+# > Example subgroup epilogue metadata:
+#
+# >     Group       : SDK
+# >     Subgroup    : Documentation Generator
+# >     Purpose     : Subgroup epilogue
+#
+# . Images
+#   sdk-documentation-system.png :: Documentation System overview
 #
 # -- Documentation Conventions ------------------------------------------------------
 #
