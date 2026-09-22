@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Test a text file for positive SolidGround product ownership</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Test a text file for positive SolidGround product ownership</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / release-manager.sh / Installation engine / _file_belongs_to_product</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Recognize the canonical title header &#x27;# &lt;Product&gt; - ...&#x27; and an explicit</div>
+<div class="ct-functionbody">  &#x27;# Product : &lt;Product&gt;&#x27; metadata line. Binary/non-readable files never match.</div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 when the file positively identifies the requested product; 1 otherwise.</div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  _file_belongs_to_product &quot;$path&quot; &quot;$SGND_RELEASE_PRODUCT&quot;</div>
+</main>
+</body>
+</html>

@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Public and Internal APIs</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Public and Internal APIs</div>
+  <div class="doc-breadcrumb">sux_preface.sh::Architecture:Public and Internal APIs:</div>
+</header>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">SolidGroundUX uses naming conventions to distinguish public APIs from internal implementation details.</p>
+<div class="ct-L2Sectionbody">  </div>
+<p class="ct-L2Sectionbody">Public framework functions use `sgnd_*` and are intended for application and tool consumers.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Framework-internal functions use `_sgnd_*`. They are effectively protected: other cooperating SolidGroundUX libraries may depend on them, but they are not part of the supported application-facing API.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Plain leading-underscore helpers such as `_helper` are local/private implementation details belonging to one script or module. Bash cannot enforce these access levels, but the convention communicates intended ownership. Consumers should rely on the public `sgnd_*` surface unless they are implementing framework internals.</p>
+<div class="ct-L2Sectionbody"></div>
+</main>
+</body>
+</html>

@@ -4,8 +4,8 @@
 # -------------------------------------------------------------------------------------
 # Metadata:
 #   Version     : 2.1
-#   Build       : 2626501
-#   Checksum    : 4ff35fd1d24ec419ee26760a6168ebca9d9e9048eef0b50fcb7e7c01d003aa92
+#   Build       : 2626523
+#   Checksum    : 402d994675db5b7dab8a1396ecfc1f8a9e5886876d84aa58f5a6d70b1bcd926a
 #   Source      : create-workspace.sh
 #   Type        : script
 #   Group       : SDK

@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Resolve a Framework-owned path with installed fallback</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Resolve a Framework-owned path with installed fallback</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / sgnd-exe-common.sh / Framework path resolution / sgnd_framework_resolve_path</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Resolve a Framework-owned file or directory from the active development tree,</div>
+<div class="ct-functionbody">  falling back to the installed Framework when the active tree does not provide it.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Parameters</div>
+<div class="ct-functionbody">  $1 Framework-relative path, without a leading slash.</div>
+<div class="ct-functionbody">  $2 Output variable receiving the resolved absolute path.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Tries SGND_FRAMEWORK_ROOT first.</div>
+<div class="ct-functionbody">  - When the path is absent and SGND_FRAMEWORK_ROOT is not /, tries /.</div>
+<div class="ct-functionbody">  - Does not change SGND_FRAMEWORK_ROOT.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 when the path exists.</div>
+<div class="ct-functionbody">  126 when the path cannot be resolved.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  sgnd_framework_resolve_path &quot;usr/local/lib/solidgroundux/common/sgnd-bootstrap.sh&quot; resolved_path</div>
+</main>
+</body>
+</html>

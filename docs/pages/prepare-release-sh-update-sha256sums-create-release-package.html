@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Create the complete distributable release ZIP</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Create the complete distributable release ZIP</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / prepare-release.sh / Update SHA256SUMS / _create_release_package</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Package the standalone release manager and release payload into one ZIP.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Requires the six canonical release artifacts created by _create_tar.</div>
+<div class="ct-functionbody">  - Adds release-manager.sh at the ZIP root only for the SolidGroundUX framework bundle.</div>
+<div class="ct-functionbody">  - Generic project bundles contain only their release artifacts and require an installed release manager.</div>
+<div class="ct-functionbody">  - Does not include SHA256SUMS; the manager verifies individual sidecars.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 on success; 1 on missing artifacts or packaging failure.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  _create_release_package</div>
+</main>
+</body>
+</html>

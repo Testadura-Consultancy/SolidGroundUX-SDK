@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>sgnd_print_labeledmultivalue</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">sgnd_print_labeledmultivalue</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / ui.sh / Public API / Rendering primitives / sgnd_print_labeledmultivalue</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Print one label followed by a value that may span multiple aligned lines.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Renders the label and separator only on the first output line.</div>
+<div class="ct-functionbody">  - Aligns continuation lines with the first value column.</div>
+<div class="ct-functionbody">  - Accepts either one large value or an array of discrete items.</div>
+<div class="ct-functionbody">  - Starts every supplied item on a new value line.</div>
+<div class="ct-functionbody">  - Wraps long values and items to the requested or available value width.</div>
+<div class="ct-functionbody">  - Applies the configured label and value colors to every rendered line.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">options</div>
+<div class="ct-functionbody">  --label VALUE</div>
+<div class="ct-functionbody">      Label rendered on the first line.</div>
+<div class="ct-functionbody">  --value VALUE</div>
+<div class="ct-functionbody">      One value that may contain long text or embedded newlines.</div>
+<div class="ct-functionbody">  --items ITEM...</div>
+<div class="ct-functionbody">      Remaining arguments are treated as individual values. This option must</div>
+<div class="ct-functionbody">      be the final option in the call.</div>
+<div class="ct-functionbody">  --valuewidth WIDTH</div>
+<div class="ct-functionbody">      Maximum visible width of the value column. Defaults to the available</div>
+<div class="ct-functionbody">      width after padding, label, and separator are accounted for.</div>
+<div class="ct-functionbody">  --sep VALUE</div>
+<div class="ct-functionbody">      Separator between label and first value. Defaults to a colon.</div>
+<div class="ct-functionbody">  --labelwidth WIDTH</div>
+<div class="ct-functionbody">      Visible width reserved for the label. Defaults to 25.</div>
+<div class="ct-functionbody">  --maxwidth WIDTH</div>
+<div class="ct-functionbody">      Maximum total render width.</div>
+<div class="ct-functionbody">  --pad COUNT</div>
+<div class="ct-functionbody">      Number of spaces before the label. Defaults to 0.</div>
+<div class="ct-functionbody">  --labelclr ANSI</div>
+<div class="ct-functionbody">      ANSI sequence used for the label.</div>
+<div class="ct-functionbody">  --valueclr ANSI</div>
+<div class="ct-functionbody">      ANSI sequence used for the value lines.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Output</div>
+<div class="ct-functionbody">  Writes one or more aligned labeled-value lines to stdout.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 after rendering.</div>
+<div class="ct-functionbody">  2 when no label is supplied or a numeric option is invalid.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  sgnd_print_labeledmultivalue \</div>
+<div class="ct-functionbody">      --label &quot;Changed files&quot; \</div>
+<div class="ct-functionbody">      --labelwidth &quot;$labelwidth&quot; \</div>
+<div class="ct-functionbody">      --items &quot;file-one.sh&quot; &quot;file-two.sh&quot;</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody">  sgnd_print_labeledmultivalue \</div>
+<div class="ct-functionbody">      --label &quot;Description&quot; \</div>
+<div class="ct-functionbody">      --labelwidth &quot;$labelwidth&quot; \</div>
+<div class="ct-functionbody">      --value &quot;$description&quot; \</div>
+<div class="ct-functionbody">      --valuewidth 60</div>
+</main>
+</body>
+</html>

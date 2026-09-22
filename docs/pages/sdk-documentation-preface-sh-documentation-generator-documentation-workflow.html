@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Documentation Workflow</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Documentation Workflow</div>
+  <div class="doc-breadcrumb">sdk-documentation_preface.sh::Documentation Generator:Documentation Workflow:</div>
+</header>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The generator coordinates product discovery, source collection, parsing, cached documentation data, rendering, and final output. One documentation collection can contain one or more selected products. A primary product is selected as the lead product and is processed first; the remaining products retain deterministic order.</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="doc-image-group images-1">
+<figure class="doc-image">
+<img src="../assets/images/sdk-documentation-generation.png" alt="Documentation generation pipeline" loading="lazy">
+<figcaption>Documentation generation pipeline</figcaption>
+</figure>
+</div>
+<p class="ct-L2Sectionbody">For each selected product, the generator resolves its source root and applies the configured source file masks. A per-product documentation ignore file is resolved from user configuration first and system configuration second. Ignored files are excluded before parsing, and duplicate module basenames are skipped with a warning.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The processor reads the selected source files and extracts module metadata, sections, items, documentation lines, attribution data, and integrity information into normalized tables. These tables are persisted as documentation cache data and form the input to the renderer.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The renderer turns the normalized data into HTML pages, navigation, appendices, glossary entries, branding, and supporting assets. Each selected product may also contribute documentation assets from its canonical usr/local/assets directory.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Four generation modes are available:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="doc-aligned-block" style="grid-template-columns:max-content max-content minmax(0, 1fr)">
+<div class="ct-L2Sectionbody doc-aligned-cell">1</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">Full</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">Reparse all matching source files for the selected products</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">2</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">Selected</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">Reparse only explicitly selected matching files</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">3</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">Changed</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">Reparse matching Git changes relative to HEAD, plus untracked files</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">4</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">Render existing</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">Rebuild HTML from the persisted renderer data only</div>
+</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Creating a new collection in Full mode starts with a clean output directory. A Full update of an existing collection instead loads the existing cache and refreshes the selected products without clearing the collection. Selected and Changed modes also load the existing cache and replace or remove only the affected modules.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Successful parse modes pass the normalized data to the renderer and persist the data required for later incremental or render-only runs. Render existing mode bypasses source parsing completely and regenerates renderer-owned output from cached data. The generated site can optionally be copied to the primary product repository&#x27;s docs directory after rendering.</p>
+<div class="ct-L2Sectionbody"></div>
+</main>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>SolidGroundUX - Framework Services Overview</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">SolidGroundUX - Framework Services Overview</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / sux-common-core_preface.sh</div>
+</header>
+<div class="ct-L1Sectionheader">Available Services</div>
+<div class="ct-L1Sectionbody"></div>
+<p class="ct-L1Sectionbody">This chapter introduces the major framework services available to application developers. While each subsystem is documented individually, this overview explains how the various components work together.</p>
+<div class="ct-L1Sectionbody"> </div>
+<div class="ct-L2Sectionheader">Configuration Management</div>
+<div class="ct-L2Sectionbody"> </div>
+<p class="ct-L2Sectionbody">The configuration subsystem provides a consistent mechanism for loading, validating, modifying, and persisting application settings.</p>
+<div class="ct-L2Sectionbody"> </div>
+<p class="ct-L2Sectionbody">Configuration values typically represent user preferences or application settings that remain relatively static between executions.</p>
+<div class="ct-L2Sectionbody"> </div>
+<div class="ct-L2Sectionheader">State Management</div>
+<div class="ct-L2Sectionbody"> </div>
+<p class="ct-L2Sectionbody">The state subsystem stores runtime information that applications may wish to remember between executions.</p>
+<div class="ct-L2Sectionbody"> </div>
+<p class="ct-L2Sectionbody">Unlike configuration values, state represents remembered runtime choices and workflow context such as previous selections, recently used values, UI choices, or cached information. Scripts opt individual values into persistence explicitly.</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionheader">Command-Line Arguments</div>
+<div class="ct-L2Sectionbody"> </div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The argument subsystem provides standardized command-line processing. After the bootstrap separates framework options from script arguments, applications can define their own declarative argument specification while retaining framework built-ins such as help, version reporting, tracing, debugging, and configuration overrides.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">DRYRUN is a framework-wide execution contract rather than merely a display flag. When DRYRUN is active, cooperating framework tools and delegated actions must avoid persistent changes, including configuration/state writes and system modifications.</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionheader">User Interface Services</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The UI subsystem provides a collection of functions intended to simplify communication with the user.</p>
+<div class="ct-L2Sectionbody">  </div>
+<p class="ct-L2Sectionbody">Common operations such as informational messages, warnings, errors, confirmations, prompts, selections, and formatted output are provided through a consistent interface.</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionheader">Console Applications</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">`sgnd-menu.sh` provides a reusable public menu service independent of the SolidGround Management Console host. Applications can create menu models, register groups and items, render pages, read selections, and dispatch registered actions through the public `sgnd_menu_*` API.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The Management Console is one consumer of that API. Its page modules are discovered from lightweight metadata and sourced lazily when first opened.</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionheader">Documentation Generation</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The SDK documentation generator can extract documentation directly from these source files.</p>
+<div class="ct-L2Sectionbody">  </div>
+<p class="ct-L2Sectionbody">Product information, architecture descriptions, API documentation, appendices, glossaries, and implementation notes are all maintained close to the source code and transformed into a navigable HTML documentation set.</p>
+<div class="ct-L2Sectionbody"> </div>
+<p class="ct-L2Sectionbody">This approach helps ensure that documentation remains synchronized with the implementation and reduces the risk of documentation becoming outdated.</p>
+</main>
+</body>
+</html>

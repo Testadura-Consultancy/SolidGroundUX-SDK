@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Console registration</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Console registration</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / 30-samba-file-server.sh / Console registration</div>
+</header>
+<p class="ct-L1Sectionbody">Provides host-level Samba file-server preparation, validation, status, and managed-share administration. Storage is consumed from the configured SolidGroundUX storage root rather than being independently provisioned here.</p>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-highlight">Samba File Server</div>
+<div class="ct-L1Sectionbody sh-emphasis">Prepare Samba file server</div>
+<div class="ct-L1Sectionbody">  &gt; Run the complete Samba file-server preparation sequence.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _smb_prepare_file_server</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-emphasis">Install Samba prerequisites</div>
+<div class="ct-L1Sectionbody">  &gt; Install Samba file-server packages and command-line utilities.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _smb_step_install_packages</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-emphasis">Validate storage</div>
+<div class="ct-L1Sectionbody">  &gt; Require the configured SolidGroundUX storage mount.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _smb_step_validate_storage</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-emphasis">Prepare share root</div>
+<div class="ct-L1Sectionbody">  &gt; Create and validate the configured Samba share root.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _smb_step_prepare_share_root</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-emphasis">Start Samba service</div>
+<div class="ct-L1Sectionbody">  &gt; Validate the configuration and start smbd.service.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _smb_step_start_service</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-emphasis">Validate Samba file server</div>
+<div class="ct-L1Sectionbody">  &gt; Validate tools, configuration, service, storage, and managed shares.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _smb_validate</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-emphasis">Show Samba file-server status</div>
+<div class="ct-L1Sectionbody">  &gt; Show service, configuration, storage, and share-root status.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _smb_status</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-highlight">Samba Shares</div>
+<div class="ct-L1Sectionbody sh-emphasis">Manage shares</div>
+<div class="ct-L1Sectionbody">  &gt; Create, remove, structure, validate, and manage access to Samba shares.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _smb_manage_shares</div>
+<div class="ct-L1Sectionbody">  &gt; Script: /usr/local/libexec/solidgroundux/manage-samba-shares.sh</div>
+</main>
+</body>
+</html>

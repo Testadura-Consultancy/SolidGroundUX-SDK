@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Show an interruptible auto-continue countdown</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Show an interruptible auto-continue countdown</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / ui-ask.sh / Public API / ask_dlg_autocontinue</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Display a short countdown prompt that continues automatically unless the user intervenes.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Writes countdown status and optional legend to /dev/tty.</div>
+<div class="ct-functionbody">  - Allows Enter or any key to continue depending on options.</div>
+<div class="ct-functionbody">  - Optionally supports redo, cancel, and pause/resume keys.</div>
+<div class="ct-functionbody">  - Returns distinct codes so callers can map user intervention to decisions.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">options</div>
+<div class="ct-functionbody">  --seconds COUNT</div>
+<div class="ct-functionbody">      Countdown length in seconds. Defaults to 5.</div>
+<div class="ct-functionbody">  --message TEXT</div>
+<div class="ct-functionbody">      Message displayed above the countdown.</div>
+<div class="ct-functionbody">  --legend TEXT</div>
+<div class="ct-functionbody">      Custom legend text. When omitted, the standard key legend is built</div>
+<div class="ct-functionbody">      from the enabled interaction options.</div>
+<div class="ct-functionbody">  --redo</div>
+<div class="ct-functionbody">      Enables R as redo, returning 3.</div>
+<div class="ct-functionbody">  --again</div>
+<div class="ct-functionbody">      Enables A as again/repeat, returning 3.</div>
+<div class="ct-functionbody">  --cancel</div>
+<div class="ct-functionbody">      Enables C or Esc as cancel, returning 2.</div>
+<div class="ct-functionbody">  --pause</div>
+<div class="ct-functionbody">      Enables P or Space to pause/resume the countdown.</div>
+<div class="ct-functionbody">  --anykey</div>
+<div class="ct-functionbody">      Allows any key to continue immediately.</div>
+<div class="ct-functionbody">  --hidelegend</div>
+<div class="ct-functionbody">      Suppresses the key legend line.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Output</div>
+<div class="ct-functionbody">  Writes countdown UI to /dev/tty.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 when the user continues explicitly.</div>
+<div class="ct-functionbody">  1 when the countdown expires.</div>
+<div class="ct-functionbody">  2 when the user cancels.</div>
+<div class="ct-functionbody">  3 when the user requests redo/again.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  ask_dlg_autocontinue --seconds 10 --message &quot;Continuing deployment&quot; --redo --cancel --pause</div>
+</main>
+</body>
+</html>

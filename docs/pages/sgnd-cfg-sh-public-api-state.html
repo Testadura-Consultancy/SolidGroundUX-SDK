@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Public API (STATE)</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Public API (STATE)</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / sgnd-cfg.sh / Public API (STATE)</div>
+</header>
+<p class="ct-L1Sectionbody">sgnd_state_load Purpose:</p>
+<div class="ct-L1Sectionbody">  Load a state domain into the current shell.</div>
+<div class="ct-L1Sectionbody"></div>
+<p class="ct-L1Sectionbody">Behavior:</p>
+<div class="ct-L1Sectionbody">  - Loads all valid key/value pairs from the selected state file.</div>
+<div class="ct-L1Sectionbody">  - Uses SGND_STATE_FILE when no explicit filename is supplied.</div>
+<div class="ct-L1Sectionbody"></div>
+<p class="ct-L1Sectionbody">Options:</p>
+<div class="ct-L1Sectionbody">  --file FILE</div>
+<div class="ct-L1Sectionbody">      State file to load. Defaults to SGND_STATE_FILE.</div>
+<div class="ct-L1Sectionbody"></div>
+<p class="ct-L1Sectionbody">Side effects:</p>
+<div class="ct-L1Sectionbody">  Updates shell variables defined in the selected state file.</div>
+<div class="ct-L1Sectionbody"></div>
+<p class="ct-L1Sectionbody">Returns:</p>
+<div class="ct-L1Sectionbody">  0 on success unless the underlying loader returns a different status.</div>
+<div class="ct-L1Sectionbody">  1 when no state filename can be resolved.</div>
+<div class="ct-L1Sectionbody"></div>
+<p class="ct-L1Sectionbody">Usage:</p>
+<div class="ct-L1Sectionbody">  sgnd_state_load [--file FILE]</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-highlight">Usage</div>
+<div class="ct-L1Sectionbody">  sgnd_state_load &quot;example&quot; &quot;example-2&quot;</div>
+</main>
+</body>
+</html>

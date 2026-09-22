@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Validate all received archive entries</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Validate all received archive entries</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / receive-files.sh / Receive helpers / _validate_archive</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Reject unsafe paths and non-regular archive entry types before extraction.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Rejects absolute paths and parent-directory traversal.</div>
+<div class="ct-functionbody">  - Accepts regular files and directories only.</div>
+<div class="ct-functionbody">  - Counts the entries that will be processed.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 when every archive entry is safe.</div>
+<div class="ct-functionbody">  1 when the archive is unreadable, empty, or contains an unsafe entry.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+</main>
+</body>
+</html>

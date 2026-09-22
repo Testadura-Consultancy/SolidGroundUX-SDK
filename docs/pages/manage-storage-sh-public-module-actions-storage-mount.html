@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>storage_mount</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">storage_mount</div>
+  <div class="doc-breadcrumb">manage-storage.sh:::Public module actions:storage_mount</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Mount the configured SolidGroundUX storage filesystem.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Verifies that the default mount point has an /etc/fstab entry.</div>
+<div class="ct-functionbody">  - Creates the mount-point directory when needed.</div>
+<div class="ct-functionbody">  - Mounts the configured filesystem unless it is already mounted.</div>
+<div class="ct-functionbody">  - Honors console dry-run mode.</div>
+<div class="ct-functionbody"></div>
+<p class="ct-functionbody">Inputs (globals):</p>
+<div class="ct-functionbody">  FLAG_DRYRUN</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 when storage is mounted or already mounted, otherwise non-zero.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  storage_mount</div>
+</main>
+</body>
+</html>

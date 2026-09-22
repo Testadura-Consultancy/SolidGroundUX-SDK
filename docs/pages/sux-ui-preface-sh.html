@@ -1,0 +1,136 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>SolidGroundUX - UI Framework</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">SolidGroundUX - UI Framework</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / sux-ui_preface.sh</div>
+</header>
+<div class="ct-L1Sectionheader">User Interface</div>
+<div class="ct-L1Sectionbody"></div>
+<p class="ct-L1Sectionbody">The SolidGroundUX user-interface layer provides a consistent vocabulary for terminal output and interaction. It separates what an application wants to communicate from the details of ANSI styling, terminal width, glyph selection, prompt handling, and output policy.</p>
+<div class="ct-L1Sectionbody"></div>
+<p class="ct-L1Sectionbody">Applications should normally use the public UI functions rather than assembling escape sequences, labels, prompts, or status messages themselves. This keeps scripts visually consistent and allows presentation rules to evolve without requiring application code to be rewritten.</p>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L2Sectionheader">UI Architecture</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The UI group is divided into small layers with distinct responsibilities:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    ui-glyphs.sh</div>
+<div class="ct-L2Sectionbody">        Shared symbols, separators, arrows, and fallback characters</div>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    ui.sh</div>
+<div class="ct-L2Sectionbody">        Core rendering, colors, themes, widths, title bars, sections, and values</div>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    ui-say.sh</div>
+<div class="ct-L2Sectionbody">        Message semantics, log-level filtering, console output, and file logging</div>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    ui-ask.sh</div>
+<div class="ct-L2Sectionbody">        Typed prompts, choices, validation, forms, and direct terminal input</div>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    ui-dlg.sh</div>
+<div class="ct-L2Sectionbody">        Higher-level decisions and dialog-oriented interaction flows</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The lower layers do not depend on application-specific behavior. Higher layers build on the rendering and input primitives below them. This keeps formatting, messaging, and interaction concerns separate while still presenting one coherent interface to applications.</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionheader">Rendering and Layout</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The rendering layer in `ui.sh` provides reusable functions for structured console output. It handles visible string length, ANSI-aware padding, terminal width, themes, foreground and background colors, text attributes, title bars, section headers, filled lines, labeled values, and formatted cells.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Width-sensitive functions use visible character length rather than raw byte length wherever possible. ANSI control sequences therefore do not disturb label alignment or layout calculations.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Frequently used rendering functions include:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    sgnd_print_titlebar</div>
+<div class="ct-L2Sectionbody">    sgnd_print_sectionheader</div>
+<div class="ct-L2Sectionbody">    sgnd_print_labeledvalue</div>
+<div class="ct-L2Sectionbody">    sgnd_print_fill</div>
+<div class="ct-L2Sectionbody">    sgnd_print</div>
+<div class="ct-L2Sectionbody">    sgnd_print_single</div>
+<div class="ct-L2Sectionbody">    sgnd_print_file</div>
+<div class="ct-L2Sectionbody">    sgnd_print_cell</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Application code should prefer these helpers over local `printf` formatting when the output represents a standard SolidGroundUX UI element.</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionheader">Themes, Palettes, and Run Modes</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Styling is resolved centrally. Palettes define named colors and visual roles, while themes determine how those roles are applied by the rendering functions. This prevents consuming scripts from embedding ANSI codes or hard-coded color choices.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The active style can reflect the current run mode, such as normal operation, dry-run execution, debugging, or another framework-defined state. Applications communicate intent through the public API; the UI layer selects the appropriate visual representation.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">When styling is disabled or unsupported, UI functions should degrade to readable plain text without changing the semantic content of the output.</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionheader">Messages and Logging</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The messaging layer in `ui-say.sh` provides the standard way for scripts to emit informational, successful, warning, error, debug, and progress-related messages. Message type, log level, console visibility, and optional file logging are handled independently from the application logic that produced the message.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">This distinction is important: an application chooses the meaning and severity of a message, while the framework decides whether and how that message is displayed or recorded.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Scripts should therefore use the `say` family consistently instead of mixing direct output with framework messages. Direct `printf` remains appropriate for machine-readable output or for narrowly controlled rendering inside the UI implementation itself.</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionheader">Prompts and User Input</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The prompt layer in `ui-ask.sh` provides interactive input without assuming that standard input is available. Where necessary, prompts read from the controlling terminal so that applications can still process redirected or piped input.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The public prompt API supports labeled input, editable defaults, validation, constrained decisions, timed continuation, immediate key choices, and small field-driven forms.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Principal functions include:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    ask</div>
+<div class="ct-L2Sectionbody">    ask_decision</div>
+<div class="ct-L2Sectionbody">    ask_dlg_autocontinue</div>
+<div class="ct-L2Sectionbody">    ask_choose</div>
+<div class="ct-L2Sectionbody">    ask_choose_immediate</div>
+<div class="ct-L2Sectionbody">    ask_prompt_form</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Prompt functions normalize common interaction patterns so applications do not need to reproduce terminal handling, label formatting, default-value behavior, or response validation.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Use `ask_decision` for an explicit user decision that should block until a choice is made. Use `ask_dlg_autocontinue` for an interruptible timed continuation where the normal path continues automatically but the operator may intervene, pause, redo, or cancel according to the options supplied. These are distinct interaction patterns.</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionheader">Dialog-Oriented Interaction</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The dialog layer in `ui-dlg.sh` builds structured decisions on top of the lower prompt primitives. It expands symbolic choices, displays available actions, normalizes keyboard input, translates dialog return codes, and supports timed auto-continue behavior.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">These helpers are intentionally lightweight. They provide predictable interaction patterns for shell applications without introducing a full-screen terminal user interface or a separate workflow engine.</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionheader">Glyphs and Character Fallbacks</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">`ui-glyphs.sh` centralizes the visual symbols used throughout the framework. Keeping glyphs in one place avoids repeated literal Unicode characters and makes it possible to provide simpler fallbacks for restricted terminals.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Rendering code should refer to the shared glyph definitions rather than choosing local arrows, checkmarks, separators, or box-drawing characters. This preserves a recognizable visual language across the framework.</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionheader">Rendering Width and Message Routing</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Width-aware UI primitives derive their default width from the active terminal. An explicit `--maxwidth` is honored when supplied, and `SGND_MAX_RENDER_WIDTH` acts as an optional global cap; an unset or zero cap allows use of the full terminal width.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The `say*` family routes semantic messages independently to console and file output. `SGND_CONSOLE_LOG_LEVEL` controls terminal visibility and `SGND_FILE_LOG_LEVEL` controls persistent logging, allowing the two audiences to use different detail levels.</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionheader">Guidance for Applications</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">A SolidGroundUX application should generally follow these rules:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    - Use `say` functions for user-facing status and diagnostic messages.</div>
+<div class="ct-L2Sectionbody">    - Use rendering helpers for standard titles, sections, labels, and tables.</div>
+<div class="ct-L2Sectionbody">    - Use prompt and dialog helpers for interactive decisions.</div>
+<div class="ct-L2Sectionbody">    - Do not embed ANSI escape sequences in application code.</div>
+<div class="ct-L2Sectionbody">    - Do not duplicate glyphs or terminal-width calculations locally.</div>
+<div class="ct-L2Sectionbody">    - Keep machine-readable output separate from styled human-readable output.</div>
+<div class="ct-L2Sectionbody">    - Respect non-interactive, quiet, debug, and dry-run execution modes.</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Following these conventions gives command-line tools a shared appearance and, more importantly, shared behavior. Users can learn one interaction model and apply it across all SolidGroundUX applications.</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionheader">Scope and Non-Goals</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The UI framework is designed for structured command-line applications. It is not intended to be a full-screen TUI toolkit, a graphical interface, or a replacement for dedicated terminal-layout libraries.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Its goal is deliberately narrower: provide dependable, composable primitives for readable output, consistent messaging, and predictable interaction in Bash.</p>
+</main>
+</body>
+</html>

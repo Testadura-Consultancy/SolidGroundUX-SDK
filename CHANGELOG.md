@@ -4,6 +4,8 @@ All notable changes to SolidGroundUX SDK are documented in this file.
 
 ## Unreleased
 
+## Release 2.1.2626523
+
 ### Added
 
 - Established SolidGroundUX SDK as the owner of development, workspace, deployment, documentation and release tooling separated from the SolidGroundUX Framework.

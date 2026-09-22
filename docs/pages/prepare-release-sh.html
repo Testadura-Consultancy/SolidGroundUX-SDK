@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>SolidGroundUX SDK - Prepare Release</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">SolidGroundUX SDK - Prepare Release</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / prepare-release.sh</div>
+</header>
+<div class="ct-modulebody sh-label">Description</div>
+<div class="ct-modulebody">  Provides a release-preparation utility for SolidGroundUX workspaces.</div>
+<div class="ct-modulebody"></div>
+<div class="ct-modulebody sh-label">The script</div>
+<div class="ct-modulebody">    - Selects target scripts by file or folder</div>
+<div class="ct-modulebody">    - Refreshes version, build, and checksum metadata unless source updates are disabled</div>
+<div class="ct-modulebody">    - Applies optional major or minor version bumps</div>
+<div class="ct-modulebody">    - Supports dry-run verification before committing changes</div>
+<div class="ct-modulebody">    - Ensures release metadata is consistent across processed scripts</div>
+<div class="ct-modulebody">    - Verifies public command wrappers for executable top-level libexec scripts</div>
+<div class="ct-modulebody">    - Creates release tar/manifests/checksums and a complete distributable release ZIP</div>
+<div class="ct-modulebody">    - Writes release-package.info at ZIP root so the package identifies its project/release</div>
+<div class="ct-modulebody">    - Uses an explicit removal-baseline manifest from persistent manifest history</div>
+<div class="ct-modulebody">    - Ships release-manager.sh only with the SolidGroundUX framework bootstrap package</div>
+<div class="ct-modulebody"></div>
+<div class="ct-modulebody sh-label">Design principles</div>
+<div class="ct-modulebody">  - Release preparation is deterministic and repeatable</div>
+<div class="ct-modulebody">  - Metadata updates are explicit and convention-based</div>
+<div class="ct-modulebody">  - Safe verification is supported through dry-run mode</div>
+<div class="ct-modulebody">  - Script formatting is preserved when updating field values</div>
+<div class="ct-modulebody"></div>
+<div class="ct-modulebody sh-label">Role in framework</div>
+<div class="ct-modulebody">  - Pre-release maintenance tool for framework and utility scripts</div>
+<div class="ct-modulebody">  - Ensures release metadata is synchronized before distribution</div>
+<div class="ct-modulebody"></div>
+<div class="ct-modulebody sh-label">Non-goals</div>
+<div class="ct-modulebody">  - Deploying files to target environments</div>
+<div class="ct-modulebody">  - Managing version control, tagging, or publication workflows</div>
+<div class="ct-modulebody"></div>
+</main>
+</body>
+</html>

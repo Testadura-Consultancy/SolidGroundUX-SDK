@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Post-action Pause</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Post-action Pause</div>
+  <div class="doc-breadcrumb">mcm_console_preface.sh::SolidGround Management Console:Post-action Pause:</div>
+</header>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Normal menu actions may request a post-action wait through the WAITSECS argument of sgnd_menu_register_item. A non-zero wait for a normal action is never shorter than 15 seconds. The console presents that wait with ask_dlg_autocontinue so the operator can continue early, pause the countdown, or cancel the countdown without changing the action result. Host-owned immediate controls set SGND_LAST_WAITSECS to 0 and therefore redraw without a post-action pause.</p>
+<div class="ct-L2Sectionbody"></div>
+</main>
+</body>
+</html>

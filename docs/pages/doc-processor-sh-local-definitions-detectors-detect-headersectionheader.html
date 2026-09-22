@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Detect named header sections</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Detect named header sections</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / doc-processor.sh / Local definitions / Detectors / _detect_headersectionheader</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Detect named sections inside the module header, such as Metadata and</div>
+<div class="ct-functionbody">  Attribution, without emitting render content.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Runs only while inside the file header.</div>
+<div class="ct-functionbody">  - Matches lines such as &#x27;# Metadata:&#x27; and &#x27;# Attribution:&#x27;.</div>
+<div class="ct-functionbody">  - Stores the active header section for field extraction.</div>
+<div class="ct-functionbody"></div>
+<p class="ct-functionbody">Inputs (globals):</p>
+<div class="ct-functionbody">  src_line, src_haltlineprocessing, doc_inheader</div>
+<div class="ct-functionbody"></div>
+<p class="ct-functionbody">Outputs (globals):</p>
+<div class="ct-functionbody">  doc_headersection, src_linetype, src_haltlineprocessing</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 always.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  _detect_headersectionheader</div>
+</main>
+</body>
+</html>

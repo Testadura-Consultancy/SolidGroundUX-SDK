@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Determine whether a message should be written to the console</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Determine whether a message should be written to the console</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / ui-say.sh / Helpers / _say_should_print_console</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Determine whether a message of the specified type should be</div>
+<div class="ct-functionbody">  written to the console based on the current log level.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Parameters</div>
+<div class="ct-functionbody">  $1 Message type (START, INFO, WARN, FAIL, DEBUG, TRACE, ...)</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Evaluates SGND_CONSOLE_LOG_LEVEL.</div>
+<div class="ct-functionbody">  - Applies the SolidGroundUX log-level visibility rules.</div>
+<div class="ct-functionbody">  - Returns success when the message should be displayed.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Globals (read)</div>
+<div class="ct-functionbody">  SGND_CONSOLE_LOG_LEVEL</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 if the message should be displayed.</div>
+<div class="ct-functionbody">  1 if the message should be suppressed.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  _say_should_print_console &quot;example&quot;</div>
+</main>
+</body>
+</html>

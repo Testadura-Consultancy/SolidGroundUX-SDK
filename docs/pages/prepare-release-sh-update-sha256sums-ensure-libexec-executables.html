@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>_ensure_libexec_executables</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">_ensure_libexec_executables</div>
+  <div class="doc-breadcrumb">prepare-release.sh:::Update SHA256SUMS:_ensure_libexec_executables</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Ensure top-level SolidGroundUX libexec files are executable before packaging.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Inspects files directly beneath usr/local/libexec/solidgroundux.</div>
+<div class="ct-functionbody">  - Does not recurse into subdirectories.</div>
+<div class="ct-functionbody">  - Adds the executable bit for user, group, and others when missing.</div>
+<div class="ct-functionbody">  - Reports intended changes without modifying files in dry-run mode.</div>
+<div class="ct-functionbody">  - Succeeds quietly when the directory does not exist or contains no files.</div>
+<div class="ct-functionbody"></div>
+<p class="ct-functionbody">Inputs (globals):</p>
+<div class="ct-functionbody">  SOURCE_DIR</div>
+<div class="ct-functionbody">  FLAG_DRYRUN</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 when all applicable files are executable or the directory is absent.</div>
+<div class="ct-functionbody">  1 when one or more permission updates fail.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  _ensure_libexec_executables</div>
+</main>
+</body>
+</html>

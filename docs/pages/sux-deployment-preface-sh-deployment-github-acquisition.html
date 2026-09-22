@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>GitHub Acquisition</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">GitHub Acquisition</div>
+  <div class="doc-breadcrumb">sux-deployment_preface.sh::Deployment:GitHub Acquisition:</div>
+</header>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">GitHub is the default authoritative source for determining the latest published SolidGroundUX release. Generic project packages can always be supplied directly by file or URL; project-specific online discovery can be added through project metadata without changing the package-installation engine.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">release-manager.sh asks GitHub which SolidGroundUX release is current before downloading.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">If that release is already present under archive/ it is considered installed.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">If it is already present under releases/ it is considered downloaded.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">In either case, the release manager avoids downloading the same release again.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">New downloads are staged in a temporary directory first. The ZIP is extracted, the contained release identity is checked, required release files are verified, checksums are validated, and release paths are checked for unsafe traversal.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Only a valid release set is admitted into releases/.</p>
+<div class="ct-L2Sectionbody"></div>
+</main>
+</body>
+</html>

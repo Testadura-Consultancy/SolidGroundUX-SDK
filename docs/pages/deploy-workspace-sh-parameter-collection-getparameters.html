@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Collect deployment parameters from CLI values, state, and ask</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Collect deployment parameters from CLI values, state, and ask</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / deploy-workspace.sh / Parameter collection / _getparameters</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Resolve command-line overrides first, use saved state as prompt defaults,</div>
+<div class="ct-functionbody">  and combine directory, filename/mask, and changed-after filters.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Outputs (globals)</div>
+<div class="ct-functionbody">  DEPLOY_TRANSPORT, REMOTE_TARGET, SRC_ROOT, DEST_ROOT, SELECT_DIRECTORY,</div>
+<div class="ct-functionbody">  SELECT_MATCH, CHANGED_AFTER, RECEIVER_PATH</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 after confirmation or when auto mode has valid resolved settings.</div>
+<div class="ct-functionbody">  1 when validation fails or the user cancels.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+</main>
+</body>
+</html>

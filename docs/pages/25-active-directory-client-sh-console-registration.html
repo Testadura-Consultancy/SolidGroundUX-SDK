@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Console registration</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Console registration</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / 25-active-directory-client.sh / Console registration</div>
+</header>
+<p class="ct-L1Sectionbody">Provides Active Directory client preparation and domain membership management. The complete join workflow is exposed together with its individual steps for diagnosis, validation, status inspection, DNS registration, and domain leave.</p>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-highlight">Menu items</div>
+<div class="ct-L1Sectionbody sh-emphasis">Join domain</div>
+<div class="ct-L1Sectionbody">  &gt; Run the complete Active Directory client join sequence.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _adc_join_domain</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-emphasis">Install AD client prerequisites</div>
+<div class="ct-L1Sectionbody">  &gt; Install realmd, SSSD, Kerberos, and Active Directory client utilities.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _adc_step_install_packages</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-emphasis">Validate join inputs</div>
+<div class="ct-L1Sectionbody">  &gt; Collect realm, DNS, account, and machine identity settings.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _adc_step_preflight</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-emphasis">Configure Active Directory DNS</div>
+<div class="ct-L1Sectionbody">  &gt; Point the client at the authoritative Active Directory DNS server.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _adc_step_dns</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-emphasis">Prepare client identity</div>
+<div class="ct-L1Sectionbody">  &gt; Set and validate the machine FQDN before joining.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _adc_step_identity</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-emphasis">Discover Active Directory services</div>
+<div class="ct-L1Sectionbody">  &gt; Validate realm, Kerberos, and LDAP service discovery.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _adc_step_discover</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-emphasis">Join Active Directory realm</div>
+<div class="ct-L1Sectionbody">  &gt; Join the machine to the selected realm.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _adc_step_join</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-emphasis">Start SSSD</div>
+<div class="ct-L1Sectionbody">  &gt; Start and validate the SSSD client service.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _adc_step_sssd</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-emphasis">Register client DNS</div>
+<div class="ct-L1Sectionbody">  &gt; Register and verify the client IPv4 host record.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _adc_step_register_dns</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-emphasis">Reconcile AD client</div>
+<div class="ct-L1Sectionbody">  &gt; Repair safe local AD client drift without rejoining the realm.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _adc_reconcile</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-emphasis">Validate AD client</div>
+<div class="ct-L1Sectionbody">  &gt; Validate membership, service discovery, and SSSD.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _adc_validate</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-emphasis">Show AD client status</div>
+<div class="ct-L1Sectionbody">  &gt; Show machine identity and current realm membership.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _adc_status</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-emphasis">Leave domain</div>
+<div class="ct-L1Sectionbody">  &gt; Leave the currently joined Active Directory realm.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _adc_leave</div>
+</main>
+</body>
+</html>

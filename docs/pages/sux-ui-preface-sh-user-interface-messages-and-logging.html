@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Messages and Logging</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Messages and Logging</div>
+  <div class="doc-breadcrumb">sux-ui_preface.sh::User Interface:Messages and Logging:</div>
+</header>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The messaging layer in `ui-say.sh` provides the standard way for scripts to emit informational, successful, warning, error, debug, and progress-related messages. Message type, log level, console visibility, and optional file logging are handled independently from the application logic that produced the message.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">This distinction is important: an application chooses the meaning and severity of a message, while the framework decides whether and how that message is displayed or recorded.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Scripts should therefore use the `say` family consistently instead of mixing direct output with framework messages. Direct `printf` remains appropriate for machine-readable output or for narrowly controlled rendering inside the UI implementation itself.</p>
+<div class="ct-L2Sectionbody"></div>
+</main>
+</body>
+</html>

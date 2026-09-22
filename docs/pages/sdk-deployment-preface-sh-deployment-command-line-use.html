@@ -1,0 +1,78 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Command-line Use</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Command-line Use</div>
+  <div class="doc-breadcrumb">sdk-deployment_preface.sh::Deployment:Command-line Use:</div>
+</header>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Command-line actions invoke the same functions exposed by the interactive menu. Arguments therefore select an action and/or provide parameter values; they do not form a separate release workflow.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Check GitHub without changing the machine:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    release-manager.sh --check</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Download the latest release without installing it:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    release-manager.sh --download</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Check, download if required, and install the latest GitHub release:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    release-manager.sh --update</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Install the newest release already available locally:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    release-manager.sh --install</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Install directly from a package ZIP or URL:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    release-manager.sh --install --source /tmp/SolidGroundUX-release.zip</div>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    release-manager.sh --install \</div>
+<div class="ct-L2Sectionbody">        --source https://example.org/releases/SolidGroundUX-release.zip</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Roll back to the previous archived release:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    release-manager.sh --rollback</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Roll back to a specific archived release:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    release-manager.sh --rollback --release 2.1.2624102</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Remove the sel# . Imageected project:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    release-manager.sh --remove</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Select a known project explicitly:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    release-manager.sh --project solidground-management-modules --install</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Run an action without questions or confirmations:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    release-manager.sh --update --auto</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Preview filesystem changes:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    release-manager.sh --update --dryrun</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Override the default GitHub repository:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    release-manager.sh --check --repo Testadura-Mark/SolidGroundUX</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Alternate target roots can be supplied for development, testing, or recovery:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    release-manager.sh --install \</div>
+<div class="ct-L2Sectionbody">        --target-root /mnt/testroot \</div>
+<div class="ct-L2Sectionbody">        --source /tmp/SolidGroundUX-release.zip</div>
+<div class="ct-L2Sectionbody"></div>
+</main>
+</body>
+</html>

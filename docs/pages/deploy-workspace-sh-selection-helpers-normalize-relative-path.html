@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Normalize and validate a workspace-relative path</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Normalize and validate a workspace-relative path</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / deploy-workspace.sh / Selection helpers / _normalize_relative_path</div>
+</header>
+<div class="ct-functionbody sh-highlight">Arguments</div>
+<div class="ct-functionbody">  $1  User-provided path.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Output</div>
+<div class="ct-functionbody">  Writes the normalized relative path to stdout.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 when the path is safe and remains beneath SRC_ROOT.</div>
+<div class="ct-functionbody">  1 for absolute paths, empty paths, or parent traversal.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  rel=&quot;$(_normalize_relative_path &quot;usr/local/bin&quot;)&quot;</div>
+</main>
+</body>
+</html>

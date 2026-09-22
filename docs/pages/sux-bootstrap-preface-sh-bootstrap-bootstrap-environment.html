@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Bootstrap Environment</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Bootstrap Environment</div>
+  <div class="doc-breadcrumb">sux-bootstrap_preface.sh::Bootstrap:Bootstrap Environment:</div>
+</header>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">`SGND_FRAMEWORK_ROOT` is the contextual root of the executing tree. In an installed execution it is normally `/`; in a development execution it normally identifies the repository `target-root`.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">A contextual root is not automatically a Framework root. When Framework-owned files are required, `sgnd_framework_resolve_path` checks whether the contextual tree really contains the Framework. If it does, local Framework resources take precedence with installed `/` as fallback. If it does not, resources resolve directly from the installed Framework.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">This leaves application/project configuration and state semantics intact while preventing SDK or MCM development directories from masquerading as Framework trees.</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="doc-image-group images-1">
+<figure class="doc-image">
+<img src="../assets/images/sux-framework-locator.png" alt="Contextual root and Framework resource resolution." loading="lazy">
+<figcaption>Contextual root and Framework resource resolution.</figcaption>
+</figure>
+</div>
+</main>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Bootstrap Sequence</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Bootstrap Sequence</div>
+  <div class="doc-breadcrumb">sux-bootstrap_preface.sh::Bootstrap:Bootstrap Sequence:</div>
+</header>
+<div class="ct-L2Sectionbody"></div>
+<div class="doc-image-group images-1">
+<figure class="doc-image">
+<img src="../assets/images/sux-bootstrap-sequence.png" alt="SolidGroundUX bootstrap sequence." loading="lazy">
+<figcaption>SolidGroundUX bootstrap sequence.</figcaption>
+</figure>
+</div>
+<p class="ct-L2Sectionbody">Startup proceeds in this order:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    executable</div>
+<div class="ct-L2Sectionbody">        -&gt; _framework_locator</div>
+<div class="ct-L2Sectionbody">        -&gt; sgnd-exe-common</div>
+<div class="ct-L2Sectionbody">        -&gt; sgnd-bootstrap</div>
+<div class="ct-L2Sectionbody">        -&gt; bootstrap environment</div>
+<div class="ct-L2Sectionbody">        -&gt; configuration and state</div>
+<div class="ct-L2Sectionbody">        -&gt; libraries declared in SGND_USING</div>
+<div class="ct-L2Sectionbody">        -&gt; application main</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">`_framework_locator` is intentionally self-contained. It runs before the normal Framework libraries are available and locates `sgnd-exe-common.sh`. The executable common layer then provides the early runtime needed to enter `sgnd-bootstrap`.</p>
+<div class="ct-L2Sectionbody"></div>
+</main>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Initialize application-owned executable paths</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Initialize application-owned executable paths</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / management-console.sh / Console application context / _sgnd_console_set_app_context</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Establish the management-application root and executable locations from the</div>
+<div class="ct-functionbody">  active console module source without changing SGND_FRAMEWORK_ROOT.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Keeps framework/runtime ownership and management-application ownership separate.</div>
+<div class="ct-functionbody">  - Makes module-owned bin, sbin, and libexec locations available to dispatchers.</div>
+<div class="ct-functionbody">  - Leaves presentation of DEV context to the console index renderer.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  _sgnd_console_set_app_context &quot;$module_path&quot;</div>
+</main>
+</body>
+</html>

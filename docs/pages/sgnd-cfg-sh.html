@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>SolidGroundUX - Configuration Management</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">SolidGroundUX - Configuration Management</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / sgnd-cfg.sh</div>
+</header>
+<div class="ct-modulebody sh-label">Description</div>
+<div class="ct-modulebody">  Provides configuration handling for the SolidGroundUX framework.</div>
+<div class="ct-modulebody"></div>
+<div class="ct-modulebody sh-label">The library</div>
+<div class="ct-modulebody">    - Loads configuration from system and user locations</div>
+<div class="ct-modulebody">    - Resolves effective configuration using precedence rules</div>
+<div class="ct-modulebody">    - Supports reading and writing key-value configuration files</div>
+<div class="ct-modulebody">    - Ensures required configuration values are present</div>
+<div class="ct-modulebody">    - Provides helper functions for accessing configuration values</div>
+<div class="ct-modulebody">    - Integrates with bootstrap and runtime state handling</div>
+<div class="ct-modulebody"></div>
+<div class="ct-modulebody sh-label">Design principles</div>
+<div class="ct-modulebody">  - Clear separation between system-level and user-level configuration</div>
+<div class="ct-modulebody">  - Deterministic resolution of configuration values</div>
+<div class="ct-modulebody">  - Minimal and transparent configuration format</div>
+<div class="ct-modulebody">  - Safe defaults with optional overrides</div>
+<div class="ct-modulebody"></div>
+<div class="ct-modulebody sh-label">Role in framework</div>
+<div class="ct-modulebody">  - Central configuration layer used during bootstrap and runtime</div>
+<div class="ct-modulebody">  - Supplies paths, settings, and environment-specific values</div>
+<div class="ct-modulebody">  - Supports scripts and modules requiring persistent configuration</div>
+<div class="ct-modulebody"></div>
+<div class="ct-modulebody sh-label">Non-goals</div>
+<div class="ct-modulebody">  - Complex hierarchical configuration systems</div>
+<div class="ct-modulebody">  - External configuration formats (JSON, YAML, etc.)</div>
+<div class="ct-modulebody">  - Runtime hot-reloading of configuration</div>
+<div class="ct-modulebody"></div>
+</main>
+</body>
+</html>

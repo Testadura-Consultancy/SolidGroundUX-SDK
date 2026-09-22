@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>SolidGroundUX - Bootstrap Environment</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">SolidGroundUX - Bootstrap Environment</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / sgnd-bootstrap-env.sh</div>
+</header>
+<div class="ct-modulebody sh-label">Description</div>
+<div class="ct-modulebody">  Establishes the runtime environment for SolidGroundUX scripts.</div>
+<div class="ct-modulebody"></div>
+<div class="ct-modulebody sh-label">The library</div>
+<div class="ct-modulebody">    - Defines and initializes core framework directories</div>
+<div class="ct-modulebody">    - Resolves system and user paths (config, state, logs, etc.)</div>
+<div class="ct-modulebody">    - Ensures required directories exist with proper permissions</div>
+<div class="ct-modulebody">    - Applies default values for environment variables when unset</div>
+<div class="ct-modulebody">    - Normalizes environment behavior across different execution contexts</div>
+<div class="ct-modulebody"></div>
+<div class="ct-modulebody sh-label">Design principles</div>
+<div class="ct-modulebody">  - Deterministic environment setup regardless of execution context</div>
+<div class="ct-modulebody">  - A single self-locating framework root for all framework-managed filesystem paths</div>
+<div class="ct-modulebody">  - Safe defaults with minimal assumptions about host system</div>
+<div class="ct-modulebody">  - Idempotent setup (safe to run multiple times)</div>
+<div class="ct-modulebody"></div>
+<div class="ct-modulebody sh-label">Role in framework</div>
+<div class="ct-modulebody">  - Core bootstrap layer responsible for environment initialization</div>
+<div class="ct-modulebody">  - Runs early in the bootstrap process before other libraries depend on it</div>
+<div class="ct-modulebody">  - Provides foundational paths and variables used across all modules</div>
+<div class="ct-modulebody"></div>
+<div class="ct-modulebody sh-label">Non-goals</div>
+<div class="ct-modulebody">  - Argument parsing (handled by sgnd-args.sh)</div>
+<div class="ct-modulebody">  - Configuration loading (handled by sgnd-cfg.sh)</div>
+<div class="ct-modulebody">  - UI or user interaction</div>
+<div class="ct-modulebody"></div>
+</main>
+</body>
+</html>

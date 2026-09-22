@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Build visible item indexes for the active source</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Build visible item indexes for the active source</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / sgnd-menu.sh / Menu model indexes / _sgnd_console_collect_visible_item_indexes</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Cache menu rows that may be rendered or selected on the active module page.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Filters non-builtin items by SGND_MENU_ACTIVE_SOURCE.</div>
+<div class="ct-functionbody">  - Includes visible and disabled-rendered states; excludes hidden rows.</div>
+<div class="ct-functionbody">  - Invalidates dependent layout caches when the visible signature changes.</div>
+<div class="ct-functionbody"></div>
+<p class="ct-functionbody">Outputs (globals):</p>
+<div class="ct-functionbody">  SGND_VISIBLE_ITEM_INDEXES and visibility-cache metadata.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 after collecting indexes.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  _sgnd_console_collect_visible_item_indexes</div>
+</main>
+</body>
+</html>

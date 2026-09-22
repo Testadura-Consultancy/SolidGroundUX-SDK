@@ -1,0 +1,67 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>SolidGroundUX Management Console Modules - Console Modules Introduction</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">SolidGroundUX Management Console Modules - Console Modules Introduction</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / mcm_preface.sh</div>
+</header>
+<div class="ct-L1Sectionheader">SolidGroundUX Management Console Modules</div>
+<div class="doc-image-group images-1">
+<figure class="doc-image">
+<img src="../assets/images/mcm-overview.png" alt="SolidGround Management Console, the MCM host application." loading="lazy">
+<figcaption>SolidGround Management Console, the MCM host application.</figcaption>
+</figure>
+</div>
+<p class="ct-L1Sectionbody">SolidGroundUX Management Console Modules (MCM) is the administration product built on the SolidGroundUX Framework. As of version 2.1 the management console is no longer treated as part of the Framework runtime: MCM owns the console host, the public `sgnd-console` command, module discovery and lazy loading, and the functional server-management modules.</p>
+<div class="ct-L1Sectionbody"></div>
+<p class="ct-L1Sectionbody">The Framework remains the shared dependency beneath MCM. It provides bootstrap, configuration/state, logging, UI primitives, `sgnd-menu`, metadata helpers, and other reusable APIs. MCM supplies the management application built from those services.</p>
+<div class="ct-L1Sectionbody"></div>
+<p class="ct-L1Sectionbody">The modules cover practical administration subjects such as computer setup, storage, Active Directory, Samba, web serving, SQL Server, Docker, Framework management, and development utilities. Their purpose is to make recurring server-management work guided, consistent, repeatable, and inspectable.</p>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L2Sectionheader">Architecture</div>
+<div class="ct-L2Sectionbody"></div>
+<div class="doc-image-group images-1">
+<figure class="doc-image">
+<img src="../assets/images/mcm-architecture.png" alt="SolidGroundUX Management Console Modules architecture." loading="lazy">
+<figcaption>SolidGroundUX Management Console Modules architecture.</figcaption>
+</figure>
+</div>
+<p class="ct-L2Sectionbody">`management-console.sh` is the MCM-owned host behind `sgnd-console`. At startup it discovers enabled module files and reads their literal page metadata without sourcing their implementation. That metadata is enough to build the main index.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">A module is sourced only when its page is opened for the first time. It then registers its groups and items through the Framework-owned `sgnd-menu` API and remains loaded for the lifetime of the console process. Returning to the index does not unload it.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Modules are source-only orchestration units. They own subject-specific menu content, helpers, validation entry points, and calls into standalone operational executables. Shared functionality belongs in the appropriate Framework or MCM library according to ownership; modules do not depend on another module having been opened first.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Framework smoke/installation testing is owned by `sgnd-smoketest`. The MCM Framework Test page orchestrates those Framework suites together with MCM console-registration and module-validation checks; it does not turn those MCM checks into Framework suites.</p>
+<div class="ct-L2Sectionbody"></div>
+<table class="doc-data-table">
+<thead><tr class="sh-emphasis"><th>Module</th><th>Executable</th><th>Common</th></tr></thead>
+<tbody>
+<tr><td>10-computer-setup.sh</td><td>set-identity.sh</td><td></td></tr>
+<tr><td>15-storage.sh</td><td>manage-storage.sh</td><td></td></tr>
+<tr><td>20-active-directory-server.sh</td><td>manage-active-directory-server.sh</td><td>active-directory-management.sh</td></tr>
+<tr><td>25-active-directory-client.sh</td><td>manage-active-directory-client.sh</td><td>active-directory-management.sh</td></tr>
+<tr><td>27-active-directory-management.sh</td><td>manage-active-directory.sh</td><td>active-directory-management.sh</td></tr>
+<tr><td>30-samba-file-server.sh</td><td>manage-samba-file-server.sh</td><td></td></tr>
+<tr><td>30-samba-file-server.sh</td><td>manage-samba-shares.sh</td><td></td></tr>
+<tr><td>40-solidgroundux.sh</td><td>manage-solidgroundux.sh</td><td></td></tr>
+<tr><td>45-solidground-framework-test.sh</td><td>sgnd-smoketest</td><td></td></tr>
+<tr><td>50-web-server.sh</td><td>manage-web-server.sh</td><td></td></tr>
+<tr><td>50-web-server.sh</td><td>publish-web-content.sh</td><td></td></tr>
+<tr><td>60-sqlserver.sh</td><td>manage-sqlserver.sh</td><td></td></tr>
+<tr><td>70-docker-server.sh</td><td>manage-docker-server.sh</td><td></td></tr>
+<tr><td>70-docker-server.sh</td><td>manage-docker-containers.sh</td><td></td></tr>
+<tr><td>90-development.sh</td><td></td><td></td></tr>
+</tbody>
+</table>
+</main>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Initialize bootstrap environment</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Initialize bootstrap environment</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / sgnd-bootstrap.sh / Main sequence helpers + EXIT dispatch / _init_bootstrap</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Prepare the minimum framework environment required before core libraries load.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Resolves the bootstrap directory.</div>
+<div class="ct-functionbody">  - Resolves and sources framework/project definition libraries from globals/.</div>
+<div class="ct-functionbody">  - Sources the comment-header parser and bootstrap environment library.</div>
+<div class="ct-functionbody">  - Initializes metadata for early-loaded core modules and the active script.</div>
+<div class="ct-functionbody">  - Applies defaults, rebases paths, and ensures required directories exist.</div>
+<div class="ct-functionbody"></div>
+<p class="ct-functionbody">Outputs (globals):</p>
+<div class="ct-functionbody">  SGND_BOOTSTRAP_DIR and environment/path globals initialized by bootstrap-env.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 when initialization succeeds.</div>
+<div class="ct-functionbody">  Non-zero when sourcing, metadata initialization, path setup, or directory creation fails.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  _init_bootstrap</div>
+</main>
+</body>
+</html>

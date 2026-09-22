@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>SolidGroundUX SDK - Document processor</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">SolidGroundUX SDK - Document processor</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / doc-processor.sh</div>
+</header>
+<div class="ct-modulebody sh-label">Description</div>
+<div class="ct-modulebody">  Provides the core parsing engine for the SolidGroundUX documentation system.</div>
+<div class="ct-modulebody"></div>
+<div class="ct-modulebody sh-label">The processor</div>
+<div class="ct-modulebody">    - Iterates source files line-by-line</div>
+<div class="ct-modulebody">    - Interprets structured comment conventions (headers, metadata, sections, items)</div>
+<div class="ct-modulebody">    - Maintains parsing state (header, section hierarchy, current item, etc.)</div>
+<div class="ct-modulebody">    - Normalizes detected elements into a flat render stream (DOC_CONTENT_LINES)</div>
+<div class="ct-modulebody"></div>
+<div class="ct-modulebody">  Parsing is convention-based and deterministic. Each recognized line contributes</div>
+<div class="ct-modulebody">  either state transitions or a normalized documentation record.</div>
+<div class="ct-modulebody"></div>
+<div class="ct-modulebody sh-label">Design principles</div>
+<div class="ct-modulebody">  - Single-pass parsing (no backtracking or multi-phase analysis)</div>
+<div class="ct-modulebody sh-label">- Separation of concerns</div>
+<div class="ct-modulebody">      * Detection/state mutation</div>
+<div class="ct-modulebody">      * Content normalization</div>
+<div class="ct-modulebody">      * Rendering (handled elsewhere)</div>
+<div class="ct-modulebody">  - Convention over configuration (strict comment grammar)</div>
+<div class="ct-modulebody">  - Minimal side effects outside controlled doc_* and mod_* variables</div>
+<div class="ct-modulebody">  - Transparent state transitions for debuggability</div>
+<div class="ct-modulebody"></div>
+<div class="ct-modulebody sh-label">Role in framework</div>
+<div class="ct-modulebody">  - Core documentation data collector</div>
+<div class="ct-modulebody">  - Produces the canonical DOC_CONTENT_LINES dataset consumed by renderers</div>
+<div class="ct-modulebody">  - Bridges raw source code and higher-level documentation output (HTML, etc.)</div>
+<div class="ct-modulebody">  - Shared parsing engine for all documentation-related tooling</div>
+<div class="ct-modulebody"></div>
+<div class="ct-modulebody sh-label">Non-goals</div>
+<div class="ct-modulebody">  - Rendering output formats (HTML, Markdown, PDF, etc.)</div>
+<div class="ct-modulebody">  - Parsing arbitrary or free-form comments</div>
+<div class="ct-modulebody">  - Semantic analysis of code (only structured comment interpretation)</div>
+<div class="ct-modulebody">  - Cross-file linking or indexing logic</div>
+<div class="ct-modulebody"></div>
+</main>
+</body>
+</html>

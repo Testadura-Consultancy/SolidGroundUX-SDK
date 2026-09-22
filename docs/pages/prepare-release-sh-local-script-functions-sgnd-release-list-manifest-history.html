@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>List removal-baseline manifests for an artifact</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">List removal-baseline manifests for an artifact</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / prepare-release.sh / Local script functions / _sgnd_release_list_manifest_history</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  List persistent manifest-history files for one explicit release artifact identity,</div>
+<div class="ct-functionbody">  newest build first.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Arguments</div>
+<div class="ct-functionbody">  $1  Artifact product name, for example SolidGroundUX or SolidGroundUX-bundled.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Matches only the requested artifact identity.</div>
+<div class="ct-functionbody">  - Keeps bundled and individual release histories separate.</div>
+<div class="ct-functionbody">  - Sorts by the numeric build suffix first, then by version as a tie-breaker.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 always.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  _sgnd_release_list_manifest_history &quot;SolidGroundUX&quot;</div>
+</main>
+</body>
+</html>

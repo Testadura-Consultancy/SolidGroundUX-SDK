@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Select convenience templates for the workspace</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Select convenience templates for the workspace</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / create-workspace.sh / Local script functions / General helpers / _resolve_convenience_template_selection</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Discover installed convenience templates and let the user choose which copies</div>
+<div class="ct-functionbody">  should be placed in the new workspace.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Lists all top-level convenience-template files except templates_preface.sh.</div>
+<div class="ct-functionbody">  - Defaults to all discovered templates.</div>
+<div class="ct-functionbody">  - Accepts &quot;all&quot;, &quot;none&quot;, or a comma-separated list of template numbers.</div>
+<div class="ct-functionbody">  - In automatic mode, selects all discovered templates without prompting.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Outputs (globals)</div>
+<div class="ct-functionbody">  WORKSPACE_SELECTED_TEMPLATES</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 on success, including when no convenience templates are installed.</div>
+<div class="ct-functionbody">  1 on invalid interactive selection.</div>
+</main>
+</body>
+</html>

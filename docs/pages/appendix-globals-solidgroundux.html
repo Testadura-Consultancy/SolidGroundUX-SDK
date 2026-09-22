@@ -1,0 +1,85 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Appendix D: Global Variables</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Appendix D: Global Variables</div>
+  <div class="doc-breadcrumb">SolidGroundUX / Appendices / Appendix D: Global Variables</div>
+</header>
+<div class="ct-documentbody">This appendix lists global variables declared through SGND_FRAMEWORK_GLOBALS, SGND_RUNTIME_GLOBALS, and SGND_SCRIPT_GLOBALS.</div>
+<section class="doc-globals-block">
+<h2 class="ct-L2Sectionheader">Framework Globals</h2>
+<table class="doc-data-table">
+<thead><tr><th>Variable</th><th>Audience</th><th>Description</th><th>Current Value</th><th>Module</th><th>Group</th><th>Extra</th></tr></thead>
+<tbody>
+<tr><td>SAY_COLORIZE_DEFAULT</td><td>user</td><td>Default colorized console output setting</td><td>label</td><td>sgnd-definitions.sh</td><td>Bootstrap</td><td></td></tr>
+<tr><td>SAY_DATE_DEFAULT</td><td>user</td><td>Default timestamp visibility</td><td>0</td><td>sgnd-definitions.sh</td><td>Bootstrap</td><td></td></tr>
+<tr><td>SAY_DATE_FORMAT</td><td>user</td><td>Default date/time format for console output</td><td>%Y-%m-%d %H:%M:%S</td><td>sgnd-definitions.sh</td><td>Bootstrap</td><td></td></tr>
+<tr><td>SAY_SHOW_DEFAULT</td><td>user</td><td>Default console message visibility</td><td>label</td><td>sgnd-definitions.sh</td><td>Bootstrap</td><td></td></tr>
+<tr><td>SGND_ALTLOG_PATH</td><td>both</td><td>Alternate log path override</td><td>/home/sysadmin/.log/solidgroundux.log</td><td>sgnd-definitions.sh</td><td>Bootstrap</td><td></td></tr>
+<tr><td>SGND_CONSOLE_LOG_LEVEL</td><td>both</td><td>Controls console message visibility. Supported values are silent, quiet, normal, verbose, debug, and trace.</td><td>quiet</td><td>sgnd-definitions.sh</td><td>Bootstrap</td><td></td></tr>
+<tr><td>SGND_CONSOLE_WIDTH</td><td>both</td><td>Prefered standard console width</td><td>80</td><td>sgnd-definitions.sh</td><td>Bootstrap</td><td></td></tr>
+<tr><td>SGND_DOCS_DIR</td><td>system</td><td>Framework-wide documentation directory</td><td>/srv/storage/development/SolidGroundUX/target-root/usr/local/share/doc</td><td>sgnd-definitions.sh</td><td>Bootstrap</td><td></td></tr>
+<tr><td>SGND_FILE_LOG_LEVEL</td><td>both</td><td>Controls file message visibility. Supported values are silent, quiet, normal, verbose, debug, and trace.</td><td>silent</td><td>sgnd-definitions.sh</td><td>Bootstrap</td><td></td></tr>
+<tr><td>SGND_LOG_COMPRESS</td><td>system</td><td>Compress rotated log files</td><td>1</td><td>sgnd-definitions.sh</td><td>Bootstrap</td><td></td></tr>
+<tr><td>SGND_LOG_KEEP</td><td>system</td><td>Number of rotated log files to retain</td><td>20</td><td>sgnd-definitions.sh</td><td>Bootstrap</td><td></td></tr>
+<tr><td>SGND_LOG_MAX_BYTES</td><td>system</td><td>Maximum log file size before rotation</td><td>26214400</td><td>sgnd-definitions.sh</td><td>Bootstrap</td><td></td></tr>
+<tr><td>SGND_LOG_PATH</td><td>system</td><td>Primary log file or directory path</td><td>/srv/storage/development/SolidGroundUX/target-root/var/log/solidgroundux.log</td><td>sgnd-definitions.sh</td><td>Bootstrap</td><td></td></tr>
+<tr><td>SGND_MAX_RENDER_WIDTH</td><td>both</td><td>Render width upper limit</td><td>140</td><td>sgnd-definitions.sh</td><td>Bootstrap</td><td></td></tr>
+<tr><td>SGND_STATE_DIR</td><td>user</td><td>User-specific persistent state directory</td><td>/home/sysadmin/.state/solidgroundux</td><td>sgnd-definitions.sh</td><td>Bootstrap</td><td></td></tr>
+<tr><td>SGND_SYSCFG_DIR</td><td>system</td><td>Framework-wide system configuration directory</td><td>/srv/storage/development/SolidGroundUX/target-root/etc/solidgroundux</td><td>sgnd-definitions.sh</td><td>Bootstrap</td><td></td></tr>
+<tr><td>SGND_UI_PALETTE</td><td>both</td><td>Default UI palette file (basename or path)</td><td>default-ui-palette.sh</td><td>sgnd-definitions.sh</td><td>Bootstrap</td><td></td></tr>
+<tr><td>SGND_UI_STYLE</td><td>both</td><td>Default UI style file (basename or path)</td><td>20-style-testadura.sh</td><td>sgnd-definitions.sh</td><td>Bootstrap</td><td></td></tr>
+<tr><td>SGND_USRCFG_DIR</td><td>user</td><td>User-specific configuration directory</td><td>/home/sysadmin/.config/solidgroundux</td><td>sgnd-definitions.sh</td><td>Bootstrap</td><td></td></tr>
+</tbody>
+</table>
+</section>
+<section class="doc-globals-block">
+<h2 class="ct-L2Sectionheader">Runtime Globals</h2>
+<table class="doc-data-table">
+<thead><tr><th>Variable</th><th>Audience</th><th>Description</th><th>Current Value</th><th>Module</th><th>Group</th><th>Extra</th></tr></thead>
+<tbody>
+<tr><td>SAY_COLORIZE_DEFAULT</td><td>both</td><td>Default say colorization mode, such as none, label, msg, both, all, or date.</td><td>label</td><td>sgnd-definitions.sh</td><td>Bootstrap</td><td></td></tr>
+<tr><td>SAY_DATE_DEFAULT</td><td>both</td><td>Default setting controlling whether say output includes a timestamp.</td><td>0</td><td>sgnd-definitions.sh</td><td>Bootstrap</td><td></td></tr>
+<tr><td>SAY_DATE_FORMAT</td><td>both</td><td>Date format used when say output includes timestamps.</td><td>%Y-%m-%d %H:%M:%S</td><td>sgnd-definitions.sh</td><td>Bootstrap</td><td></td></tr>
+<tr><td>SAY_SHOW_DEFAULT</td><td>both</td><td>Default say output prefix mode, such as label, icon, symbol, or combinations.</td><td>label</td><td>sgnd-definitions.sh</td><td>Bootstrap</td><td></td></tr>
+<tr><td>SGND_ALTLOG_PATH</td><td>user</td><td>Fallback user-level logfile path for framework or application logging.</td><td>/home/sysadmin/.log/solidgroundux.log</td><td>sgnd-definitions.sh</td><td>Bootstrap</td><td></td></tr>
+<tr><td>SGND_COMMON_EXE</td><td>both</td><td>Directory containing common SolidGroundUX executable files.</td><td>//usr/local/libexec/solidgroundux</td><td>sgnd-definitions.sh</td><td>Bootstrap</td><td></td></tr>
+<tr><td>SGND_COMMON_LIB</td><td>both</td><td>Directory containing common SolidGroundUX library files.</td><td>//usr/local/lib/solidgroundux/common</td><td>sgnd-definitions.sh</td><td>Bootstrap</td><td></td></tr>
+<tr><td>SGND_CONSOLE_LOG_LEVEL</td><td>both</td><td>Controls console message visibility. Supported values are silent, quiet, normal, verbose, debug, and trace.</td><td>quiet</td><td>sgnd-definitions.sh</td><td>Bootstrap</td><td></td></tr>
+<tr><td>SGND_CONSOLE_WIDTH</td><td>both</td><td>Preferred standard width for console rendering primitives.</td><td>80</td><td>sgnd-definitions.sh</td><td>Bootstrap</td><td></td></tr>
+<tr><td>SGND_DOCS_DIR</td><td>system</td><td>Directory containing SolidGroundUX documentation files.</td><td>/srv/storage/development/SolidGroundUX/target-root/usr/local/share/doc</td><td>sgnd-definitions.sh</td><td>Bootstrap</td><td></td></tr>
+<tr><td>SGND_FILE_LOG_LEVEL</td><td>both</td><td>Controls file message visibility. Supported values are silent, quiet, normal, verbose, debug, and trace.</td><td>silent</td><td>sgnd-definitions.sh</td><td>Bootstrap</td><td></td></tr>
+<tr><td>SGND_FRAMEWORK_CFG_BASENAME</td><td>both</td><td>Basename of the framework globals configuration file.</td><td>sgnd_framework_globals.cfg</td><td>sgnd-definitions.sh</td><td>Bootstrap</td><td></td></tr>
+<tr><td>SGND_FRAMEWORK_ROOT</td><td>both</td><td>Root path used as the base for framework filesystem locations.</td><td>/</td><td>sgnd-definitions.sh</td><td>Bootstrap</td><td></td></tr>
+<tr><td>SGND_FRAMEWORK_STATEFILE</td><td>user</td><td>User-specific framework runtime state file.</td><td>/home/sysadmin/.config/solidgroundux/framework.state</td><td>sgnd-definitions.sh</td><td>Bootstrap</td><td></td></tr>
+<tr><td>SGND_GLOBALS_FOLDER</td><td>both</td><td>Directory containing framework and project definition libraries.</td><td>//usr/local/lib/solidgroundux/globals</td><td>sgnd-definitions.sh</td><td>Bootstrap</td><td></td></tr>
+<tr><td>SGND_LOG_COMPRESS</td><td>both</td><td>Controls whether rotated logfiles are compressed.</td><td>1</td><td>sgnd-definitions.sh</td><td>Bootstrap</td><td></td></tr>
+<tr><td>SGND_LOG_KEEP</td><td>both</td><td>Number of rotated logfile copies to retain.</td><td>20</td><td>sgnd-definitions.sh</td><td>Bootstrap</td><td></td></tr>
+<tr><td>SGND_LOG_MAX_BYTES</td><td>both</td><td>Maximum logfile size before log rotation is attempted.</td><td>26214400</td><td>sgnd-definitions.sh</td><td>Bootstrap</td><td></td></tr>
+<tr><td>SGND_LOG_PATH</td><td>system</td><td>Primary logfile path for framework or application logging.</td><td>/srv/storage/development/SolidGroundUX/target-root/var/log/solidgroundux.log</td><td>sgnd-definitions.sh</td><td>Bootstrap</td><td></td></tr>
+<tr><td>SGND_MAX_RENDER_WIDTH</td><td>both</td><td>Upper limit applied to console rendering width.</td><td>140</td><td>sgnd-definitions.sh</td><td>Bootstrap</td><td></td></tr>
+<tr><td>SGND_STATE_DIR</td><td>user</td><td>Directory containing user-level SolidGroundUX state files.</td><td>/home/sysadmin/.state/solidgroundux</td><td>sgnd-definitions.sh</td><td>Bootstrap</td><td></td></tr>
+<tr><td>SGND_STYLE_DIR</td><td>system</td><td>Directory containing SolidGroundUX style and palette files.</td><td>/usr/local/lib/solidgroundux/styles</td><td>sgnd-definitions.sh</td><td>Bootstrap</td><td></td></tr>
+<tr><td>SGND_SYSCFG_DIR</td><td>system</td><td>Directory containing system-level SolidGroundUX configuration files.</td><td>/srv/storage/development/SolidGroundUX/target-root/etc/solidgroundux</td><td>sgnd-definitions.sh</td><td>Bootstrap</td><td></td></tr>
+<tr><td>SGND_UI_PALETTE</td><td>both</td><td>Selected SolidGroundUX UI palette file.</td><td>default-ui-palette.sh</td><td>sgnd-definitions.sh</td><td>Bootstrap</td><td></td></tr>
+<tr><td>SGND_UI_STYLE</td><td>both</td><td>Selected SolidGroundUX UI style file.</td><td>20-style-testadura.sh</td><td>sgnd-definitions.sh</td><td>Bootstrap</td><td></td></tr>
+<tr><td>SGND_USER_HOME</td><td>user</td><td>Effective user home directory, honoring SUDO_USER when present.</td><td>/home/sysadmin</td><td>sgnd-definitions.sh</td><td>Bootstrap</td><td></td></tr>
+<tr><td>SGND_USRCFG_DIR</td><td>user</td><td>Directory containing user-level SolidGroundUX configuration files.</td><td>/home/sysadmin/.config/solidgroundux</td><td>sgnd-definitions.sh</td><td>Bootstrap</td><td></td></tr>
+</tbody>
+</table>
+</section>
+<section class="doc-globals-block">
+<h2 class="ct-L2Sectionheader">Script Globals</h2>
+<div class="ct-documentbody">No entries found.</div>
+</section>
+</main>
+</body>
+</html>

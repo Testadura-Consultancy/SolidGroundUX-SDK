@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Remove artifacts recorded in the create manifest</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Remove artifacts recorded in the create manifest</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / create-workspace.sh / Local script functions / Manifest helpers / _uncreate_from_manifest</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Remove files and directories listed in a workspace manifest.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Validates that the manifest exists.</div>
+<div class="ct-functionbody">  - Reads FILE and DIR entries from the manifest.</div>
+<div class="ct-functionbody">  - Removes files first.</div>
+<div class="ct-functionbody">  - Removes directories afterwards in reverse order.</div>
+<div class="ct-functionbody">  - Removes only empty directories by using rmdir.</div>
+<div class="ct-functionbody">  - Removes the manifest itself last.</div>
+<div class="ct-functionbody">  - Honors dry-run mode by reporting intended actions without modifying the filesystem.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Arguments</div>
+<div class="ct-functionbody">  $1  Manifest file path</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 on success</div>
+<div class="ct-functionbody">  1 when the manifest does not exist</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  _uncreate_from_manifest &quot;example&quot;</div>
+</main>
+</body>
+</html>

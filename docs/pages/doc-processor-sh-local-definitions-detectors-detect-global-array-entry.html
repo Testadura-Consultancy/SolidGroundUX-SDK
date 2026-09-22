@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Detect global declaration array entries</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Detect global declaration array entries</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / doc-processor.sh / Local definitions / Detectors / _detect_global_array_entry</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Parse entries inside SGND_FRAMEWORK_GLOBALS, SGND_RUNTIME_GLOBALS, and SGND_SCRIPT_GLOBALS.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Runs only while inside a global declaration array block.</div>
+<div class="ct-functionbody">  - Ends the block when a closing parenthesis is encountered.</div>
+<div class="ct-functionbody">  - Parses strict pipe-delimited entries:</div>
+<div class="ct-functionbody">  - Emits one global declaration record per valid entry.</div>
+<div class="ct-functionbody"></div>
+<p class="ct-functionbody">Outputs (globals):</p>
+<div class="ct-functionbody">  MOD_GLOBALS, doc_globalblock, doc_globalscope, src_haltlineprocessing</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 always.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  _detect_global_array_entry</div>
+</main>
+</body>
+</html>

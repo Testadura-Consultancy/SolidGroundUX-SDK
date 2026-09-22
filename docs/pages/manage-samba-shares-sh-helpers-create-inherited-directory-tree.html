@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Create a relative directory tree with inherited access</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Create a relative directory tree with inherited access</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / manage-samba-shares.sh / Helpers / _create_inherited_directory_tree</div>
+</header>
+<div class="ct-functionbody sh-highlight">Arguments</div>
+<div class="ct-functionbody">  $1 SHARE_PATH</div>
+<div class="ct-functionbody">  $2 RELATIVE_PATH</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 when the complete tree exists and newly created components inherited</div>
+<div class="ct-functionbody">  their parent&#x27;s ownership/mode/ACL model; non-zero on failure.</div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  _create_inherited_directory_tree &quot;&lt;share_path&gt;&quot; &quot;&lt;relative_path&gt;&quot;</div>
+</main>
+</body>
+</html>

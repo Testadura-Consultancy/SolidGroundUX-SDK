@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Sayprogress</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Sayprogress</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / ui-say.sh / Public API / Build final output line and print / sayprogress</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Render or update a transient progress line.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Calculates progress from --current and --total.</div>
+<div class="ct-functionbody">  - Optionally renders current/total, percentage, and a progress bar.</div>
+<div class="ct-functionbody">  - Writes the rendered line into the selected progress slot.</div>
+<div class="ct-functionbody">  - Automatically reserves a progress region when none exists yet.</div>
+<div class="ct-functionbody">  - Clamps invalid progress values to safe ranges.</div>
+<div class="ct-functionbody">  - Throttles redraws for slot 1 and deeper to reduce terminal I/O.</div>
+<div class="ct-functionbody">  - Always redraws the first item and the final 10 items.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">options</div>
+<div class="ct-functionbody">  --current VALUE</div>
+<div class="ct-functionbody">      Current progress value. Values below 0 are normalized to 0.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody">  --total VALUE</div>
+<div class="ct-functionbody">      Total progress value. Values below 1 are normalized to 1.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody">  --label TEXT</div>
+<div class="ct-functionbody">      Text appended to the progress indicators.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody">  --type MASK</div>
+<div class="ct-functionbody">      Bit mask controlling visible indicators. 1 shows current/total,</div>
+<div class="ct-functionbody">      2 shows percentage, and 4 shows the progress bar.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody">  --barcolor VALUE</div>
+<div class="ct-functionbody">      Color token used for the progress bar.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody">  --labelcolor VALUE</div>
+<div class="ct-functionbody">      Color token used for the label.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody">  --indicatorcolor VALUE</div>
+<div class="ct-functionbody">      Color token used for numeric progress indicators.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody">  --interval COUNT</div>
+<div class="ct-functionbody">      Redraw interval for throttled progress slots. Applies only to slot 1</div>
+<div class="ct-functionbody">      and deeper. When omitted, the interval defaults to total / 100,</div>
+<div class="ct-functionbody">      with a minimum of 1.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody">  --padleft COUNT</div>
+<div class="ct-functionbody">      Number of spaces to prefix before the progress text.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody">  --slot INDEX</div>
+<div class="ct-functionbody">      Reserved progress slot to update. Slot numbering starts at 0.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody">  --width COUNT</div>
+<div class="ct-functionbody">      Width of the progress bar.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Outputs</div>
+<div class="ct-functionbody">  Writes terminal cursor control sequences and progress text to stderr.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 on success.</div>
+<div class="ct-functionbody">  1 when an unknown argument is supplied.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  sayprogress &quot;example&quot; &quot;example-2&quot;</div>
+</main>
+</body>
+</html>

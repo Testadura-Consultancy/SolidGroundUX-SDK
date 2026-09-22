@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Append a normalized documentation content line</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Append a normalized documentation content line</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / doc-processor.sh / Local definitions / Emitters / _emit_contentline</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Emit the current normalized content state into DOC_CONTENT_LINES.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Skips emission when content type or emit flag is missing.</div>
+<div class="ct-functionbody">  - Increments the documentation line counter.</div>
+<div class="ct-functionbody">  - Appends the normalized content line with current section and item context.</div>
+<div class="ct-functionbody">  - Clears the emit flag after successful emission.</div>
+<div class="ct-functionbody"></div>
+<p class="ct-functionbody">Inputs (globals):</p>
+<div class="ct-functionbody">  doc_contenttype, doc_content, doc_emitline, mod_name, src_linenr, doc_linenr</div>
+<div class="ct-functionbody">  doc_section, doc_parentsection, doc_grandparentsection, doc_headersection, doc_item, doc_itemtitle</div>
+<div class="ct-functionbody"></div>
+<p class="ct-functionbody">Outputs (globals):</p>
+<div class="ct-functionbody">  DOC_CONTENT_LINES, doc_linenr, doc_emitline</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 when skipped or appended successfully.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  _emit_contentline</div>
+</main>
+</body>
+</html>

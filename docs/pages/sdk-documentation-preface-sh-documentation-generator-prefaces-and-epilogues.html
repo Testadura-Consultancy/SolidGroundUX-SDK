@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Prefaces and Epilogues</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Prefaces and Epilogues</div>
+  <div class="doc-breadcrumb">sdk-documentation_preface.sh::Documentation Generator:Prefaces and Epilogues:</div>
+</header>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Documentation-only sources can provide introductory or closing content for a product, group, or subgroup. The renderer recognizes these sources as prefaces or epilogues and places them in the generated index around the normal content at the corresponding hierarchy level.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The role is primarily selected by the Metadata Purpose value:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="doc-aligned-block" style="grid-template-columns:max-content minmax(0, 1fr)">
+<div class="ct-L2Sectionbody doc-aligned-cell">Product preface</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">First documentation entry beneath the product</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">Product epilogue</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">Final documentation entry beneath the product</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">Group preface</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">First documentation entry beneath the named Group</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">Group epilogue</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">Final documentation entry beneath the named Group</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">Subgroup preface</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">First documentation entry beneath the named Subgroup</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">Subgroup epilogue</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">Final documentation entry beneath the named Subgroup</div>
+</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Group and Subgroup metadata determine where group- and subgroup-level sources are placed. Product-level sources belong directly to their product. A preface is emitted before the normal modules at that level; an epilogue is emitted after them. These files therefore affect both page order and the generated navigation index.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Filename recognition is also supported as a compatibility fallback. The renderer recognizes conventional names based on the product, group, or subgroup name followed by a preface or epilogue suffix. Names are normalized for matching, so hyphens, spaces, and underscores in the logical name do not define the hierarchy themselves.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">New documentation sources should make the role explicit through Purpose rather than relying on filename inference. This keeps placement independent of the physical doc-sources filename and leaves Group and Subgroup metadata as the authoritative description of where the content belongs.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Example group preface metadata:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    Group       : Deployment</div>
+<div class="ct-L2Sectionbody">    Purpose     : Group preface</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Example subgroup epilogue metadata:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    Group       : SDK</div>
+<div class="ct-L2Sectionbody">    Subgroup    : Documentation Generator</div>
+<div class="ct-L2Sectionbody">    Purpose     : Subgroup epilogue</div>
+<div class="ct-L2Sectionbody"></div>
+<div class="doc-image-group images-1">
+<figure class="doc-image">
+<img src="../assets/images/sdk-documentation-system.png" alt="Documentation System overview" loading="lazy">
+<figcaption>Documentation System overview</figcaption>
+</figure>
+</div>
+</main>
+</body>
+</html>

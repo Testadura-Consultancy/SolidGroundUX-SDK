@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>SolidGroundUX SDK - Create Wrappers</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">SolidGroundUX SDK - Create Wrappers</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / create-wrappers.sh</div>
+</header>
+<div class="ct-modulebody sh-label">Description</div>
+<div class="ct-modulebody">  Creates one or more command wrappers from SolidGroundUX scripts. Source files are</div>
+<div class="ct-modulebody">  selected from a source directory using a filename or shell mask. Generated wrappers</div>
+<div class="ct-modulebody">  are rendered from the canonical wrapper-template and resolve the active SolidGroundUX</div>
+<div class="ct-modulebody">  framework tree from the wrapper path before launching their configured target.</div>
+<div class="ct-modulebody"></div>
+<div class="ct-modulebody sh-label">Wrapper names</div>
+<div class="ct-modulebody">    - Optional Metadata/Wrapper overrides the generated command name.</div>
+<div class="ct-modulebody">    - Otherwise script.sh -&gt; sgnd-script and sgnd-script.sh -&gt; sgnd-script.</div>
+<div class="ct-modulebody"></div>
+<div class="ct-modulebody sh-label">Wrapper target directories</div>
+<div class="ct-modulebody">    - &lt;selected-framework-root&gt;/usr/local/bin  (default)</div>
+<div class="ct-modulebody">    - &lt;selected-framework-root&gt;/usr/local/sbin</div>
+<div class="ct-modulebody"></div>
+<div class="ct-modulebody sh-label">Design principles</div>
+<div class="ct-modulebody">  - Generated wrappers remain environment-independent.</div>
+<div class="ct-modulebody">  - The source directory determines the framework tree that owns the wrappers.</div>
+<div class="ct-modulebody">  - Wrapper targets are stored relative to that selected framework root.</div>
+<div class="ct-modulebody">  - Wrapper execution follows the active self-locating framework tree.</div>
+<div class="ct-modulebody">  - Existing wrappers are not overwritten without confirmation.</div>
+<div class="ct-modulebody">  - A filename or mask may select one or multiple source scripts.</div>
+<div class="ct-modulebody"></div>
+</main>
+</body>
+</html>

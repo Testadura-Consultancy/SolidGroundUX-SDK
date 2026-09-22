@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>SolidGroundUX - Documentation preface/epilogue template</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">SolidGroundUX - Documentation preface/epilogue template</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / doc-template.sh</div>
+</header>
+<div class="ct-modulebody sh-label">Documentation syntax quick reference</div>
+<div class="ct-modulebody"></div>
+<div class="ct-modulebody sh-label">Section indicators</div>
+<div class="ct-modulebody">  # - Heading              Level 1 / top-level section</div>
+<div class="ct-modulebody">  # -- Section             Level 2 section</div>
+<div class="ct-modulebody">  # --- Subsection         Level 3 subsection</div>
+<div class="ct-modulebody"></div>
+<div class="ct-modulebody sh-label">Documentation item/header indicators</div>
+<div class="ct-modulebody">   # fn:                    Function or method</div>
+<div class="ct-modulebody">   # var:                   Variable</div>
+<div class="ct-modulebody">   # cls:                   Class</div>
+<div class="ct-modulebody">   # doc:                   General documentation</div>
+<div class="ct-modulebody">   # fn$ / var$ / cls$ / doc$</div>
+<div class="ct-modulebody">                             Template documentation variants</div>
+<div class="ct-modulebody"></div>
+<div class="ct-modulebody sh-label">Documentation and style hints</div>
+<div class="ct-modulebody">   # &gt; text                 Plain documentation / normal style</div>
+<div class="ct-modulebody">   # : text                 label</div>
+<div class="ct-modulebody">   # . text                 highlight</div>
+<div class="ct-modulebody">   # ! text                 emphasis</div>
+<div class="ct-modulebody">   # _ text                 underline</div>
+<div class="ct-modulebody">   # ~ text                 quote / aside</div>
+<div class="ct-modulebody">   # - text                 list item</div>
+<div class="ct-modulebody">                             indent is reserved; leading whitespace prevents marker parsing</div>
+<div class="ct-modulebody"></div>
+<div class="ct-modulebody sh-label">Aligning documentation columns</div>
+<div class="doc-aligned-block" style="grid-template-columns:max-content minmax(0, 1fr)">
+<div class="ct-modulebody doc-aligned-cell"># &gt; fn:</div>
+<div class="ct-modulebody doc-aligned-cell doc-aligned-last">Function documentation</div>
+<div class="ct-modulebody doc-aligned-cell"># &gt; var:</div>
+<div class="ct-modulebody doc-aligned-cell doc-aligned-last">Variable documentation</div>
+<div class="ct-modulebody doc-aligned-cell"># &gt; doc:</div>
+<div class="ct-modulebody doc-aligned-cell doc-aligned-last">General documentation</div>
+<div class="ct-modulebody doc-aligned-cell">@</div>
+<div class="ct-modulebody doc-aligned-cell doc-aligned-last">aligns columns across consecutive documentation lines</div>
+</div>
+<div class="ct-modulebody"></div>
+<div class="ct-modulebody sh-label">Showing images in documentation</div>
+<div class="ct-modulebody">  # . Images               Begin an image group (Image is also accepted; : may replace .)</div>
+<div class="ct-modulebody">  # filename.png :: Caption</div>
+<div class="ct-modulebody">  #                        Blank documentation line ends the image block</div>
+<div class="ct-modulebody"></div>
+<div class="ct-modulebody sh-label">Showing tables in documentation</div>
+<div class="ct-modulebody">  # . Table                Begin a table</div>
+<div class="ct-modulebody">  # ! Header 1 :: Header 2 First row is the semantic header; ! is optional</div>
+<div class="ct-modulebody">  # Value 1 :: Value 2     Following rows use normal documentation lines</div>
+<div class="ct-modulebody">  #                        Blank documentation line ends the table</div>
+<div class="ct-modulebody"></div>
+</main>
+</body>
+</html>

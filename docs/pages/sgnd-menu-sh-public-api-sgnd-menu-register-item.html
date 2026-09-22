@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Register one menu item</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Register one menu item</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / sgnd-menu.sh / Public API / sgnd_menu_register_item</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Add an executable item to the reusable menu model.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Arguments</div>
+<div class="ct-functionbody">  $1  KEY       - Unique menu key.</div>
+<div class="ct-functionbody">  $2  GROUP     - Owning group key.</div>
+<div class="ct-functionbody">  $3  LABEL     - Visible item label.</div>
+<div class="ct-functionbody">  $4  HANDLER   - Function invoked when selected.</div>
+<div class="ct-functionbody">  $5  DESC      - Optional description.</div>
+<div class="ct-functionbody">  $6  BUILTIN   - 1 for host-owned controls, otherwise 0.</div>
+<div class="ct-functionbody">  $7  WAITSECS  - Post-action countdown; normal actions are clamped to a</div>
+<div class="ct-functionbody">                   minimum of 15 seconds when a non-zero wait is requested.</div>
+<div class="ct-functionbody">  $8  VISIBLE   - Visibility state.</div>
+<div class="ct-functionbody">  $9  INDENT    - Item indentation level.</div>
+<div class="ct-functionbody">  $10 STATUS    - Optional transient status decoration.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 when registered; non-zero on validation, duplicate-key, or handler errors.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  sgnd_menu_register_item &quot;status&quot; &quot;system&quot; &quot;Show status&quot; &quot;show_status&quot; &quot;Display current status&quot; 0 15 1 0</div>
+</main>
+</body>
+</html>

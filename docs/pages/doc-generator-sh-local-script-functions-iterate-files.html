@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Iterate source files and collect documentation data</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Iterate source files and collect documentation data</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / doc-generator.sh / Local script functions / _iterate_files</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Iterate over files in a directory using comma-separated file masks,</div>
+<div class="ct-functionbody">  optionally recursing into subdirectories.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Filters source files against comma-separated file_spec masks</div>
+<div class="ct-functionbody">  - Supports recursive and non-recursive modes</div>
+<div class="ct-functionbody">  - Calls a callback function for each matched file</div>
+<div class="ct-functionbody">  - Skips non-regular files</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Arguments</div>
+<div class="ct-functionbody">  $1  SOURCE_DIR</div>
+<div class="ct-functionbody">  $2  FILE_SPEC</div>
+<div class="ct-functionbody">  $3  FLAG_RECURSIVE   (0 = no recursion, 1 = recursive)</div>
+<div class="ct-functionbody">  $4  CALLBACK_FUNC</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 on success</div>
+<div class="ct-functionbody">  1 on invalid input</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  _iterate_files &quot;./src&quot; &quot;*.sh,*.py&quot; 1 sgnd_doc_process_file</div>
+<div class="ct-functionheader">_iterate_files - Iterate source files and collect documentation data</div>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Iterate over files in a directory using comma-separated file masks,</div>
+<div class="ct-functionbody">  optionally recursing into subdirectories.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Filters source files against comma-separated file_spec masks.</div>
+<div class="ct-functionbody">  - Supports recursive and non-recursive modes.</div>
+<div class="ct-functionbody">  - Shows two-level progress:</div>
+<div class="ct-functionbody">      slot 0 = module/file progress</div>
+<div class="ct-functionbody">      slot 1 = line progress inside the active module</div>
+<div class="ct-functionbody">  - Calls a callback function for each matched file.</div>
+<div class="ct-functionbody">  - Skips non-regular files.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Arguments</div>
+<div class="ct-functionbody">  $1  SOURCE_DIR</div>
+<div class="ct-functionbody">  $2  FILE_SPEC</div>
+<div class="ct-functionbody">  $3  FLAG_RECURSIVE   (0 = no recursion, 1 = recursive)</div>
+<div class="ct-functionbody">  $4  CALLBACK_FUNC</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 on success</div>
+<div class="ct-functionbody">  1 on invalid input</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  _iterate_files &quot;./src&quot; &quot;*.sh,*.py&quot; 1 _parse_module_file</div>
+</main>
+</body>
+</html>

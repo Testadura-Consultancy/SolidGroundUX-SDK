@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Resolve a path beneath a framework root</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Resolve a path beneath a framework root</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / create-wrappers.sh / Helpers / _framework_path</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Convert a framework-relative path to an absolute path beneath the supplied</div>
+<div class="ct-functionbody">  framework root. Defaults to the active SGND_FRAMEWORK_ROOT.</div>
+<div class="ct-functionbody sh-highlight">Arguments</div>
+<div class="ct-functionbody">  $1 Relative path.</div>
+<div class="ct-functionbody">  $2 Framework root (optional).</div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 always.</div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  path=&quot;$(_framework_path &quot;usr/local/bin&quot; &quot;$root&quot;)&quot;</div>
+</main>
+</body>
+</html>

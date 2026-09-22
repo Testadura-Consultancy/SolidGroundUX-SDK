@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Parse one module source file</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Parse one module source file</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / doc-processor.sh / Internal API / _parse_module_file</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Parse a source file and collect normalized documentation tables.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Validates the source filename argument.</div>
+<div class="ct-functionbody">  - Resets parser state for the file.</div>
+<div class="ct-functionbody">  - Reads the file line-by-line in source order.</div>
+<div class="ct-functionbody">  - Runs detectors in deterministic order.</div>
+<div class="ct-functionbody">  - Emits normalized content, section, item, metadata, and attribution records.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Arguments</div>
+<div class="ct-functionbody">  $1  Source file to parse.</div>
+<div class="ct-functionbody"></div>
+<p class="ct-functionbody">Outputs (globals):</p>
+<div class="ct-functionbody">  MOD_TABLE, MOD_ATTRIBUTION, MOD_SECTIONS, MOD_ITEMS, DOC_CONTENT_LINES</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 on successful parsing.</div>
+<div class="ct-functionbody">  1 when no source filename is supplied.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  _parse_module_file &quot;/usr/local/lib/solidgroundux/common/sgnd-core.sh&quot;</div>
+</main>
+</body>
+</html>

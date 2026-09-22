@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Main sequence</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Main sequence</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / create-workspace.sh / Local script functions / Main sequence</div>
+</header>
+<p class="ct-L2Sectionbody">_resolve_project_settings</p>
+<div class="ct-L2Sectionbody sh-highlight">Purpose</div>
+<div class="ct-L2Sectionbody">  Resolve and confirm the project name and target folder for a new workspace.</div>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody sh-highlight">Behavior</div>
+<div class="ct-L2Sectionbody">  - Prompts for the project name.</div>
+<div class="ct-L2Sectionbody">  - Prompts whether to include executable, library, and console-module components.</div>
+<div class="ct-L2Sectionbody">  - Derives a filesystem-safe slug from the project name.</div>
+<div class="ct-L2Sectionbody">  - Uses the selected components to determine a default project folder.</div>
+<div class="ct-L2Sectionbody">  - Prompts for the project folder.</div>
+<div class="ct-L2Sectionbody">  - Normalizes relative folder paths to absolute paths.</div>
+<div class="ct-L2Sectionbody">  - Displays a summary and asks the user to confirm, redo, or abort.</div>
+<div class="ct-L2Sectionbody">  - Repeats until the settings are confirmed or the user cancels.</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Outputs (globals):</p>
+<div class="ct-L2Sectionbody">  PROJECT_NAME</div>
+<div class="ct-L2Sectionbody">  PROJECT_FOLDER</div>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody sh-highlight">Returns</div>
+<div class="ct-L2Sectionbody">  0  settings confirmed</div>
+<div class="ct-L2Sectionbody">  1  user aborted or an unexpected response occurred</div>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody sh-highlight">Usage</div>
+<div class="ct-L2Sectionbody">  _resolve_project_settings</div>
+<div class="ct-L2Sectionbody sh-highlight">Purpose</div>
+<div class="ct-L2Sectionbody">  Resolve project creation settings.</div>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody sh-highlight">Behavior</div>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody sh-highlight">Returns</div>
+<div class="ct-L2Sectionbody">  Returns the underlying command or workflow status.</div>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody sh-highlight">Usage</div>
+<div class="ct-L2Sectionbody">  _resolve_project_settings</div>
+</main>
+</body>
+</html>

@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Console Module Template</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Console Module Template</div>
+  <div class="doc-breadcrumb">templates_preface.sh::Templates:Console Module Template:</div>
+</header>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The module template is used for page modules loaded by the SolidGround Management Console. A module is source-only and is sourced only when its page is first opened. It registers menu groups and items through the public `sgnd_menu_*` API, but should not perform the actual action until the user selects the corresponding menu item.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The main index discovers pages before sourcing them, so each module must expose its page name and description as literal `*_MODULE_NAME=&quot;...&quot;` and `*_MODULE_DESC=&quot;...&quot;` assignments. Computed values cannot be used for these two discovery fields.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Modules must not depend on another lazy-loaded page having been opened first. A helper required by multiple modules belongs in `console-helpers.sh` or another appropriately scoped common library.</p>
+<div class="ct-L2Sectionbody"></div>
+</main>
+</body>
+</html>

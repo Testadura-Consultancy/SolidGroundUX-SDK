@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Display or switch the active UI theme</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Display or switch the active UI theme</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / ui.sh / Public API / Theme loading / sgnd_theme</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Display the current theme or switch the semantic UI style used by the</div>
+<div class="ct-functionbody">  current SolidGroundUX session.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - With no theme argument, displays the currently configured theme.</div>
+<div class="ct-functionbody">  - Resolves a short theme name such as &quot;dark&quot; to its numbered style file.</div>
+<div class="ct-functionbody">  - Accepts an explicit numbered style filename such as &quot;10-style-dark.sh&quot;.</div>
+<div class="ct-functionbody">  - Loads the selected style immediately through sgnd_load_ui_style.</div>
+<div class="ct-functionbody">  - With --save, stores SGND_UI_STYLE in the user framework cfg after the</div>
+<div class="ct-functionbody">    theme has loaded successfully.</div>
+<div class="ct-functionbody">  - Leaves the active theme unchanged when validation or loading fails.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Arguments</div>
+<div class="ct-functionbody">  THEME</div>
+<div class="ct-functionbody">      Optional theme name or style filename.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Options</div>
+<div class="ct-functionbody">  --save</div>
+<div class="ct-functionbody">      Save the selected theme in the user framework configuration.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody">  -h, --help</div>
+<div class="ct-functionbody">      Display usage information.</div>
+<div class="ct-functionbody"></div>
+<p class="ct-functionbody">Outputs (globals):</p>
+<div class="ct-functionbody">  SGND_UI_STYLE</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Output</div>
+<div class="ct-functionbody">  Displays the current theme when no theme is supplied.</div>
+<div class="ct-functionbody">  Reports validation, loading, or persistence failures to stderr.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 when the current theme is displayed or the requested theme is loaded.</div>
+<div class="ct-functionbody">  1 when the theme cannot be found, loaded, or saved.</div>
+<div class="ct-functionbody">  2 when invalid arguments are supplied.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  sgnd_theme</div>
+<div class="ct-functionbody">  sgnd_theme dark</div>
+<div class="ct-functionbody">  sgnd_theme fantasy --save</div>
+</main>
+</body>
+</html>

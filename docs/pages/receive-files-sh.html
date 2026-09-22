@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>SolidGroundUX SDK - Receive Files</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">SolidGroundUX SDK - Receive Files</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / receive-files.sh</div>
+</header>
+<div class="ct-modulebody sh-label">Description</div>
+<div class="ct-modulebody">  Receives a tar archive through standard input, validates that every archive entry</div>
+<div class="ct-modulebody">  is a safe relative path, and extracts the streamed workspace files beneath the</div>
+<div class="ct-modulebody">  requested target root.</div>
+<div class="ct-modulebody"></div>
+<div class="ct-modulebody sh-label">Design principles</div>
+<div class="ct-modulebody">  - File selection remains the responsibility of deploy-workspace.sh</div>
+<div class="ct-modulebody">  - Archive entries always remain relative to the supplied target root</div>
+<div class="ct-modulebody">  - Unsafe absolute paths and parent traversal are rejected before extraction</div>
+<div class="ct-modulebody">  - The received stream is processed as one deployment operation</div>
+<div class="ct-modulebody"></div>
+</main>
+</body>
+</html>

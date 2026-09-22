@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>_write_release_package_info - Write ZIP-root package identity metadata</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">_write_release_package_info - Write ZIP-root package identity metadata</div>
+  <div class="doc-breadcrumb">prepare-release.sh:::Update SHA256SUMS:_write_release_package_info</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Write a small machine-readable shipping label for the release package.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Uses the resolved project identity from the authoritative definitions file.</div>
+<div class="ct-functionbody">  - Writes only simple shell-style key/value assignments; the release manager</div>
+<div class="ct-functionbody">    parses these values and does not source the file.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Arguments</div>
+<div class="ct-functionbody">  $1  Destination file.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 on success; non-zero on write failure.</div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  _write_release_package_info &quot;&lt;destination&gt;&quot;</div>
+</main>
+</body>
+</html>

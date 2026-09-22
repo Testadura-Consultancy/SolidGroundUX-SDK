@@ -3,8 +3,8 @@
 # ----------------------------------------------------------------------------------
 # Metadata:
 #   Version     : 2.1
-#   Build       : 2626501
-#   Checksum    : 78ea6b25875545e04695c2c2345978bad3609f2bd333a1f3964720932e40bf28
+#   Build       : 2626523
+#   Checksum    : f9d95941b59a8885957d11d3c04c7b80e81ee6d61ccb4581505fdefeb5c6f0a2
 #   Source      : sdk tools_preface.sh
 #   Type        : documentation
 #   Group       : SDK
@@ -34,7 +34,7 @@
 # > A typical SolidGroundUX project follows an iterative lifecycle:
 #
 # . Images
-#   dev-lifecycle.png :: A typical development lifecycle for a SolidGroundUX project.  
+#   sdk-dev-lifecycle.png :: A typical development lifecycle for a SolidGroundUX project.  
 #
 # > The SDK tools automate much of the repetitive work involved in these stages,
 # > allowing developers to focus primarily on application functionality.
@@ -160,7 +160,7 @@
 # ! Deviate at your own peril.
 #
 # . Images
-#   project-structure.png :: Folder structure of a typical SolidGroundUX project workspace. 
+#   sdk-project-structure.png :: Folder structure of a typical SolidGroundUX project workspace. 
 #
 # > Executable applications are typically placed in bin and sbin, reusable
 # > libraries in lib, and internal implementation helpers in libexec.

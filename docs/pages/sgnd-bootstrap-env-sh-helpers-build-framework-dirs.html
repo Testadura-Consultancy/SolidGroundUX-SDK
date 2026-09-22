@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Build framework directory specifications</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Build framework directory specifications</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / sgnd-bootstrap-env.sh / Helpers / _build_framework_dirs</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Rebuild the directory specification list used by sgnd_ensure_dirs.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Uses the currently rebased framework path globals.</div>
+<div class="ct-functionbody">  - Marks framework-owned paths as system directories.</div>
+<div class="ct-functionbody">  - Marks user configuration, state, and alternate log paths as user directories.</div>
+<div class="ct-functionbody"></div>
+<p class="ct-functionbody">Inputs (globals):</p>
+<div class="ct-functionbody">  SGND_COMMON_LIB, SGND_SYSCFG_DIR, SGND_USRCFG_DIR, SGND_STATE_DIR,</div>
+<div class="ct-functionbody">  SGND_STYLE_DIR, SGND_DOCS_DIR, SGND_LOG_PATH, SGND_ALTLOG_PATH</div>
+<div class="ct-functionbody"></div>
+<p class="ct-functionbody">Outputs (globals):</p>
+<div class="ct-functionbody">  SGND_FRAMEWORK_DIRS</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 always.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  _build_framework_dirs</div>
+</main>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Load the SolidGroundUX bootstrap library</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Load the SolidGroundUX bootstrap library</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / sgnd-exe-common.sh / Local helpers / _load_bootstrapper</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Resolve and source the main SolidGroundUX bootstrap library.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Uses SGND_FRAMEWORK_ROOT resolved by the executable template.</div>
+<div class="ct-functionbody">  - Builds the path to sgnd-bootstrap.sh.</div>
+<div class="ct-functionbody">  - Verifies that the bootstrap library is readable.</div>
+<div class="ct-functionbody">  - Sources sgnd-bootstrap.sh into the current shell.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Globals (read)</div>
+<div class="ct-functionbody">  SGND_FRAMEWORK_ROOT</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Output</div>
+<div class="ct-functionbody">  Writes a fatal message to stderr when the bootstrap library cannot be read.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 when the bootstrap library was sourced.</div>
+<div class="ct-functionbody">  126 when the bootstrap library is unreadable.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+</main>
+</body>
+</html>

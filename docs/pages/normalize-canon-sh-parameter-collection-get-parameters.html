@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>_get_parameters - Resolve interactive or automatic normalization inputs</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">_get_parameters - Resolve interactive or automatic normalization inputs</div>
+  <div class="doc-breadcrumb">normalize-canon.sh:::Parameter collection:_get_parameters</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Resolve the file or mask used for canonical normalization, using explicit</div>
+<div class="ct-functionbody">  command-line inputs as the highest-priority values and saved state as the</div>
+<div class="ct-functionbody">  fallback for --auto execution.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Loads SGND_CANON_INPUT from script state when available.</div>
+<div class="ct-functionbody">  - Uses positional command-line inputs as defaults in interactive mode.</div>
+<div class="ct-functionbody">  - In --auto mode, uses positional command-line inputs when supplied.</div>
+<div class="ct-functionbody">  - In --auto mode without positional inputs, uses the saved SGND_CANON_INPUT.</div>
+<div class="ct-functionbody">  - In interactive mode, prompts with ask and saves the confirmed value.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Outputs (globals)</div>
+<div class="ct-functionbody">  SGND_CANON_INPUT</div>
+<div class="ct-functionbody">  SGND_CANON_CLI_INPUTS</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 when usable input has been resolved; 2 when auto mode has no usable input.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  _get_parameters</div>
+</main>
+</body>
+</html>

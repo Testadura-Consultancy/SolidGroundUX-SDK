@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Prompts and User Input</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Prompts and User Input</div>
+  <div class="doc-breadcrumb">sux-ui_preface.sh::User Interface:Prompts and User Input:</div>
+</header>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The prompt layer in `ui-ask.sh` provides interactive input without assuming that standard input is available. Where necessary, prompts read from the controlling terminal so that applications can still process redirected or piped input.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The public prompt API supports labeled input, editable defaults, validation, constrained decisions, timed continuation, immediate key choices, and small field-driven forms.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Principal functions include:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    ask</div>
+<div class="ct-L2Sectionbody">    ask_decision</div>
+<div class="ct-L2Sectionbody">    ask_dlg_autocontinue</div>
+<div class="ct-L2Sectionbody">    ask_choose</div>
+<div class="ct-L2Sectionbody">    ask_choose_immediate</div>
+<div class="ct-L2Sectionbody">    ask_prompt_form</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Prompt functions normalize common interaction patterns so applications do not need to reproduce terminal handling, label formatting, default-value behavior, or response validation.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Use `ask_decision` for an explicit user decision that should block until a choice is made. Use `ask_dlg_autocontinue` for an interruptible timed continuation where the normal path continues automatically but the operator may intervene, pause, redo, or cancel according to the options supplied. These are distinct interaction patterns.</p>
+<div class="ct-L2Sectionbody"></div>
+</main>
+</body>
+</html>

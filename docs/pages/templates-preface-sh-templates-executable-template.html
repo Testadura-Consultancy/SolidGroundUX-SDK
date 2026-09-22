@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Executable Template</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Executable Template</div>
+  <div class="doc-breadcrumb">templates_preface.sh::Templates:Executable Template:</div>
+</header>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The executable template is used for scripts that are intended to be run directly by a user, administrator, scheduled task, or another process.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">It contains the canonical executable locator/bootstrap structure. The locator derives the active framework root from the script path and loads `sgnd-exe-common.sh`; the template then declares dependencies, arguments, state/config contracts, and enters the framework through `sgnd_exe_start` from `main`.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">New command-line tools should normally start from this template rather than copying bootstrap code from an existing script. The template represents the current intended executable structure.</p>
+<div class="ct-L2Sectionbody"></div>
+</main>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Expand compact choice specifications</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Expand compact choice specifications</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / ui-ask.sh / Internal helpers / _ask_expand_choices</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Expand a comma-separated choice specification into one choice per line.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Splits the specification on commas.</div>
+<div class="ct-functionbody">  - Trims surrounding whitespace from each part.</div>
+<div class="ct-functionbody">  - Expands single-character ranges such as A-D or 1-4.</div>
+<div class="ct-functionbody">  - Emits invalid reversed ranges as warnings and skips them.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Arguments</div>
+<div class="ct-functionbody">  $1 - Choice specification to expand.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Output</div>
+<div class="ct-functionbody">  Writes one expanded choice per line to stdout.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 after processing the supplied specification.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  mapfile -t choices &lt; &lt;(_ask_expand_choices &quot;A-D,Q&quot;)</div>
+</main>
+</body>
+</html>

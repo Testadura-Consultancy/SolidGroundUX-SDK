@@ -1,0 +1,513 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Appendix B: Glossary</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Appendix B: Glossary</div>
+  <div class="doc-breadcrumb">SolidGroundUX / Appendices / Appendix B: Glossary</div>
+</header>
+<div class="ct-documentbody">This appendix lists documented functions and variables, sorted alphabetically by name.</div>
+<section class="doc-glossary-block">
+<h2 class="ct-L2Sectionheader">Functions</h2>
+<table class="doc-data-table">
+<thead><tr><th>Function</th><th>Title</th><th>Purpose</th><th>Module</th></tr></thead>
+<tbody>
+<tr><td>_acquire_release</td><td>Acquire, stage, validate, and admit a release ZIP</td><td>Acquire, stage, validate, and admit a release ZIP. Returns 0 on success; non-zero on discovery, transfer, extraction, or validation failure. Usage _acquire_release &quot;$expected_base&quot; &quot;$source&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_action_check</td><td>Report the latest published build and its local state</td><td>Report the latest GitHub release and its local state. Returns 0 on success; non-zero when online discovery fails. Usage _action_check</td><td>release-manager.sh</td></tr>
+<tr><td>_action_download</td><td>Acquire the latest build or explicitly sourced release without installing it</td><td>Acquire the latest or explicitly sourced release without installing it. Returns 0 on success; non-zero on acquisition failure. Usage _action_download</td><td>release-manager.sh</td></tr>
+<tr><td>_action_install</td><td>Install the newest matching pending local release</td><td>Install the newest matching pending local release. Returns 0 on success; 2 on cancellation; non-zero on failure. Usage _action_install</td><td>release-manager.sh</td></tr>
+<tr><td>_action_remove</td><td>Remove the active SolidGroundUX installation after confirmation</td><td>Remove the active SolidGroundUX installation after confirmation. Returns 0 on success; 2 on cancellation; non-zero on failure. Usage _action_remove</td><td>release-manager.sh</td></tr>
+<tr><td>_action_rollback</td><td>Install the previous or explicitly selected archived release</td><td>Install the previous or explicitly selected archived release. Returns 0 on success; 2 on cancellation; non-zero on failure. Usage _action_rollback</td><td>release-manager.sh</td></tr>
+<tr><td>_action_update</td><td>Acquire if needed and install the latest published build</td><td>Acquire if needed and install the latest available release. Returns 0 on success; 2 on cancellation; non-zero on failure. Usage _action_update</td><td>release-manager.sh</td></tr>
+<tr><td>_admit_bootstrap_release</td><td>Validate and move an adjacent bootstrap release into releases/</td><td>Validate the release set shipped beside release-manager.sh and move its known artifacts into the canonical pending-release directory. Returns 0 when no bootstrap release is present or admission succeeds; non-zero on ambiguity, validation failure, or filesystem failure. Usage _admit_bootstrap_release</td><td>release-manager.sh</td></tr>
+<tr><td>_admit_extracted_release</td><td>Validate an extracted release ZIP and admit its artifacts to releases/</td><td>Validate an extracted release ZIP and admit its artifacts to releases/. Returns 0 on success; non-zero when validation or movement fails. Usage _admit_extracted_release &quot;$root&quot; &quot;$expected_base&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_apply_removed_manifest</td><td>Apply the incoming release removal manifest</td><td>Apply the incoming release removal manifest. Returns 0 when complete; non-zero on removal failure. Usage _apply_removed_manifest &quot;$removed&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_archive_release_set</td><td>Move an installed pending release set into versioned archive history</td><td>Move an installed pending release set into versioned archive history. Returns 0 on success; non-zero on filesystem failure. Usage _archive_release_set &quot;$archive&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_archived_release_base_exists</td><td>Test whether a release is present in archive/</td><td>Test whether a release is present in archive/. Returns 0 when present; 1 otherwise. Usage _archived_release_base_exists &quot;$release&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_ask_build_prompt</td><td>Build a readline-safe ask prompt</td><td>Build the colored prompt string used by ask-style input functions.</td><td>ui-ask.sh</td></tr>
+<tr><td>_ask_choice_is_valid</td><td></td><td>Validate a single choice against a ask_choose-style choices list.</td><td>ui-ask.sh</td></tr>
+<tr><td>_ask_decision_display</td><td></td><td>Build a compact display string from a decision specification.</td><td>ui-ask.sh</td></tr>
+<tr><td>_ask_decision_expand_choices</td><td>Expand decision aliases</td><td>Expand a decision choice specification into canonical/alias pairs.</td><td>ui-ask.sh</td></tr>
+<tr><td>_ask_decision_map_dlg_rc</td><td>Map autocontinue return codes to decisions</td><td>Convert ask_dlg_autocontinue return codes into canonical decision values.</td><td>ui-ask.sh</td></tr>
+<tr><td>_ask_decision_normalize</td><td>Normalize a typed decision</td><td>Convert a typed decision or alias into its canonical decision value.</td><td>ui-ask.sh</td></tr>
+<tr><td>_ask_expand_choices</td><td>Expand compact choice specifications</td><td>Expand a comma-separated choice specification into one choice per line.</td><td>ui-ask.sh</td></tr>
+<tr><td>_ask_is_ident</td><td></td><td>Test whether a value is a valid shell variable identifier.</td><td>ui-ask.sh</td></tr>
+<tr><td>_ask_parse_fieldspec</td><td>Parse an ask_prompt_form field specification</td><td>Split a form field specification into the temporary parser globals used by ask_prompt_form.</td><td>ui-ask.sh</td></tr>
+<tr><td>_ask_validate</td><td></td><td>Run a validation callback when provided.</td><td>ui-ask.sh</td></tr>
+<tr><td>_boot_fail</td><td>Report a bootstrap failure safely</td><td>Report a bootstrap-stage failure without depending on later UI initialization.</td><td>sgnd-bootstrap.sh</td></tr>
+<tr><td>_bootstrap_first_install</td><td>Bootstrap and install an adjacent release on a clean machine</td><td>Complete the zero-framework first-install path when release-manager.sh is executed from a GitHub bootstrap bundle: ensure directories, admit the bundled release, install it when no version is installed, persist the manager, and clean the temporary bundle. Returns 0 when no first-install bootstrap is required or when it completes successfully; non-zero on admission, verification, installation, or persistence failure. Usage _bootstrap_first_install</td><td>release-manager.sh</td></tr>
+<tr><td>_build_framework_dirs</td><td>Build framework directory specifications</td><td>Rebuild the directory specification list used by sgnd_ensure_dirs.</td><td>sgnd-bootstrap-env.sh</td></tr>
+<tr><td>_bundle_product_names</td><td>Emit product names recorded in bundle metadata</td><td>Read the first field of RELEASE-PRODUCTS records without hard-coding products. Returns 0 when bundle metadata is available; 1 otherwise. Usage mapfile -t products &lt; &lt;(_bundle_product_names)</td><td>release-manager.sh</td></tr>
+<tr><td>_bundle_products_file</td><td>Locate product metadata for the selected bundle</td><td>Locate RELEASE-PRODUCTS metadata retained beside the installed or pending bundle. Returns 0 and the metadata path when found; 1 otherwise. Usage products_file=&quot;$(_bundle_products_file)&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_cleanup_bootstrap_files</td><td>Remove known temporary bootstrap files after first install</td><td>Clean only the known release-manager bootstrap files when the manager was run from /tmp, leaving unrelated temporary files untouched. Returns 0 always unless removal of a known bootstrap file fails. Usage _cleanup_bootstrap_files</td><td>release-manager.sh</td></tr>
+<tr><td>_cleanup_staging</td><td>Remove the temporary extraction directory</td><td></td><td>untar-it.sh</td></tr>
+<tr><td>_confirm</td><td>Request a standalone yes/no confirmation</td><td>Request a standalone yes/no confirmation. Returns 0 for confirmation; 1 for rejection or unavailable interaction. Usage _confirm &quot;Continue?&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_create_archive</td><td>Create the compressed framework archive</td><td></td><td>tar-it.sh</td></tr>
+<tr><td>_current_release</td><td>Return the highest archived release as the current version</td><td>Return the highest archived release as the current version. Returns 0 when an archived release exists; non-zero otherwise. Usage current=&quot;$(_current_release)&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_detect_bootstrap_release</td><td>Detect one complete release set beside the running script</td><td>Detect the release payload supplied in a first-install bootstrap bundle without depending on the current working directory. Outputs BOOTSTRAP_RELEASE_BASE BOOTSTRAP_SOURCE_DIR Returns 0 when exactly one adjacent release archive is found; 1 when none is present; 2 when multiple release archives make the bundle ambiguous. Usage _detect_bootstrap_release</td><td>release-manager.sh</td></tr>
+<tr><td>_dlg_keymap</td><td>Dlg keymap</td><td>Return the dialog key/action mapping used by custom dialog controls.</td><td>ui-dlg.sh</td></tr>
+<tr><td>_download_to</td><td>Download or copy a release source to a destination file</td><td>Download or copy a release source to a destination file. Returns 0 on success; non-zero on transfer failure. Usage _download_to &quot;$source&quot; &quot;$destination&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_dt_build_sortkey</td><td>Dt build sortkey</td><td>Internal helper for dt build sortkey.</td><td>sgnd-datatable.sh</td></tr>
+<tr><td>_ensure_manager_directories</td><td>Ensure standalone release-manager directories exist</td><td>Create the state, pending-release, and archive directories required by the standalone release manager. Returns 0 on success; non-zero when a required directory cannot be created. Usage _ensure_manager_directories</td><td>release-manager.sh</td></tr>
+<tr><td>_ensure_release_manager_config</td><td>Create the persistent standalone config when absent</td><td>Seed release-manager.cfg with the current release source and release line. Returns 0 on success; non-zero on write failure. Usage _ensure_release_manager_config</td><td>release-manager.sh</td></tr>
+<tr><td>_ensure_root</td><td>Re-execute release-manager with elevated privileges when required</td><td></td><td>release-manager.sh</td></tr>
+<tr><td>_extract_release</td><td>Extract a complete SolidGroundUX release beneath the target root</td><td>Extract a complete SolidGroundUX release beneath the target root. Returns 0 on success; non-zero when extraction fails. Usage _extract_release &quot;$archive&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_extract_staging</td><td>Extract the validated archive into temporary staging</td><td></td><td>untar-it.sh</td></tr>
+<tr><td>_file_belongs_to_product</td><td>Test a text file for positive SolidGround product ownership</td><td>Recognize the canonical title header &#x27;# &lt;Product&gt; - ...&#x27; and an explicit &#x27;# Product : &lt;Product&gt;&#x27; metadata line. Binary/non-readable files never match. Returns 0 when the file positively identifies the requested product; 1 otherwise. Usage _file_belongs_to_product &quot;$path&quot; &quot;$SGND_RELEASE_PRODUCT&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_find_archived_archive</td><td>Find the tarball belonging to an archived release</td><td>Find the tarball belonging to an archived release. Returns 0 when found; 1 otherwise. Usage _find_archived_archive &quot;$release&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_find_pending_archives</td><td>List pending release tarballs under the releases directory</td><td>List pending release tarballs under the releases directory. Returns 0 always. Usage _find_pending_archives</td><td>release-manager.sh</td></tr>
+<tr><td>_framework_locator</td><td>Locate and load the SolidGroundUX executable bootstrap context</td><td>Determine the filesystem root of the currently executing SolidGroundUX tree from the script&#x27;s physical path, then load the executable runtime library.</td><td>tar-it.sh</td></tr>
+<tr><td>_framework_locator</td><td>Locate and load the SolidGroundUX executable bootstrap context</td><td>Determine the filesystem root of the currently executing SolidGroundUX tree from the script&#x27;s physical path, then load the executable runtime library.</td><td>untar-it.sh</td></tr>
+<tr><td>_getparameters</td><td>Resolve and confirm archive settings</td><td></td><td>tar-it.sh</td></tr>
+<tr><td>_getparameters</td><td>Resolve and confirm restore settings</td><td></td><td>untar-it.sh</td></tr>
+<tr><td>_github_latest_asset</td><td>Resolve the newest build ZIP attached to the configured GitHub Release</td><td>Inspect Release assets and select the highest SolidGroundUX-&lt;release-line&gt;.&lt;build&gt;-release.zip by version sorting. Returns Usage row=&quot;$(_github_latest_asset)&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_github_release_asset_url</td><td>Resolve the download URL for the newest published build</td><td>Return the browser download URL selected by _github_latest_asset. Returns 0 on success; non-zero when GitHub lookup fails. Usage url=&quot;$(_github_release_asset_url)&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_github_release_json</td><td>Fetch metadata from the configured GitHub Release endpoint</td><td>Read the configured GitHub Release metadata. The endpoint is persistent while individual build ZIP assets can be replaced or added underneath it. Returns 0 and the release JSON on stdout; non-zero when lookup fails. Usage json=&quot;$(_github_release_json)&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_init_bootstrap</td><td>Initialize bootstrap environment</td><td>Prepare the minimum framework environment required before core libraries load.</td><td>sgnd-bootstrap.sh</td></tr>
+<tr><td>_install_pending_archive</td><td>Install, update, or roll back to a pending release archive</td><td>Install, update, or roll back to a pending release archive. Returns 0 on success; non-zero on verification or deployment failure. Usage _install_pending_archive &quot;$archive&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_install_release_manager</td><td>Install the standalone manager at its canonical path</td><td>Copy the currently running release manager to the machine-local state root so future update, rollback, repair, and removal operations do not depend on a temporary bootstrap copy. Returns 0 on success; non-zero when the manager cannot be copied or made executable. Usage _install_release_manager</td><td>release-manager.sh</td></tr>
+<tr><td>_install_release_manager_wrapper</td><td>Install the public sgnd-release-manager command</td><td>Create the canonical public wrapper in /usr/local/bin pointing at the standalone release manager stored under /var/lib/solidgroundux. Returns 0 on success; non-zero on filesystem failure. Usage _install_release_manager_wrapper</td><td>release-manager.sh</td></tr>
+<tr><td>_interactive_menu</td><td>Run the standalone interactive release-manager menu</td><td>Run the standalone interactive release-manager menu. Returns 0 on normal exit. Usage _interactive_menu</td><td>release-manager.sh</td></tr>
+<tr><td>_latest_online_release</td><td>Resolve the canonical base name of the newest published build</td><td>Resolve the highest build asset attached to the configured GitHub Release. Returns 0 on success; non-zero when GitHub lookup fails. Usage _latest_online_release</td><td>release-manager.sh</td></tr>
+<tr><td>_list_archived_releases</td><td>List archived releases in ascending version order</td><td>List archived releases in ascending version order. Returns 0 always. Usage _list_archived_releases</td><td>release-manager.sh</td></tr>
+<tr><td>_list_archives</td><td>Build the available archive list, newest first</td><td>Find readable .tar.gz archives in ARCHIVE_DIRECTORY and store their basenames.</td><td>untar-it.sh</td></tr>
+<tr><td>_list_known_projects</td><td>List locally known project slugs</td><td></td><td>release-manager.sh</td></tr>
+<tr><td>_list_product_manifests</td><td>List archived manifests for a product and release variant</td><td>Find manifests by exact product artifact identity without prefix collisions. Returns 0 after emitting matching manifest paths in version order. Usage _list_product_manifests &quot;$product&quot; individual</td><td>release-manager.sh</td></tr>
+<tr><td>_load_bootstrapper</td><td>Load the SolidGroundUX bootstrap library</td><td>Resolve and source the main SolidGroundUX bootstrap library.</td><td>sgnd-exe-common.sh</td></tr>
+<tr><td>_load_project_info</td><td>Load persisted display identity for one project</td><td></td><td>release-manager.sh</td></tr>
+<tr><td>_load_release_manager_config</td><td>Load persistent standalone release-manager settings</td><td>Load release-source settings from the release-manager config file without depending on SolidGroundUX framework configuration libraries. Returns 0 always; missing config is not an error. Usage _load_release_manager_config</td><td>release-manager.sh</td></tr>
+<tr><td>_manifest_paths</td><td>Emit normalized paths from a release manifest</td><td>Emit normalized paths from a release manifest. Returns 0 after reading the manifest. Usage _manifest_paths &quot;$manifest&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_move_all_archives_to_releases</td><td>Return all archived releases to releases/</td><td>Return all archived releases to releases/. Returns 0 on success; non-zero on movement failure. Usage _move_all_archives_to_releases</td><td>release-manager.sh</td></tr>
+<tr><td>_move_archive_dir_to_releases</td><td>Return one archived release directory to releases/</td><td>Return one archived release directory to releases/. Returns 0 on success; 1 when the destination exists or movement fails. Usage _move_archive_dir_to_releases &quot;$base&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_move_newer_archives_to_releases</td><td>Return archived versions newer than a rollback target to releases/</td><td>Return archived versions newer than a rollback target to releases/. Returns 0 on success; non-zero on movement failure. Usage _move_newer_archives_to_releases &quot;$target_base&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_newest_pending_archive</td><td>Find the newest pending archive matching an optional release selector</td><td>Find the newest pending archive matching an optional release selector. Returns 0 when found; 1 otherwise. Usage archive=&quot;$(_newest_pending_archive &quot;$VAL_RELEASE&quot;)&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_normalize_archive_name</td><td>Normalize the requested archive filename</td><td></td><td>tar-it.sh</td></tr>
+<tr><td>_normalize_root</td><td>Normalize an absolute filesystem root</td><td>Normalize an absolute filesystem root. Returns 0 when the root is absolute; 1 otherwise. Usage root=&quot;$(_normalize_root &quot;/&quot;)&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_package_info_value</td><td>Read one key from release-package.info safely</td><td>Parse a simple KEY=value field without sourcing package-controlled shell code. Usage _package_info_value &quot;&lt;file&gt;&quot; &quot;&lt;key&gt;&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_parse_bootstrap_args</td><td>Parse early bootstrap options</td><td>Extract bootstrap-only options before the full argument parser is available.</td><td>sgnd-bootstrap.sh</td></tr>
+<tr><td>_pause</td><td>Wait for Enter after an interactive operation</td><td>Wait for Enter after an interactive operation. Returns 0 always. Usage _pause</td><td>release-manager.sh</td></tr>
+<tr><td>_pending_release_base_exists</td><td>Test whether a release is available in releases/</td><td>Test whether a release is available in releases/. Returns 0 when present; 1 otherwise. Usage _pending_release_base_exists &quot;$release&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_persist_project_info</td><td>Persist display identity for an admitted project package</td><td></td><td>release-manager.sh</td></tr>
+<tr><td>_previous_release</td><td>Return the archived release immediately preceding current</td><td>Return the archived release immediately preceding current. Returns 0 when a previous release exists; non-zero otherwise. Usage previous=&quot;$(_previous_release)&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_print_status</td><td>Display current installed and locally available release state</td><td>Display current installed and locally available release state. Returns 0 always. Usage _print_status</td><td>release-manager.sh</td></tr>
+<tr><td>_project_slug_safe</td><td>Validate a project slug used beneath the manager state root</td><td></td><td>release-manager.sh</td></tr>
+<tr><td>_release_ask</td><td>Ask for a scalar value using framework ask() or the fallback UI</td><td></td><td>release-manager.sh</td></tr>
+<tr><td>_release_ask_yesno</td><td>Ask a yes/no question with a default</td><td></td><td>release-manager.sh</td></tr>
+<tr><td>_release_base_from_archive</td><td>Derive a release base name from a tar.gz archive path</td><td>Derive a release base name from a tar.gz archive path. Returns 0 for a tar.gz archive; 1 otherwise. Usage base=&quot;$(_release_base_from_archive &quot;$archive&quot;)&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_release_clear</td><td>Clear the active terminal reliably</td><td></td><td>release-manager.sh</td></tr>
+<tr><td>_release_default_target_root</td><td>Derive target root only from canonical manager location</td><td></td><td>release-manager.sh</td></tr>
+<tr><td>_release_definition_value</td><td>Read one simple assignment from a definitions file</td><td>Read product release metadata without sourcing project-controlled shell code. Returns 0 with the unquoted value on stdout; 1 when the key is absent. Usage value=&quot;$(_release_definition_value &quot;$file&quot; &quot;SGND_RELEASE_URL&quot;)&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_release_fail</td><td>Write a failure message</td><td>Write a failure message. Returns 0 always. Usage _release_fail &quot;message&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_release_framework_root_for_target</td><td>Resolve the framework root for the selected target</td><td></td><td>release-manager.sh</td></tr>
+<tr><td>_release_info</td><td>Write verbose informational output</td><td>Write verbose informational output. Returns 0 always. Usage _release_info &quot;message&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_release_is_local_or_installed</td><td>Test whether a release is already downloaded or archived</td><td>Test whether a release is already downloaded or archived. Returns 0 when present locally; 1 otherwise. Usage _release_is_local_or_installed &quot;$base&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_release_labeled_value</td><td>Print one aligned label/value pair</td><td></td><td>release-manager.sh</td></tr>
+<tr><td>_release_line</td><td>Print a repeated border character</td><td></td><td>release-manager.sh</td></tr>
+<tr><td>_release_load_project_repo</td><td>Load a saved repository URL for one project</td><td></td><td>release-manager.sh</td></tr>
+<tr><td>_release_load_state</td><td>Load standalone parameter defaults</td><td></td><td>release-manager.sh</td></tr>
+<tr><td>_release_location</td><td>Resolve a release tarball from pending or archived storage</td><td>Resolve a release tarball from pending or archived storage. Returns 0 when found; non-zero otherwise. Usage _release_location &quot;$release&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_release_matches</td><td>Test whether a release base matches an optional selector</td><td>Test whether a release base matches an optional selector. Returns 0 when it matches; 1 otherwise. Usage _release_matches &quot;$base&quot; &quot;$VAL_RELEASE&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_release_metadata_field</td><td>Read a field from this script&#x27;s Metadata header</td><td>Read one value from the canonical script Metadata block without depending on SolidGroundUX framework libraries. Arguments $1  Metadata field name, for example Version or Build. Returns 0 and the trimmed field value when found; 1 otherwise. Usage version=&quot;$(_release_metadata_field &quot;Version&quot;)&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_release_normalize_github_url</td><td>Normalize a GitHub repository/release URL</td><td></td><td>release-manager.sh</td></tr>
+<tr><td>_release_ok</td><td>Write a successful-operation message</td><td>Write a successful-operation message. Returns 0 always. Usage _release_ok &quot;message&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_release_package_catalog</td><td>List release packages known to this target</td><td>Build the selectable package catalog from installed product definitions, with bootstrap defaults for products that may not yet be installed on a clean target. Output Usage mapfile -t packages &lt; &lt;(_release_package_catalog)</td><td>release-manager.sh</td></tr>
+<tr><td>_release_print</td><td>Print a line through the active UI implementation</td><td></td><td>release-manager.sh</td></tr>
+<tr><td>_release_product_artifact_name</td><td>Convert a display product name to its canonical release-file identity</td><td></td><td>release-manager.sh</td></tr>
+<tr><td>_release_project_repo_state_file</td><td>Resolve per-project repository state file</td><td></td><td>release-manager.sh</td></tr>
+<tr><td>_release_prompt_manual_settings</td><td>Collect explicit product/repository/channel overrides</td><td></td><td>release-manager.sh</td></tr>
+<tr><td>_release_prompt_settings</td><td>Resolve target and select the release package</td><td>Ask only for the target first, then derive release context from a selected package. Manual project/product/repository editing is an explicit override path. Usage _release_prompt_settings</td><td>release-manager.sh</td></tr>
+<tr><td>_release_repo_from_url</td><td>Convert a GitHub release URL to OWNER/REPO</td><td></td><td>release-manager.sh</td></tr>
+<tr><td>_release_run</td><td>Execute a command or report it in dry-run mode</td><td>Execute a command or report it in dry-run mode. Returns The executed command status, or 0 in dry-run mode. Usage _release_run mkdir -p /tmp/example</td><td>release-manager.sh</td></tr>
+<tr><td>_release_save_project_repo</td><td>Persist repository URL for the selected project</td><td></td><td>release-manager.sh</td></tr>
+<tr><td>_release_save_state</td><td>Persist accepted parameter values</td><td></td><td>release-manager.sh</td></tr>
+<tr><td>_release_section_header</td><td>Render a section header through the active UI</td><td></td><td>release-manager.sh</td></tr>
+<tr><td>_release_select_package_interactive</td><td>Select a product package and derive its context</td><td>Make package selection the normal entry point. Project, product, channel, version, build, and GitHub URL are derived from the selected product; the URL remains editable. Returns 0 after package selection; 2 when manual override was selected; 1 on cancellation. Usage _release_select_package_interactive</td><td>release-manager.sh</td></tr>
+<tr><td>_release_sort</td><td>Sort release identifiers by version</td><td>Sort release identifiers by version. Returns Status returned by sort. Usage</td><td>release-manager.sh</td></tr>
+<tr><td>_release_terminal_width</td><td>Return the usable terminal width</td><td></td><td>release-manager.sh</td></tr>
+<tr><td>_release_title</td><td>Render the standalone release-manager title</td><td>Display the release-manager identity and current hostname without using framework UI libraries. Returns 0 always. Usage _release_title</td><td>release-manager.sh</td></tr>
+<tr><td>_release_try_framework_ui</td><td>Prefer the installed SolidGroundUX UI when healthy</td><td>Opportunistically load the normal framework UI after the target root is known.</td><td>release-manager.sh</td></tr>
+<tr><td>_release_warn</td><td>Write a warning message</td><td>Write a warning message. Returns 0 always. Usage _release_warn &quot;message&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_remember_release_channel</td><td>Persist the channel of the successfully installed release</td><td></td><td>release-manager.sh</td></tr>
+<tr><td>_remove_bundle_products_by_scan</td><td>Remove header-owned files for every product in a bundle</td><td>Apply ownership cleanup to each product recorded in RELEASE-PRODUCTS. Returns 0 when every product scan succeeds; non-zero on the first failure. Usage _remove_bundle_products_by_scan</td><td>release-manager.sh</td></tr>
+<tr><td>_remove_by_manifest</td><td>Remove files listed by a selected release manifest</td><td>Remove exactly the files/symlinks owned by a selected release manifest. Directories are removed only when empty by _remove_paths_from_stream. Returns 0 on success; non-zero when the manifest is invalid or removal fails. Usage _remove_by_manifest &quot;$manifest&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_remove_by_product_scan</td><td>Remove files positively identified as belonging to a product</td><td>Provide a recovery cleanup independent of release manifests by scanning canonical managed roots for SolidGround metadata headers belonging to the selected product. Returns 0 on success; non-zero when removal fails. Usage _remove_by_product_scan &quot;$SGND_RELEASE_PRODUCT&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_remove_paths_from_stream</td><td>Remove streamed release paths conservatively from the target</td><td>Remove streamed release paths conservatively from the target. Returns 0 on success; non-zero when file removal fails. Usage</td><td>release-manager.sh</td></tr>
+<tr><td>_remove_release_difference</td><td>Remove paths present in one release manifest but absent from another</td><td>Remove paths present in one release manifest but absent from another. Returns 0 on success; non-zero on comparison/removal failure. Usage _remove_release_difference &quot;$current_manifest&quot; &quot;$target_manifest&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_require_command</td><td>Verify that a required system command is available</td><td>Verify that a required system command is available. Returns 0 when available; 1 otherwise. Usage _require_command tar</td><td>release-manager.sh</td></tr>
+<tr><td>_resolve_archive</td><td>Resolve ARCHIVE_FILE against ARCHIVE_DIRECTORY</td><td></td><td>untar-it.sh</td></tr>
+<tr><td>_restore_files</td><td>Restore selected staged files beneath the target root</td><td></td><td>untar-it.sh</td></tr>
+<tr><td>_rollback_to_archived_release</td><td>Make the installed framework match a selected archived release</td><td>Make the installed framework match a selected archived release. Returns 0 on success; non-zero when rollback cannot be completed. Usage _rollback_to_archived_release &quot;$target_base&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_safe_relative_path</td><td>Validate and normalize a release-relative path</td><td>Validate and normalize a release-relative path. Returns 0 when safe; 1 for absolute or traversing paths. Usage path=&quot;$(_safe_relative_path &quot;$raw&quot;)&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_say_caller</td><td>Say caller</td><td>Determine the script or function context that emitted a say message.</td><td>ui-say.sh</td></tr>
+<tr><td>_say_normalize_log_level</td><td>Normalize a log level name</td><td>Convert aliases and legacy log-level names into a canonical SolidGroundUX log-level value.</td><td>ui-say.sh</td></tr>
+<tr><td>_say_should_print_console</td><td>Determine whether a message should be written to the console</td><td>Determine whether a message of the specified type should be written to the console based on the current log level.</td><td>ui-say.sh</td></tr>
+<tr><td>_say_should_write_log</td><td>Determine whether a message should be written to the logfile</td><td>Apply the file log level independently from console visibility.</td><td>ui-say.sh</td></tr>
+<tr><td>_say_write_log</td><td>Say write log</td><td>Append a formatted say message to the active SolidGroundUX log file.</td><td>ui-say.sh</td></tr>
+<tr><td>_sayprogress_write_slot</td><td>Sayprogress write slot</td><td>Render one progress slot in the active sayprogress line.</td><td>ui-say.sh</td></tr>
+<tr><td>_scan_cli_args</td><td>Record which archive settings were supplied explicitly</td><td></td><td>tar-it.sh</td></tr>
+<tr><td>_scan_cli_args</td><td>Record which restore settings were supplied explicitly</td><td></td><td>untar-it.sh</td></tr>
+<tr><td>_scan_product_owned_paths</td><td>Emit files beneath managed roots that positively identify a product</td><td>Recover product ownership without a release manifest by inspecting file headers. Only files with positive product metadata are emitted; symlinks are not followed. Returns 0 after scanning the available managed roots. Usage _scan_product_owned_paths &quot;$SGND_RELEASE_PRODUCT&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_select_archive</td><td>Select an archive from the numbered archive list</td><td>Display available archives and resolve a numeric user selection.</td><td>untar-it.sh</td></tr>
+<tr><td>_select_archived_release</td><td>Select an archived release from a submenu</td><td>Select an archived release or the remove operation from a submenu. Returns 0 with the selected target on stdout; 1 when returning/cancelling. Usage target=&quot;$(_select_archived_release)&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_select_bundle_removal_scope</td><td>Select one constituent product or the complete bundle</td><td>Present products from RELEASE-PRODUCTS dynamically so future bundle members require no release-manager code changes. ALL represents the complete bundle/all products. Returns 0 with product name or ALL on stdout; 1 when returning/cancelling. Usage scope=&quot;$(_select_bundle_removal_scope &quot;Removal scope&quot;)&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_select_files</td><td>Select staged files using directory and filename mask</td><td></td><td>untar-it.sh</td></tr>
+<tr><td>_select_project_interactive</td><td>Select a locally known project</td><td></td><td>release-manager.sh</td></tr>
+<tr><td>_select_removal_manifest</td><td>Select an archived manifest for the active package</td><td>Preserve the individual-package path while delegating to the generic selector. Returns 0 with the selected manifest path on stdout; 1 when returning/cancelling. Usage manifest=&quot;$(_select_removal_manifest)&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_select_removal_manifest_for</td><td>Select an archived manifest for a product/variant</td><td>Present matching archived manifests from new to old. Returns 0 with the selected manifest path on stdout; 1 when returning/cancelling. Usage manifest=&quot;$(_select_removal_manifest_for &quot;$product&quot; individual)&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_set_action</td><td>Set and validate the requested release-manager action</td><td>Set and validate the requested release-manager action. Returns 0 on success; 1 when conflicting actions are supplied. Usage _set_action update</td><td>release-manager.sh</td></tr>
+<tr><td>_set_project_context</td><td>Select release/archive state for one project</td><td>Make all existing installation-engine functions operate on the selected project.</td><td>release-manager.sh</td></tr>
+<tr><td>_sgnd_arg_find_spec</td><td>Find an argument specification</td><td>Locate the effective argument specification for a long or short option.</td><td>sgnd-args.sh</td></tr>
+<tr><td>_sgnd_arg_init_defaults</td><td>Initialize argument defaults</td><td>Initialize argument target variables from builtin and/or script argument specs.</td><td>sgnd-args.sh</td></tr>
+<tr><td>_sgnd_arg_split</td><td>Split one argument specification</td><td>Parse a pipe-separated argument specification into parser fields.</td><td>sgnd-args.sh</td></tr>
+<tr><td>_sgnd_arg_validate_enum</td><td>Validate an enum argument value</td><td>Test whether a supplied value is present in a comma-separated choice list.</td><td>sgnd-args.sh</td></tr>
+<tr><td>_sgnd_cfg_write_template_header</td><td>Cfg write template header</td><td>Internal helper for cfg write template header.</td><td>sgnd-cfg.sh</td></tr>
+<tr><td>_sgnd_console_body_height</td><td>Return the usable menu-body height</td><td>Determine how many rendered lines may be allocated to one menu page.</td><td>sgnd-menu.sh</td></tr>
+<tr><td>_sgnd_console_build_pages</td><td>Build cached menu page boundaries</td><td>Partition visible menu rows into pages that fit the current terminal and configured line limit.</td><td>sgnd-menu.sh</td></tr>
+<tr><td>_sgnd_console_calc_label_width</td><td>Calculate the shared menu label width</td><td>Find the widest visible item prefix so labels and descriptions align consistently.</td><td>sgnd-menu.sh</td></tr>
+<tr><td>_sgnd_console_collect_group_render_indexes</td><td>Build ordered group indexes for the active source</td><td>Build the cached group order used by the renderer for the currently active module source.</td><td>sgnd-menu.sh</td></tr>
+<tr><td>_sgnd_console_collect_visible_item_indexes</td><td>Build visible item indexes for the active source</td><td>Cache menu rows that may be rendered or selected on the active module page.</td><td>sgnd-menu.sh</td></tr>
+<tr><td>_sgnd_console_dispatch</td><td>Dispatch a normalized menu choice</td><td>Resolve navigation, lines-per-page, numeric, or direct-key choices against the current cached menu model and execute the selected handler.</td><td>sgnd-menu.sh</td></tr>
+<tr><td>_sgnd_console_display_key_width</td><td>Calculate the width of visible numeric menu keys</td><td>Keep item labels aligned when a menu contains multi-digit selections.</td><td>sgnd-menu.sh</td></tr>
+<tr><td>_sgnd_console_find_visible_pos_for_row</td><td>Find a model row in the visible index</td><td></td><td>sgnd-menu.sh</td></tr>
+<tr><td>_sgnd_console_get_visible_display_number</td><td>Return an item&#x27;s chapter-local display number</td><td>Convert a model row index into the numeric key shown to the user, resetting numbering when the module chapter changes.</td><td>sgnd-menu.sh</td></tr>
+<tr><td>_sgnd_console_get_visible_row_index</td><td>Resolve a visible position to its model row</td><td></td><td>sgnd-menu.sh</td></tr>
+<tr><td>_sgnd_console_group_continues_after_visible_pos</td><td>Test whether a group continues later in the visible list</td><td></td><td>sgnd-menu.sh</td></tr>
+<tr><td>_sgnd_console_label_clearonrender</td><td>Build the clear-on-render label</td><td></td><td>sgnd-menu.sh</td></tr>
+<tr><td>_sgnd_console_label_debug</td><td>Build the debug label</td><td></td><td>sgnd-menu.sh</td></tr>
+<tr><td>_sgnd_console_label_dryrun</td><td>Build the dry-run label</td><td></td><td>sgnd-menu.sh</td></tr>
+<tr><td>_sgnd_console_label_logfile</td><td>Build the logfile label</td><td></td><td>sgnd-menu.sh</td></tr>
+<tr><td>_sgnd_console_label_verbose</td><td>Build the verbose label</td><td></td><td>sgnd-menu.sh</td></tr>
+<tr><td>_sgnd_console_measure_group_header_lines</td><td>Return group-header height</td><td></td><td>sgnd-menu.sh</td></tr>
+<tr><td>_sgnd_console_measure_item_lines</td><td>Measure one rendered menu item</td><td></td><td>sgnd-menu.sh</td></tr>
+<tr><td>_sgnd_console_nextpage</td><td>Move to the next menu page</td><td></td><td>sgnd-menu.sh</td></tr>
+<tr><td>_sgnd_console_onoff</td><td>Render a colored On/Off state</td><td></td><td>sgnd-menu.sh</td></tr>
+<tr><td>_sgnd_console_prevpage</td><td>Move to the previous menu page</td><td></td><td>sgnd-menu.sh</td></tr>
+<tr><td>_sgnd_console_quit</td><td>Request menu termination</td><td></td><td>sgnd-menu.sh</td></tr>
+<tr><td>_sgnd_console_redraw</td><td>Request a menu redraw</td><td></td><td>sgnd-menu.sh</td></tr>
+<tr><td>_sgnd_console_refresh_model_cache</td><td>Materialize menu datatables into indexed caches</td><td>Convert registered group/item rows into direct-index arrays used by layout and rendering.</td><td>sgnd-menu.sh</td></tr>
+<tr><td>_sgnd_console_render_group</td><td>Render one complete menu group</td><td>Render a group and all of its currently renderable items, primarily for builtin groups outside normal paging.</td><td>sgnd-menu.sh</td></tr>
+<tr><td>_sgnd_console_render_menu</td><td>Render the active menu page</td><td>Render the title, page indicator, paged module rows, builtin groups, and toggle bar.</td><td>sgnd-menu.sh</td></tr>
+<tr><td>_sgnd_console_render_menu_body_paged</td><td>Render the current page body</td><td>Select the current page&#x27;s cached rows/groups and pass them to the row renderer.</td><td>sgnd-menu.sh</td></tr>
+<tr><td>_sgnd_console_render_menu_title</td><td>Render the console title block</td><td>Render the console title/version, hostname, description, and surrounding borders.</td><td>sgnd-menu.sh</td></tr>
+<tr><td>_sgnd_console_render_page_header</td><td>Render the current page indicator above the menu body</td><td>Show page navigation state as a centered section header when the menu spans more than one page.</td><td>sgnd-menu.sh</td></tr>
+<tr><td>_sgnd_console_render_page_rows</td><td>Render selected groups and item rows</td><td>Render one page using the supplied group keys and model row indexes.</td><td>sgnd-menu.sh</td></tr>
+<tr><td>_sgnd_console_render_togglebar</td><td>Render runtime status and keyboard legend</td><td>Show the current mode, access level, log levels, theme, and direct-key legend beneath the menu.</td><td>sgnd-menu.sh</td></tr>
+<tr><td>_sgnd_console_set_lines_per_page</td><td>Set lines per page</td><td>Prompt for and apply the number of menu lines available per page.</td><td>sgnd-menu.sh</td></tr>
+<tr><td>_sgnd_console_statusword</td><td>Render one status-bar fragment</td><td></td><td>sgnd-menu.sh</td></tr>
+<tr><td>_sgnd_console_theme_name</td><td>Return the active theme name</td><td>Derive a human-readable theme name from SGND_UI_STYLE.</td><td>sgnd-menu.sh</td></tr>
+<tr><td>_sgnd_console_toggle_clearonrender</td><td>Toggle clear-on-render</td><td>Switch SGND_CLEAR_ONRENDER between enabled and disabled for the current session.</td><td>sgnd-menu.sh</td></tr>
+<tr><td>_sgnd_console_toggle_debug</td><td>Toggle debug mode</td><td>Toggle FLAG_DEBUG and refresh the framework run mode.</td><td>sgnd-menu.sh</td></tr>
+<tr><td>_sgnd_console_toggle_verbose</td><td>Toggle verbose mode</td><td>Switch FLAG_VERBOSE for the current console session.</td><td>sgnd-menu.sh</td></tr>
+<tr><td>_sgnd_console_toggleword</td><td>Render a toggle word with an emphasized hotkey</td><td>Format one toggle label using the enabled/disabled color and underline its hotkey.</td><td>sgnd-menu.sh</td></tr>
+<tr><td>_sgnd_console_valid_choices_csv</td><td>Build the current valid-choice list</td><td>Emit a comma-separated list containing visible numeric selections and active built-in keys for the current menu state.</td><td>sgnd-menu.sh</td></tr>
+<tr><td>_sgnd_console_visible_item_count</td><td>Return the visible item count</td><td></td><td>sgnd-menu.sh</td></tr>
+<tr><td>_sgnd_ensure_linebreak</td><td>Ensure linebreak</td><td>Ensure the next message starts on a clean line after progress output.</td><td>ui-say.sh</td></tr>
+<tr><td>_sgnd_flag_is_on</td><td>Evaluate whether a menu/framework flag is enabled</td><td></td><td>sgnd-menu.sh</td></tr>
+<tr><td>_sgnd_is_ident</td><td>Is ident</td><td>Internal helper for is ident.</td><td>sgnd-cfg.sh</td></tr>
+<tr><td>_sgnd_kv_get</td><td>Kv get</td><td>Internal helper for kv get.</td><td>sgnd-cfg.sh</td></tr>
+<tr><td>_sgnd_kv_has</td><td></td><td>Test whether a KEY exists in a KEY=VALUE file (even if empty).</td><td>sgnd-cfg.sh</td></tr>
+<tr><td>_sgnd_kv_list_keys</td><td>Kv list keys</td><td>Internal helper for kv list keys.</td><td>sgnd-cfg.sh</td></tr>
+<tr><td>_sgnd_kv_load_file</td><td>Kv load file</td><td>Load kv file into the current shell context.</td><td>sgnd-cfg.sh</td></tr>
+<tr><td>_sgnd_kv_reset_file</td><td></td><td>Hard-delete a KEY=VALUE file.</td><td>sgnd-cfg.sh</td></tr>
+<tr><td>_sgnd_kv_set</td><td>Kv set</td><td>Internal helper for kv set.</td><td>sgnd-cfg.sh</td></tr>
+<tr><td>_sgnd_kv_unset</td><td>Kv unset</td><td>Internal helper for kv unset.</td><td>sgnd-cfg.sh</td></tr>
+<tr><td>_sgnd_logfile</td><td>Logfile</td><td>Resolve the active SolidGroundUX log file path.</td><td>ui-say.sh</td></tr>
+<tr><td>_sgnd_menu_execute_item</td><td>Execute a registered menu item through an optional host executor</td><td>Execute a registered menu item while allowing a host application to wrap handler execution with application-specific behavior such as result tracking.</td><td>sgnd-menu.sh</td></tr>
+<tr><td>_sgnd_menu_module_chapter</td><td>Derive the page chapter from a module source</td><td>Group ordered console modules by their tens prefix: 10/15, 20/25, 30/35, etc.</td><td>sgnd-menu.sh</td></tr>
+<tr><td>_sgnd_menu_status_text</td><td>Build a colored status icon</td><td></td><td>sgnd-menu.sh</td></tr>
+<tr><td>_sgnd_minimal_say_normalize_log_level</td><td>Normalize a minimal bootstrap log level</td><td>Convert aliases and legacy log-level names into a canonical SolidGroundUX log-level value before the full UI layer is available.</td><td>sgnd-exe-common.sh</td></tr>
+<tr><td>_sgnd_minimal_say_should_print_console</td><td>Determine minimal bootstrap console visibility</td><td>Determine whether a bootstrap message should be written before the full SolidGroundUX UI layer is loaded.</td><td>sgnd-exe-common.sh</td></tr>
+<tr><td>_sgnd_on_exit_run</td><td>Run registered exit handlers</td><td>Dispatch registered framework cleanup handlers when the shell exits.</td><td>sgnd-bootstrap.sh</td></tr>
+<tr><td>_sgnd_print_arg_spec_entry</td><td>Print arg spec entry</td><td>Internal helper for print arg spec entry.</td><td>sgnd-info.sh</td></tr>
+<tr><td>_sgnd_print_arg_spec_list</td><td>Print arg spec list</td><td>Internal helper for print arg spec list.</td><td>sgnd-info.sh</td></tr>
+<tr><td>_sgnd_print_cfg_pass</td><td>Print cfg pass</td><td>Internal helper for print cfg pass.</td><td>sgnd-info.sh</td></tr>
+<tr><td>_sgnd_rotate_logs</td><td>Rotate logs</td><td>Rotate log files when log retention settings require it.</td><td>ui-say.sh</td></tr>
+<tr><td>_sgnd_save_state_dispatch</td><td>Save state on clean exit</td><td>Conditionally persist framework state from the exit-handler stack.</td><td>sgnd-bootstrap.sh</td></tr>
+<tr><td>_sgnd_ui_resolve_theme_file</td><td>Ui resolve theme file</td><td>Resolve a palette or style name to a readable theme file path.</td><td>ui.sh</td></tr>
+<tr><td>_sh_err</td><td>Sh err</td><td>Write an error message through say when available, otherwise stderr.</td><td>ui.sh</td></tr>
+<tr><td>_source_corelibs</td><td>Source required core libraries</td><td>Load the fixed set of framework core libraries in bootstrap order.</td><td>sgnd-bootstrap.sh</td></tr>
+<tr><td>_source_usinglibs</td><td>Source declared optional libraries</td><td>Load script-declared framework libraries listed in SGND_USING.</td><td>sgnd-bootstrap.sh</td></tr>
+<tr><td>_target_path</td><td>Map a release-relative path beneath the configured target root</td><td>Map a release-relative path beneath the configured target root. Returns 0 always. Usage target=&quot;$(_target_path &quot;$rel&quot;)&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_validate_archive_entries</td><td>Reject unsafe archive entry paths</td><td></td><td>untar-it.sh</td></tr>
+<tr><td>_validate_manifest_paths</td><td>Reject unsafe paths contained in a release manifest</td><td>Reject unsafe paths contained in a release manifest. Returns 0 when all paths are safe; 1 otherwise. Usage _validate_manifest_paths &quot;$manifest&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_validate_parameters</td><td>Validate archive source and destination settings</td><td></td><td>tar-it.sh</td></tr>
+<tr><td>_validate_parameters</td><td>Validate restore settings</td><td></td><td>untar-it.sh</td></tr>
+<tr><td>_validate_tar_paths</td><td>Reject unsafe paths contained in a release tarball</td><td>Reject unsafe paths contained in a release tarball. Returns 0 when all paths are safe; 1 otherwise. Usage _validate_tar_paths &quot;$archive&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_verify_release_set</td><td>Verify checksums and path safety for a complete release set</td><td>Verify checksums and path safety for a complete release set. Returns 0 when the release set is valid; 1 otherwise. Usage _verify_release_set &quot;$archive&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>_verify_sha256_sidecar</td><td>Verify one release artifact against its SHA256 sidecar</td><td>Verify one release artifact against its SHA256 sidecar. Returns 0 when valid; 1 on missing or mismatched data. Usage _verify_sha256_sidecar &quot;$file&quot; &quot;$file.sha256&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>ask</td><td>Ask for a single typed value</td><td>Prompt the user for one text value through the SolidGroundUX console UI.</td><td>ui-ask.sh</td></tr>
+<tr><td>ask_choose</td><td>Ask for a value from a choice list</td><td>Prompt the user for a choice and store the entered value in a named variable.</td><td>ui-ask.sh</td></tr>
+<tr><td>ask_choose_immediate</td><td>Ask for a choice with instant single-key acceptance</td><td>Prompt for a choice while allowing configured single-key choices to be accepted immediately.</td><td>ui-ask.sh</td></tr>
+<tr><td>ask_datetime</td><td></td><td>Prompt for an absolute or relative date/time value and normalize it.</td><td>ui-ask.sh</td></tr>
+<tr><td>ask_decision</td><td>Ask for a canonical symbolic decision</td><td>Prompt the user for a constrained decision and store the canonical result.</td><td>ui-ask.sh</td></tr>
+<tr><td>ask_dlg_autocontinue</td><td>Show an interruptible auto-continue countdown</td><td>Display a short countdown prompt that continues automatically unless the user intervenes.</td><td>ui-ask.sh</td></tr>
+<tr><td>ask_prompt_form</td><td>Prompt for multiple named fields</td><td>Prompt the user for a list of field specifications and assign each response to its target variable.</td><td>ui-ask.sh</td></tr>
+<tr><td>ask_selection</td><td>Select one or more values from a numbered list</td><td>Display a reusable numbered selection list and return the selected value or values.</td><td>ui-ask.sh</td></tr>
+<tr><td>confirm</td><td>Confirm</td><td>Ask the user for a yes/no confirmation and return success for yes.</td><td>ui.sh</td></tr>
+<tr><td>init_paths</td><td>Resolve target, state, release, and archive directories</td><td>Resolve target, state, release, and archive directories. Returns 0 on success; 1 when the target root is invalid. Usage init_paths</td><td>release-manager.sh</td></tr>
+<tr><td>justsay</td><td>Write plain message text</td><td>Write message text without applying a semantic say-state such as ok, fail, or warning.</td><td>ui-say.sh</td></tr>
+<tr><td>main</td><td>Run standalone release-manager initialization and dispatch</td><td>Run standalone release-manager initialization and dispatch. Returns Exit status of the selected interactive or command-line action. Usage main &quot;$@&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>main</td><td>Run the archive workflow</td><td></td><td>tar-it.sh</td></tr>
+<tr><td>main</td><td>Run the selective restore workflow</td><td></td><td>untar-it.sh</td></tr>
+<tr><td>parse_args</td><td>Parse release-manager command-line arguments</td><td>Parse release-manager command-line arguments. Returns 0 on success; non-zero on invalid arguments. Usage parse_args &quot;$@&quot;</td><td>release-manager.sh</td></tr>
+<tr><td>print_usage</td><td>Display standalone release-manager command-line help</td><td>Display standalone release-manager command-line help. Returns 0 always. Usage print_usage</td><td>release-manager.sh</td></tr>
+<tr><td>say</td><td>Emit a minimal bootstrap message</td><td>Emit a status message before the full SolidGroundUX UI layer is loaded.</td><td>sgnd-exe-common.sh</td></tr>
+<tr><td>say</td><td>Say</td><td>Emit a standardized SolidGroundUX console message.</td><td>ui-say.sh</td></tr>
+<tr><td>saycancel</td><td>Write a cancellation message</td><td>Report a cancelled operation through the SolidGroundUX message layer.</td><td>ui-say.sh</td></tr>
+<tr><td>saydebug</td><td>Write a debug message</td><td>Write diagnostic output when debug messaging is enabled by the runtime configuration.</td><td>ui-say.sh</td></tr>
+<tr><td>sayend</td><td>Write an operation-complete message</td><td>Mark the end of an operation through the SolidGroundUX message layer.</td><td>ui-say.sh</td></tr>
+<tr><td>sayfail</td><td>Write a failure message</td><td>Report a failed operation through the SolidGroundUX message layer.</td><td>ui-say.sh</td></tr>
+<tr><td>sayinfo</td><td>Write an informational message</td><td>Write a normal informational message through the SolidGroundUX message layer.</td><td>ui-say.sh</td></tr>
+<tr><td>sayok</td><td>Write a success message</td><td>Report a successful operation through the SolidGroundUX message layer.</td><td>ui-say.sh</td></tr>
+<tr><td>sayprogress</td><td>Sayprogress</td><td>Render or update a transient progress line.</td><td>ui-say.sh</td></tr>
+<tr><td>sayprogress_begin</td><td>Sayprogress Begin</td><td>Reserve one or more console lines for transient progress output.</td><td>ui-say.sh</td></tr>
+<tr><td>sayprogress_done</td><td>Sayprogress Done</td><td>Clear the reserved progress region and return output to normal flow.</td><td>ui-say.sh</td></tr>
+<tr><td>saystart</td><td>Write a start/progress message</td><td>Announce the start of an operation through the SolidGroundUX message layer.</td><td>ui-say.sh</td></tr>
+<tr><td>saywarning</td><td></td><td>Emit a WARN message.</td><td>ui-say.sh</td></tr>
+<tr><td>sgnd_abs_path</td><td>Abs path</td><td>Resolve a path to an absolute path.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_apply_defaults</td><td>Apply defaults</td><td>Apply default framework path, metadata, runtime, UI, and logging globals when they are not already set.</td><td>sgnd-bootstrap-env.sh</td></tr>
+<tr><td>sgnd_array_has_items</td><td>Array has items</td><td>Check whether an indexed array contains at least one item.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_array_union</td><td>Array union</td><td>Build the union of two shell arrays.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_ask_decision</td><td>Ask decision</td><td>Ask a constrained symbolic decision using the dialog helpers when available.</td><td>ui-dlg.sh</td></tr>
+<tr><td>sgnd_bg</td><td>Bg</td><td>Bg.</td><td>ui.sh</td></tr>
+<tr><td>sgnd_bootstrap</td><td>Bootstrap</td><td>Bootstrap the SolidGroundUX framework for an executable script.</td><td>sgnd-bootstrap.sh</td></tr>
+<tr><td>sgnd_builtinarg_handler</td><td>Builtinarg handler</td><td>Handle built-in framework options such as help, debug, verbose, dry-run, logfile, and UI mode.</td><td>sgnd-args.sh</td></tr>
+<tr><td>sgnd_caller_id</td><td>Caller id</td><td>Return the calling script/function identity for diagnostics.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_can_append</td><td>Can append</td><td>Check whether a file can be appended to, creating its parent path if needed.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_cannot_root</td><td>Cannot root</td><td>Reject execution as root.</td><td>sgnd-system.sh</td></tr>
+<tr><td>sgnd_cfg_create_missing_domain_files</td><td>Cfg create missing domain files</td><td>Create missing configuration files for configured domains.</td><td>sgnd-cfg.sh</td></tr>
+<tr><td>sgnd_cfg_domain_apply</td><td>Cfg domain apply</td><td>Apply default, system, user, and script configuration domains in precedence order.</td><td>sgnd-cfg.sh</td></tr>
+<tr><td>sgnd_cfg_get</td><td>Cfg get</td><td>Read a key from a configuration domain.</td><td>sgnd-cfg.sh</td></tr>
+<tr><td>sgnd_cfg_has</td><td>Cfg has</td><td>Check whether a key exists in a configuration domain.</td><td>sgnd-cfg.sh</td></tr>
+<tr><td>sgnd_cfg_has_audience</td><td>Cfg has audience</td><td>Check whether the active script or framework metadata matches a configuration audience.</td><td>sgnd-cfg.sh</td></tr>
+<tr><td>sgnd_cfg_load</td><td>Cfg load</td><td>Load a configuration domain into shell variables.</td><td>sgnd-cfg.sh</td></tr>
+<tr><td>sgnd_cfg_load_file</td><td>Cfg load file</td><td>Load a SolidGroundUX key/value configuration file into shell variables.</td><td>sgnd-cfg.sh</td></tr>
+<tr><td>sgnd_cfg_reset</td><td>Cfg reset</td><td>Clear all keys from a configuration domain.</td><td>sgnd-cfg.sh</td></tr>
+<tr><td>sgnd_cfg_set</td><td>Cfg set</td><td>Set a key in a configuration domain.</td><td>sgnd-cfg.sh</td></tr>
+<tr><td>sgnd_cfg_show_keys</td><td>Cfg show keys</td><td>Print all keys stored in a configuration domain.</td><td>sgnd-cfg.sh</td></tr>
+<tr><td>sgnd_cfg_unset</td><td>Cfg unset</td><td>Remove a key from a configuration domain.</td><td>sgnd-cfg.sh</td></tr>
+<tr><td>sgnd_cfg_write_skeleton_filtered</td><td></td><td>Write an auto-generated cfg skeleton filtered by audience.</td><td>sgnd-cfg.sh</td></tr>
+<tr><td>sgnd_check_license</td><td>Check license</td><td>Validate the current SolidGroundUX license state when licensing is enabled.</td><td>sgnd-bootstrap.sh</td></tr>
+<tr><td>sgnd_clear</td><td>Clear the visible terminal display</td><td></td><td>ui.sh</td></tr>
+<tr><td>sgnd_color_samples</td><td>Color samples</td><td>Print sample output for the currently loaded color palette.</td><td>ui.sh</td></tr>
+<tr><td>sgnd_console_register_group</td><td>Compatibility alias for sgnd_menu_register_group</td><td></td><td>sgnd-menu.sh</td></tr>
+<tr><td>sgnd_console_register_item</td><td>Compatibility alias for sgnd_menu_register_item</td><td></td><td>sgnd-menu.sh</td></tr>
+<tr><td>sgnd_decision_display_choices</td><td>Decision display choices</td><td>Build a compact display string from a decision choice specification.</td><td>ui-dlg.sh</td></tr>
+<tr><td>sgnd_decision_expand_choices</td><td>Decision expand choices</td><td>Expand decision aliases into canonical/alias records.</td><td>ui-dlg.sh</td></tr>
+<tr><td>sgnd_decision_from_dialog_rc</td><td>Decision from dialog rc</td><td>Map a dialog return code to a canonical decision value.</td><td>ui-dlg.sh</td></tr>
+<tr><td>sgnd_decision_normalize</td><td>Decision normalize</td><td>Normalize a typed decision alias to its canonical value.</td><td>ui-dlg.sh</td></tr>
+<tr><td>sgnd_default</td><td>Default</td><td>Assign a default value to a shell variable when it is unset or empty.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_defaults_reset</td><td>Defaults reset</td><td>Reset default framework environment values so they can be rebuilt from the current root.</td><td>sgnd-bootstrap-env.sh</td></tr>
+<tr><td>sgnd_die</td><td>Die</td><td>Print a failure message and terminate the current script.</td><td>sgnd-system.sh</td></tr>
+<tr><td>sgnd_disable_save_state</td><td>Disable save state</td><td>Disable automatic save-state handling for the current shell.</td><td>sgnd-bootstrap.sh</td></tr>
+<tr><td>sgnd_dlg_autocontinue</td><td>Dlg autocontinue</td><td>Show an interruptible dialog-based auto-continue prompt.</td><td>ui-dlg.sh</td></tr>
+<tr><td>sgnd_dlg_custom_rc_for_key</td><td>Dlg custom rc for key</td><td>Return the dialog return code associated with a configured key.</td><td>ui-dlg.sh</td></tr>
+<tr><td>sgnd_dt_append</td><td>Dt append</td><td>Append a complete row to a datatable.</td><td>sgnd-datatable.sh</td></tr>
+<tr><td>sgnd_dt_array_length</td><td>Dt array length</td><td>Return the number of items in an indexed Bash array.</td><td>sgnd-datatable.sh</td></tr>
+<tr><td>sgnd_dt_column_count</td><td>Dt column count</td><td>Return the number of columns in a schema.</td><td>sgnd-datatable.sh</td></tr>
+<tr><td>sgnd_dt_column_index</td><td>Dt column index</td><td>Return the zero-based index for a schema column.</td><td>sgnd-datatable.sh</td></tr>
+<tr><td>sgnd_dt_delete</td><td>Dt delete</td><td>Delete a datatable row by index.</td><td>sgnd-datatable.sh</td></tr>
+<tr><td>sgnd_dt_export_psv</td><td>Dt export psv</td><td>Print a datatable as pipe-separated values.</td><td>sgnd-datatable.sh</td></tr>
+<tr><td>sgnd_dt_find_first</td><td>Dt find first</td><td>Find the first datatable row where a column matches a value.</td><td>sgnd-datatable.sh</td></tr>
+<tr><td>sgnd_dt_get</td><td>Dt get</td><td>Read one field from a datatable row.</td><td>sgnd-datatable.sh</td></tr>
+<tr><td>sgnd_dt_get_sorted_rows</td><td>Dt get sorted rows</td><td>Return datatable row indexes sorted by a column.</td><td>sgnd-datatable.sh</td></tr>
+<tr><td>sgnd_dt_has_row</td><td>Dt has row</td><td>Check whether a datatable row index exists.</td><td>sgnd-datatable.sh</td></tr>
+<tr><td>sgnd_dt_insert</td><td>Dt insert</td><td>Insert or append a datatable row.</td><td>sgnd-datatable.sh</td></tr>
+<tr><td>sgnd_dt_make_row</td><td>Dt make row</td><td>Build a pipe-separated datatable row from field values.</td><td>sgnd-datatable.sh</td></tr>
+<tr><td>sgnd_dt_print_table</td><td>Dt print table</td><td>Render a datatable as an aligned table.</td><td>sgnd-datatable.sh</td></tr>
+<tr><td>sgnd_dt_row2var</td><td>Dt row2var</td><td>Export one datatable row to shell variables.</td><td>sgnd-datatable.sh</td></tr>
+<tr><td>sgnd_dt_row_count</td><td>Dt row count</td><td>Return the number of rows in a datatable.</td><td>sgnd-datatable.sh</td></tr>
+<tr><td>sgnd_dt_row_get</td><td>Dt row get</td><td>Read a whole datatable row by index.</td><td>sgnd-datatable.sh</td></tr>
+<tr><td>sgnd_dt_row_set</td><td>Dt row set</td><td>Replace a whole datatable row by index.</td><td>sgnd-datatable.sh</td></tr>
+<tr><td>sgnd_dt_set</td><td>Dt set</td><td>Set one field in a datatable row.</td><td>sgnd-datatable.sh</td></tr>
+<tr><td>sgnd_dt_split_row</td><td>Dt split row</td><td>Split a pipe-separated datatable row into fields.</td><td>sgnd-datatable.sh</td></tr>
+<tr><td>sgnd_dt_split_schema</td><td>Dt split schema</td><td>Split a datatable schema string into column names.</td><td>sgnd-datatable.sh</td></tr>
+<tr><td>sgnd_dt_validate_schema</td><td>Dt validate schema</td><td>Validate a datatable schema definition.</td><td>sgnd-datatable.sh</td></tr>
+<tr><td>sgnd_dt_validate_value</td><td>Dt validate value</td><td>Validate a datatable value before it is stored in a PSV row.</td><td>sgnd-datatable.sh</td></tr>
+<tr><td>sgnd_enable_save_state</td><td>Enable save state</td><td>Enable automatic persistence of selected runtime values on shell exit.</td><td>sgnd-bootstrap.sh</td></tr>
+<tr><td>sgnd_ensure_dir</td><td>Ensure dir</td><td>Create a directory when it does not already exist.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_ensure_dirs</td><td>Ensure dirs</td><td>Create the standard SolidGroundUX runtime, cache, log, state, and configuration directories.</td><td>sgnd-bootstrap-env.sh</td></tr>
+<tr><td>sgnd_ensure_writable_dir</td><td>Ensure writable dir</td><td>Create a directory and verify that it is writable.</td><td>sgnd-system.sh</td></tr>
+<tr><td>sgnd_exe_start</td><td>Start a SolidGroundUX executable script</td><td>Run the standard SolidGroundUX executable startup sequence.</td><td>sgnd-exe-common.sh</td></tr>
+<tr><td>sgnd_fg</td><td>Fg</td><td>Build a foreground-color SGR sequence.</td><td>ui.sh</td></tr>
+<tr><td>sgnd_fill_center</td><td>Fill center</td><td>Center text in a target width.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_fill_left</td><td>Fill left</td><td>Pad text on the left to a target width.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_fill_right</td><td>Fill right</td><td>Pad text on the right to a target width.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_fix_ownership</td><td>Fix ownership</td><td>Apply recursive ownership to a path.</td><td>sgnd-system.sh</td></tr>
+<tr><td>sgnd_fix_permissions</td><td>Fix permissions</td><td>Apply recursive permissions to a path.</td><td>sgnd-system.sh</td></tr>
+<tr><td>sgnd_framework_resolve_path</td><td>Resolve a Framework-owned path with installed fallback</td><td>Resolve a Framework-owned file or directory from the active development tree, falling back to the installed Framework when the active tree does not provide it.</td><td>sgnd-exe-common.sh</td></tr>
+<tr><td>sgnd_get_ip</td><td>Get ip</td><td>Print the first local IP address reported by hostname.</td><td>sgnd-system.sh</td></tr>
+<tr><td>sgnd_get_os</td><td>Get os</td><td>Print the operating system ID from /etc/os-release.</td><td>sgnd-system.sh</td></tr>
+<tr><td>sgnd_get_os_version</td><td>Get os version</td><td>Print the operating system version ID from /etc/os-release.</td><td>sgnd-system.sh</td></tr>
+<tr><td>sgnd_get_primary_nic</td><td>Get primary nic</td><td>Print the network interface used for the default route.</td><td>sgnd-system.sh</td></tr>
+<tr><td>sgnd_has_tty</td><td>Has tty</td><td>Check whether /dev/tty can be read and written.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_hash_sha256_file</td><td>Hash sha256 file</td><td>Calculate the SHA-256 hash of a file.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_have</td><td>Have</td><td>Check whether a command is available on PATH.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_internal_call_guard</td><td>Internal call guard</td><td>Reject calls to internal functions from outside allowed framework contexts.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_is_active</td><td>Is active</td><td>Check whether a systemd service is active.</td><td>sgnd-system.sh</td></tr>
+<tr><td>sgnd_is_desktop_mode</td><td>Is desktop mode</td><td>Check whether the framework is running in a desktop-capable UI mode.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_is_number</td><td>Is number</td><td>Check whether a value contains only digits.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_is_set</td><td>Is set</td><td>Check whether a shell variable is set.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_is_true</td><td>Is true</td><td>Interpret common true/false text values as a shell boolean.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_is_ui_mode</td><td>Is ui mode</td><td>Check whether the current UI mode matches the supplied value.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_join</td><td>Join</td><td>Join arguments using a delimiter.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_kill_if_running</td><td>Kill if running</td><td>Terminate processes that match the supplied executable name.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_load_ui_style</td><td>Load ui style</td><td>Load the configured SolidGroundUX UI palette and style files.</td><td>sgnd-bootstrap.sh</td></tr>
+<tr><td>sgnd_menu_create</td><td>Initialize a reusable menu model</td><td>Initialize or reset the menu model used by the caller.</td><td>sgnd-menu.sh</td></tr>
+<tr><td>sgnd_menu_dispatch</td><td>Dispatch a normalized menu choice</td><td>Execute or navigate the current menu through the public menu API.</td><td>sgnd-menu.sh</td></tr>
+<tr><td>sgnd_menu_read_choice</td><td>Read one menu choice or navigation key</td><td>Read menu input directly from /dev/tty and normalize navigation/control keys.</td><td>sgnd-menu.sh</td></tr>
+<tr><td>sgnd_menu_register_group</td><td>Register a menu group</td><td>Add a group definition to the reusable menu model.</td><td>sgnd-menu.sh</td></tr>
+<tr><td>sgnd_menu_register_item</td><td>Register one menu item</td><td>Add an executable item to the reusable menu model.</td><td>sgnd-menu.sh</td></tr>
+<tr><td>sgnd_menu_set_item_status</td><td>Set menu item status decoration</td><td>Update the transient status associated with a registered menu item.</td><td>sgnd-menu.sh</td></tr>
+<tr><td>sgnd_menu_show_menu</td><td>Render the current menu</td><td>Render the menu model using the shared SolidGroundUX menu renderer.</td><td>sgnd-menu.sh</td></tr>
+<tr><td>sgnd_mktemp_dir</td><td>Mktemp dir</td><td>Create and print a temporary directory path.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_mktemp_file</td><td>Mktemp file</td><td>Create and print a temporary file path.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_module_init_metadata</td><td>Module init metadata</td><td>Initialize module metadata globals from a sourced library or module comment header.</td><td>sgnd-bootstrap.sh</td></tr>
+<tr><td>sgnd_module_show_metadata</td><td>Module show metadata</td><td>Print the metadata registered for the current module or script.</td><td>ui.sh</td></tr>
+<tr><td>sgnd_must</td><td>Must</td><td>Run a command and terminate with a contextual failure message if it fails.</td><td>sgnd-system.sh</td></tr>
+<tr><td>sgnd_need_bash</td><td>Need bash</td><td>Require a minimum Bash major version.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_need_cmd</td><td>Need cmd</td><td>Require a command to exist or terminate the current script.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_need_root</td><td>Need root</td><td>Require the current process to run as root.</td><td>sgnd-system.sh</td></tr>
+<tr><td>sgnd_need_systemd</td><td>Need systemd</td><td>Require systemd/systemctl availability.</td><td>sgnd-system.sh</td></tr>
+<tr><td>sgnd_need_tty</td><td>Need tty</td><td>Require stdout to be attached to a terminal.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_need_writable</td><td>Need writable</td><td>Require a writable filesystem path.</td><td>sgnd-system.sh</td></tr>
+<tr><td>sgnd_on_exit_add</td><td>On exit add</td><td>Register a function or command to run through the SolidGroundUX exit dispatcher.</td><td>sgnd-bootstrap.sh</td></tr>
+<tr><td>sgnd_on_exit_install</td><td>On exit install</td><td>Install the SolidGroundUX exit trap dispatcher once for the current shell.</td><td>sgnd-bootstrap.sh</td></tr>
+<tr><td>sgnd_padded_visible</td><td>Padded visible</td><td>Pad styled text based on visible width rather than byte length.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_parse_args</td><td>Parse framework or script command-line arguments</td><td>Parse command-line options against the selected SolidGroundUX argument specification while preserving the remaining arguments for a later parse pass.</td><td>sgnd-args.sh</td></tr>
+<tr><td>sgnd_parse_statespec</td><td>Parse statespec</td><td>Parse a save-state specification into source variable and state key parts.</td><td>sgnd-bootstrap.sh</td></tr>
+<tr><td>sgnd_ping_ok</td><td>Ping ok</td><td>Check whether a host responds to one ping probe.</td><td>sgnd-system.sh</td></tr>
+<tr><td>sgnd_port_open</td><td>Port open</td><td>Check whether a TCP port is reachable.</td><td>sgnd-system.sh</td></tr>
+<tr><td>sgnd_print</td><td>Print</td><td>Print styled, optionally padded, wrapped, or justified text.</td><td>ui.sh</td></tr>
+<tr><td>sgnd_print_args</td><td>Print args</td><td>Print parsed argument values.</td><td>sgnd-info.sh</td></tr>
+<tr><td>sgnd_print_cell</td><td>Print cell</td><td>Print a fixed-width styled cell without a trailing newline.</td><td>ui.sh</td></tr>
+<tr><td>sgnd_print_cfg</td><td>Print cfg</td><td>Print effective configuration values for diagnostics.</td><td>sgnd-info.sh</td></tr>
+<tr><td>sgnd_print_file</td><td>Print file</td><td>Print the contents of a file using sgnd_print formatting.</td><td>ui.sh</td></tr>
+<tr><td>sgnd_print_fill</td><td>Print fill</td><td>Print a left/right line filled to a target width.</td><td>ui.sh</td></tr>
+<tr><td>sgnd_print_framework_metadata</td><td>Print framework metadata</td><td>Print framework metadata values.</td><td>sgnd-info.sh</td></tr>
+<tr><td>sgnd_print_labeledmultivalue</td><td></td><td>Print one label followed by a value that may span multiple aligned lines.</td><td>ui.sh</td></tr>
+<tr><td>sgnd_print_labeledvalue</td><td>Print labeledvalue</td><td>Print a formatted label/value row.</td><td>ui.sh</td></tr>
+<tr><td>sgnd_print_license</td><td>Print license</td><td>Print active license information.</td><td>sgnd-info.sh</td></tr>
+<tr><td>sgnd_print_metadata</td><td>Print metadata</td><td>Print active script or module metadata.</td><td>sgnd-info.sh</td></tr>
+<tr><td>sgnd_print_readme</td><td>Print readme</td><td>Print the active script README section.</td><td>sgnd-info.sh</td></tr>
+<tr><td>sgnd_print_sectionheader</td><td>Print sectionheader</td><td>Print a section header or horizontal border line.</td><td>ui.sh</td></tr>
+<tr><td>sgnd_print_single</td><td>Print single</td><td>Print a single styled line without wrapping.</td><td>ui.sh</td></tr>
+<tr><td>sgnd_print_state</td><td>Print state</td><td>Print current state-domain values.</td><td>sgnd-info.sh</td></tr>
+<tr><td>sgnd_print_titlebar</td><td>Print titlebar</td><td>Print the standard SolidGroundUX title bar.</td><td>ui.sh</td></tr>
+<tr><td>sgnd_proc_exists</td><td>Proc exists</td><td>Check whether a process with the given executable name is running.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_prompt_fromlist</td><td>Prompt fromlist</td><td>Prompt the user to select one value from a list.</td><td>ui-dlg.sh</td></tr>
+<tr><td>sgnd_real_home</td><td>Real home</td><td>Print the home directory for the real user.</td><td>sgnd-system.sh</td></tr>
+<tr><td>sgnd_real_user</td><td>Real user</td><td>Print the non-root user behind sudo, or the current user.</td><td>sgnd-system.sh</td></tr>
+<tr><td>sgnd_rebase_directories</td><td>Rebase directories</td><td>Recalculate framework directory globals from the current SGND_FRAMEWORK_ROOT.</td><td>sgnd-bootstrap-env.sh</td></tr>
+<tr><td>sgnd_rebase_framework_cfg_paths</td><td>Rebase framework cfg paths</td><td>Recalculate framework configuration file paths from the configured etc directory.</td><td>sgnd-bootstrap-env.sh</td></tr>
+<tr><td>sgnd_render_width</td><td>Resolve an effective console render width</td><td>Resolve the width used by SolidGroundUX console rendering primitives.</td><td>ui.sh</td></tr>
+<tr><td>sgnd_require</td><td>Require</td><td>Require a command to succeed, terminating on failure.</td><td>sgnd-system.sh</td></tr>
+<tr><td>sgnd_retry</td><td>Retry</td><td>Retry a command until it succeeds or the retry count is exhausted.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_run_as_real_user</td><td>Run as real user</td><td>Run a command as the real non-root user when invoked through sudo.</td><td>sgnd-system.sh</td></tr>
+<tr><td>sgnd_runmode_color</td><td>Runmode color</td><td>Return the UI color associated with the current or supplied run mode.</td><td>ui.sh</td></tr>
+<tr><td>sgnd_safe_replace_file</td><td>Safe replace file</td><td>Atomically replace a target file with a prepared temporary file.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_sample_row</td><td>Sample row</td><td>Print one sample row for the style sample output.</td><td>ui.sh</td></tr>
+<tr><td>sgnd_save_state</td><td>Save state</td><td>Persist configured runtime state values to the active state domain.</td><td>sgnd-bootstrap.sh</td></tr>
+<tr><td>sgnd_script_init_metadata</td><td>Script init metadata</td><td>Initialize script metadata globals from a script comment header.</td><td>sgnd-bootstrap.sh</td></tr>
+<tr><td>sgnd_sgr</td><td>Sgr</td><td>Build an ANSI SGR escape sequence from numeric codes or existing SGR fragments.</td><td>ui.sh</td></tr>
+<tr><td>sgnd_show_help</td><td>Show help</td><td>Print usage information generated from a SolidGroundUX argument specification.</td><td>sgnd-args.sh</td></tr>
+<tr><td>sgnd_show_vars_by_prefix</td><td>Show vars by prefix</td><td>Print variables whose names start with a supplied prefix.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_showenvironment</td><td>Showenvironment</td><td>Print a combined SolidGroundUX environment overview.</td><td>sgnd-info.sh</td></tr>
+<tr><td>sgnd_slugify</td><td>Slugify</td><td>Convert text to a lowercase filesystem-friendly slug.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_stack_trace</td><td>Stack trace</td><td>Print a Bash call stack for diagnostics.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_string_repeat</td><td>String repeat</td><td>Repeat a string a fixed number of times.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_strip_ansi</td><td>Strip ansi</td><td>Remove ANSI escape sequences from text.</td><td>ui.sh</td></tr>
+<tr><td>sgnd_style_samples</td><td>Display the active UI theme</td><td>Demonstrate the active SolidGroundUX theme and the rendering primitives used by framework console applications.</td><td>ui.sh</td></tr>
+<tr><td>sgnd_terminal_width</td><td>Terminal width</td><td>Return the active terminal width or a configured fallback.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_terminal_width</td><td>Return the current terminal width</td><td>Return the number of columns available to console rendering.</td><td>ui.sh</td></tr>
+<tr><td>sgnd_theme</td><td>Display or switch the active UI theme</td><td>Display the current theme or switch the semantic UI style used by the current SolidGroundUX session.</td><td>ui.sh</td></tr>
+<tr><td>sgnd_timestamp</td><td>Timestamp</td><td>Print the current timestamp in SolidGroundUX log format.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_trim</td><td>Trim</td><td>Trim leading and trailing whitespace from text.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_ui_set_default_theme</td><td>Ui set default theme</td><td>Load the default SolidGroundUX UI palette and style.</td><td>ui.sh</td></tr>
+<tr><td>sgnd_ui_set_theme</td><td>Ui set theme</td><td>Load a SolidGroundUX UI palette and style into the current shell session.</td><td>ui.sh</td></tr>
+<tr><td>sgnd_update_runmode</td><td>Update runmode</td><td>Update runmode.</td><td>ui.sh</td></tr>
+<tr><td>sgnd_validate_bool</td><td>Validate bool</td><td>Validate a common boolean value.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_validate_cidr</td><td>Validate cidr</td><td>Validate a CIDR prefix length.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_validate_date</td><td>Validate date</td><td>Validate a date string in YYYY-MM-DD form.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_validate_dir_exists</td><td>Validate dir exists</td><td>Validate that a directory exists.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_validate_executable</td><td>Validate executable</td><td>Validate that a path exists and is executable.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_validate_file_exists</td><td>Validate file exists</td><td>Validate that a file exists.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_validate_file_not_exists</td><td>Validate file not exists</td><td>Validate that a file does not already exist.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_validate_fs_name</td><td>Validate fs name</td><td>Validate a conservative filesystem name.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_validate_int</td><td>Validate int</td><td>Validate a signed integer.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_validate_ipv4</td><td>Validate ipv4</td><td>Validate an IPv4 address.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_validate_numeric</td><td>Validate numeric</td><td>Validate a signed integer or decimal number.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_validate_path_exists</td><td>Validate path exists</td><td>Validate that a filesystem path exists.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_validate_slug</td><td>Validate slug</td><td>Validate a lowercase slug suitable for identifiers or paths.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_validate_text</td><td>Validate text</td><td>Validate that text is not empty.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_validate_yesno</td><td>Validate yesno</td><td>Validate a single-character yes/no response.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_version_ge</td><td>Version ge</td><td>Compare two version strings and return success when the first is greater or equal.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_visible_len</td><td>Visible len</td><td>Return the visible character length of text after ANSI escape sequences are removed.</td><td>ui.sh</td></tr>
+<tr><td>sgnd_visible_length</td><td>Visible length</td><td>Return visible text length after stripping ANSI escape sequences.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_wait_for_exit</td><td>Wait for exit</td><td>Wait for a named process to stop running.</td><td>sgnd-core.sh</td></tr>
+<tr><td>sgnd_wrap_words</td><td>Wrap words</td><td>Wrap text to a target visible width.</td><td>sgnd-core.sh</td></tr>
+</tbody>
+</table>
+</section>
+<section class="doc-glossary-block">
+<h2 class="ct-L2Sectionheader">Variables</h2>
+<table class="doc-data-table">
+<thead><tr><th>Variable</th><th>Title</th><th>Purpose</th><th>Module</th></tr></thead>
+<tbody>
+<tr><td>palette_solidground_brand</td><td>SolidGround brand colors</td><td>Define the SolidGround product brand colors.</td><td>default-ui-palette.sh</td></tr>
+<tr><td>palette_testadura_brand</td><td>Testadura brand colors</td><td>Define the official Testadura corporate brand colors.</td><td>default-ui-palette.sh</td></tr>
+<tr><td>SGND_BUILTIN_ARGS</td><td>Builtin framework argument specifications</td><td>Define standard command-line options available to framework-enabled scripts.</td><td>sgnd-args.sh</td></tr>
+<tr><td>SGND_BUILTIN_EXAMPLES</td><td>Builtin help examples</td><td>Provide reusable help examples for standard framework options.</td><td>sgnd-args.sh</td></tr>
+<tr><td>SGND_CORE_LIBS</td><td>Ordered core library list</td><td>Define the core libraries that sgnd-bootstrap loads in fixed order.</td><td>sgnd-definitions.sh</td></tr>
+<tr><td>SGND_FRAMEWORK_DIRS</td><td>Framework directory specifications</td><td>Hold the rebuilt path specification list consumed by sgnd_ensure_dirs.</td><td>sgnd-bootstrap-env.sh</td></tr>
+<tr><td>style_background_bright</td><td>Background: Bright</td><td>Document the variables assigned in this style section.</td><td>default-ui-palette.sh</td></tr>
+<tr><td>style_background_dark_muted</td><td>Background: Dark / muted</td><td>Document the variables assigned in this style section.</td><td>default-ui-palette.sh</td></tr>
+<tr><td>style_background_normal</td><td>Background: Normal</td><td>Document the variables assigned in this style section.</td><td>default-ui-palette.sh</td></tr>
+<tr><td>style_color_codes</td><td>Color codes</td><td>Document the variables assigned in this style section.</td><td>default-ui-palette.sh</td></tr>
+<tr><td>style_colors</td><td>Colors</td><td>Document the variables assigned in this style section.</td><td>00-style-default.sh</td></tr>
+<tr><td>style_colors</td><td>Colors</td><td>Document the variables assigned in this style file.</td><td>10-style-dark.sh</td></tr>
+<tr><td>style_colors</td><td>Colors</td><td>Document the variables assigned in this style file.</td><td>11-style-steelblue.sh</td></tr>
+<tr><td>style_colors</td><td>Colors</td><td>Document the variables assigned in this style file.</td><td>20-style-testadura.sh</td></tr>
+<tr><td>style_colors</td><td>Colors</td><td>Document the variables assigned in this style file.</td><td>21-style-fantasy.sh</td></tr>
+<tr><td>style_colors</td><td>Colors</td><td>Document the variables assigned in this style file.</td><td>22-style-redalert.sh</td></tr>
+<tr><td>style_colors</td><td>Colors</td><td>Document the variables assigned in this style file.</td><td>23-style-psychedelic.sh</td></tr>
+<tr><td>style_colors</td><td>Colors</td><td>Document the variables assigned in this style file.</td><td>30-style-mono-green.sh</td></tr>
+<tr><td>style_colors</td><td>Colors</td><td>Document the variables assigned in this style file.</td><td>31-style-mono-amber.sh</td></tr>
+<tr><td>style_colors</td><td>Colors</td><td>Document the variables assigned in this style file.</td><td>32-style-mono-blue.sh</td></tr>
+<tr><td>style_foreground_bright</td><td>Foreground: Bright</td><td>Document the variables assigned in this style section.</td><td>default-ui-palette.sh</td></tr>
+<tr><td>style_foreground_dark_muted</td><td>Foreground: Dark / muted</td><td></td><td>default-ui-palette.sh</td></tr>
+<tr><td>style_foreground_normal</td><td>Foreground: Normal</td><td></td><td>default-ui-palette.sh</td></tr>
+<tr><td>style_say_global_defaults</td><td>say() global defaults</td><td>Document the variables assigned in this style section.</td><td>00-style-default.sh</td></tr>
+<tr><td>style_say_global_defaults</td><td>say() global defaults</td><td>Document the variables assigned in this style file.</td><td>10-style-dark.sh</td></tr>
+<tr><td>style_say_global_defaults</td><td>say() global defaults</td><td>Document the variables assigned in this style file.</td><td>11-style-steelblue.sh</td></tr>
+<tr><td>style_say_global_defaults</td><td>say() global defaults</td><td>Document the variables assigned in this style file.</td><td>20-style-testadura.sh</td></tr>
+<tr><td>style_say_global_defaults</td><td>say() global defaults</td><td>Document the variables assigned in this style file.</td><td>21-style-fantasy.sh</td></tr>
+<tr><td>style_say_global_defaults</td><td>say() global defaults</td><td>Document the variables assigned in this style file.</td><td>22-style-redalert.sh</td></tr>
+<tr><td>style_say_global_defaults</td><td>say() global defaults</td><td>Document the variables assigned in this style file.</td><td>23-style-psychedelic.sh</td></tr>
+<tr><td>style_say_global_defaults</td><td>say() global defaults</td><td>Document the variables assigned in this style file.</td><td>30-style-mono-green.sh</td></tr>
+<tr><td>style_say_global_defaults</td><td>say() global defaults</td><td>Document the variables assigned in this style file.</td><td>31-style-mono-amber.sh</td></tr>
+<tr><td>style_say_global_defaults</td><td>say() global defaults</td><td>Document the variables assigned in this style file.</td><td>32-style-mono-blue.sh</td></tr>
+<tr><td>style_say_prefixes</td><td>Say prefixes</td><td>Document the variables assigned in this style section.</td><td>00-style-default.sh</td></tr>
+<tr><td>style_say_prefixes</td><td>Say prefixes</td><td>Document the variables assigned in this style file.</td><td>10-style-dark.sh</td></tr>
+<tr><td>style_say_prefixes</td><td>Say prefixes</td><td>Document the variables assigned in this style file.</td><td>11-style-steelblue.sh</td></tr>
+<tr><td>style_say_prefixes</td><td>Say prefixes</td><td>Document the variables assigned in this style file.</td><td>20-style-testadura.sh</td></tr>
+<tr><td>style_say_prefixes</td><td>Say prefixes</td><td>Document the variables assigned in this style file.</td><td>21-style-fantasy.sh</td></tr>
+<tr><td>style_say_prefixes</td><td>Say prefixes</td><td>Document the variables assigned in this style file.</td><td>22-style-redalert.sh</td></tr>
+<tr><td>style_say_prefixes</td><td>Say prefixes</td><td>Document the variables assigned in this style file.</td><td>23-style-psychedelic.sh</td></tr>
+<tr><td>style_say_prefixes</td><td>Say prefixes</td><td>Document the variables assigned in this style file.</td><td>30-style-mono-green.sh</td></tr>
+<tr><td>style_say_prefixes</td><td>Say prefixes</td><td>Document the variables assigned in this style file.</td><td>31-style-mono-amber.sh</td></tr>
+<tr><td>style_say_prefixes</td><td>Say prefixes</td><td>Document the variables assigned in this style file.</td><td>32-style-mono-blue.sh</td></tr>
+<tr><td>style_text_attributes_sgr</td><td>Text attributes (SGR)</td><td>Document the variables assigned in this style section.</td><td>default-ui-palette.sh</td></tr>
+</tbody>
+</table>
+</section>
+</main>
+</body>
+</html>

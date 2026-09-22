@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>SolidGroundUX SDK - Deploy Workspace</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">SolidGroundUX SDK - Deploy Workspace</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / deploy-workspace.sh</div>
+</header>
+<div class="ct-modulebody sh-label">Description</div>
+<div class="ct-modulebody">  Collects deployment settings from command-line arguments and interactive prompts,</div>
+<div class="ct-modulebody">  resolves the requested workspace files into a concrete relative path list, creates</div>
+<div class="ct-modulebody">  a tar stream, and passes that stream to receive-files.sh locally or over SSH.</div>
+<div class="ct-modulebody"></div>
+<div class="ct-modulebody sh-label">Design principles</div>
+<div class="ct-modulebody">  - Selection and transport remain separate from destination-side installation policy</div>
+<div class="ct-modulebody">  - Local and remote deployment use the same receive-files.sh contract</div>
+<div class="ct-modulebody">  - Command-line values override saved defaults</div>
+<div class="ct-modulebody">  - Confirmed deployment settings are always saved; the success timestamp changes only after a successful receive operation</div>
+<div class="ct-modulebody">  - Changed-after defaults to the last successful deployment timestamp when available</div>
+<div class="ct-modulebody"></div>
+</main>
+</body>
+</html>

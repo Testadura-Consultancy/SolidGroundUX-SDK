@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>_replace_library_guard - Replace the complete Library guard section</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">_replace_library_guard - Replace the complete Library guard section</div>
+  <div class="doc-breadcrumb">normalize-canon.sh:::Local script functions:_replace_library_guard</div>
+</header>
+<div class="ct-functionbody sh-highlight">Arguments</div>
+<div class="ct-functionbody">  $1 FILE</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  Uses _sgnd_lib_guard() only to identify the file type. Once identified,</div>
+<div class="ct-functionbody">  replaces the complete Library guard section through the next top-level</div>
+<div class="ct-functionbody">  section marker. A top-level section is identified structurally by</div>
+<div class="ct-functionbody">  `# - &lt;Section title&gt;`; trailing separator dashes are cosmetic and optional.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 when replacement succeeds; non-zero when the section is malformed.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  _replace_library_guard &quot;$file&quot;</div>
+</main>
+</body>
+</html>

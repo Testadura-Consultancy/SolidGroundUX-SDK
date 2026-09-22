@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>_ask_datetime_normalize</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">_ask_datetime_normalize</div>
+  <div class="doc-breadcrumb">ui-ask.sh:::Internal helpers:_ask_datetime_normalize</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Normalize an absolute date/time value or SolidGroundUX datetime shortcut.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Accepts absolute values understood by GNU date.</div>
+<div class="ct-functionbody">  - Resolves N to the current local date and time.</div>
+<div class="ct-functionbody">  - Resolves D to the start of the current local day.</div>
+<div class="ct-functionbody">  - Resolves signed relative expressions against the current local time.</div>
+<div class="ct-functionbody">  - Supports s, m, h, d, M, and y units for seconds, minutes, hours,</div>
+<div class="ct-functionbody">    days, months, and years respectively.</div>
+<div class="ct-functionbody">  - Supports combined relative expressions such as -1d2h30m.</div>
+<div class="ct-functionbody">  - Returns a local ISO-8601 timestamp including the UTC offset.</div>
+<div class="ct-functionbody"></div>
+<p class="ct-functionbody">Inputs:</p>
+<div class="ct-functionbody">  $1 - Absolute date/time value or SolidGroundUX datetime expression.</div>
+<div class="ct-functionbody"></div>
+<p class="ct-functionbody">Outputs (stdout):</p>
+<div class="ct-functionbody">  Normalized ISO-8601 datetime.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 when the value was normalized successfully.</div>
+<div class="ct-functionbody">  1 when the value is empty or invalid.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  normalized=&quot;$(_ask_datetime_normalize &quot;-2h30m&quot;)&quot;</div>
+</main>
+</body>
+</html>

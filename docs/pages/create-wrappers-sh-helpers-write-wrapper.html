@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Create one framework-relative wrapper</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Create one framework-relative wrapper</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / create-wrappers.sh / Helpers / _write_wrapper</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Generate a wrapper from the canonical wrapper template.</div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Resolves the source path relative to SGND_FRAMEWORK_ROOT.</div>
+<div class="ct-functionbody">  - Loads the canonical wrapper template from SGND_FRAMEWORK_ROOT.</div>
+<div class="ct-functionbody">  - Replaces the &lt;target&gt; placeholder with the framework-relative target.</div>
+<div class="ct-functionbody">  - Preserves overwrite and dry-run behavior.</div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 on success; 1 on failure or declined overwrite.</div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  _write_wrapper &quot;$source&quot; &quot;$wrapper&quot;</div>
+</main>
+</body>
+</html>

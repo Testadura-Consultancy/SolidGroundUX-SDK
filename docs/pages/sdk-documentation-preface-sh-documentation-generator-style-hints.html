@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Style Hints</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Style Hints</div>
+  <div class="doc-breadcrumb">sdk-documentation_preface.sh::Documentation Generator:Style Hints:</div>
+</header>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Documentation lines may include an optional leading marker that either identifies plain documentation content or assigns a renderer style hint.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The plain documentation marker is:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    &gt;           Plain documentation line</div>
+<div class="ct-L2Sectionbody">    &gt;           When used without text, emits an intentional blank line</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Style hints are presentation hints layered on top of the structural content type. The renderer reads the exported stylehint value for each documentation line. When the style hint is normal, no additional style class is added. When another value is supplied, the renderer adds a corresponding sh-&lt;stylehint&gt; CSS class.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The currently supported style hints are:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="doc-aligned-block" style="grid-template-columns:max-content minmax(0, 1fr)">
+<div class="ct-L2Sectionbody doc-aligned-cell">normal</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">Standard rendered text</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">label</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">(:) Label or small subheader text</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">highlight</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">(.) Highlighted text</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">emphasis</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">(!) Emphasized text</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">underline</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">(_) Underlined text</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">quote</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">(~) Quoted or aside text</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">listitem</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">(-) Bullet-style list item</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">indent</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">Reserved indentation style</div>
+</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Marker characters are only interpreted when they are the first token after the comment marker. Leading whitespace after &quot;# &quot; is preserved as author layout and prevents marker interpretation.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">These symbols are intended as visual cues and make it easier to identify the purpose of a line while scanning a page.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Style hints should be used for presentation only. They do not replace content labels such as fn:, fn$, var:, var$, doc:, or doc$.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The file doc-sample.sh should be treated as the practical reference for the supported documentation syntax.</p>
+<div class="ct-L2Sectionbody"></div>
+</main>
+</body>
+</html>

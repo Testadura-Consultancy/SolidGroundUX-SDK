@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Display the completed deployment details</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Display the completed deployment details</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / deploy-workspace.sh / Reporting / _print_deployment_summary</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Show which workspace files were selected and where they were sent.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Displays source, destination, transport, receiver, timing, and result mode.</div>
+<div class="ct-functionbody">  - Displays every selected relative path on its own aligned value line.</div>
+<div class="ct-functionbody">  - Uses sgnd_print_labeledmultivalue so no selected path is truncated.</div>
+<div class="ct-functionbody">  - Clearly marks dry-run deployments.</div>
+<div class="ct-functionbody"></div>
+<p class="ct-functionbody">Inputs (globals)</p>
+<div class="ct-functionbody">  DEPLOY_TRANSPORT, REMOTE_TARGET, SRC_ROOT, DEST_ROOT, RECEIVER_PATH,</div>
+<div class="ct-functionbody">  SELECTED_PATHS, DEPLOY_STARTED_AT, DEPLOY_FINISHED_AT, FLAG_DRYRUN</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 after displaying the summary.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  _print_deployment_summary</div>
+</main>
+</body>
+</html>

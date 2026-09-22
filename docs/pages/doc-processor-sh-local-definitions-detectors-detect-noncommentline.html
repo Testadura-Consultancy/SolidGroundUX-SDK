@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Detect non-comment source lines</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Detect non-comment source lines</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / doc-processor.sh / Local definitions / Detectors / _detect_noncommentline</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Stop documentation parsing for source lines that are not structured comments.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Ignores the line when another detector already handled it.</div>
+<div class="ct-functionbody">  - Returns without action for comment lines.</div>
+<div class="ct-functionbody">  - Clears the current source/content type for executable or ordinary source lines.</div>
+<div class="ct-functionbody">  - Prevents later detectors from processing the same line.</div>
+<div class="ct-functionbody"></div>
+<p class="ct-functionbody">Inputs (globals):</p>
+<div class="ct-functionbody">  src_line, src_haltlineprocessing</div>
+<div class="ct-functionbody"></div>
+<p class="ct-functionbody">Outputs (globals):</p>
+<div class="ct-functionbody">  src_linetype, doc_contenttype, doc_headersection, doc_emitline, src_haltlineprocessing</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 always.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  _detect_noncommentline</div>
+</main>
+</body>
+</html>

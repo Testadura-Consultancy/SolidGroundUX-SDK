@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Prefer the installed SolidGroundUX UI when healthy</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Prefer the installed SolidGroundUX UI when healthy</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / release-manager.sh / Standalone UI / _release_try_framework_ui</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Opportunistically load the normal framework UI after the target root is known.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Never required for release-manager operation.</div>
+<div class="ct-functionbody">  - Falls back silently to the bootstrap UI if the framework is absent, damaged,</div>
+<div class="ct-functionbody">    or cannot complete bootstrap.</div>
+<div class="ct-functionbody">  - Keeps release-manager business logic behind _release_* UI adapters.</div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  _release_try_framework_ui</div>
+</main>
+</body>
+</html>

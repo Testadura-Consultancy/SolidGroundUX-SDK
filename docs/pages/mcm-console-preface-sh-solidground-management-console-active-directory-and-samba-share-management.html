@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Active Directory and Samba Share Management</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Active Directory and Samba Share Management</div>
+  <div class="doc-breadcrumb">mcm_console_preface.sh::SolidGround Management Console:Active Directory and Samba Share Management:</div>
+</header>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Active Directory Management is a dedicated functional page for users, groups, memberships, and computer accounts. Repeated administration actions manage their own continue/return flow so common bulk work can be performed without repeatedly returning through the module menu.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Samba share management is implemented by the standalone manage-samba-shares.sh executable. On realmd/SSSD domain members it does not depend on `getent group` enumeration. Active Directory groups are discovered directly through LDAP/GSSAPI using the domain controller advertised by the realm&#x27;s LDAP SRV record.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Kerberos authentication uses the canonical uppercase realm. If no valid ticket is available, the share manager interactively obtains one with kinit before querying LDAP. LDAP discovery disables SASL hostname canonicalization so the query uses the registered domain-controller LDAP service principal. The selected group is then resolved through NSS in qualified `group@domain` form before ACL assignment.</p>
+<div class="ct-L2Sectionbody"></div>
+</main>
+</body>
+</html>

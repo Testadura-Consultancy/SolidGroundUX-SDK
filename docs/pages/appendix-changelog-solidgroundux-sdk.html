@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Appendix Y: Change Log</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Appendix Y: Change Log</div>
+  <div class="doc-breadcrumb">SolidGroundUX SDK / Appendices / Appendix Y: Change Log</div>
+</header>
+<h2 class="ct-L1Sectionheader">Changelog</h2>
+<p class="ct-documentbody">All notable changes to SolidGroundUX SDK are documented in this file.</p>
+<h3 class="ct-L2Sectionheader">Unreleased</h3>
+<h4 class="ct-L3Sectionheader">Added</h4>
+<ul>
+<li>Established SolidGroundUX SDK as the owner of development, workspace, deployment, documentation and release tooling separated from the SolidGroundUX Framework.</li>
+<li>Added multi-product documentation collections with product discovery/selection, a primary product, product-specific `.docignore` configuration, deterministic duplicate-module handling and merged product assets.</li>
+<li>Added explicit documentation collection/output handling and documentation table syntax support.</li>
+<li>Added multi-product release preparation with per-product Version/Build policy, primary-product bundle identity, product ownership collision detection and per-product removal-baseline selection.</li>
+<li>Added release-package discovery and product-aware release/removal handling, including manifest-based removal and ownership-based removal paths.</li>
+<li>Added a declarative `workspace-layout.cfg` used by `create-workspace` to instantiate the complete canonical target-root tree, including system/user configuration and state locations, MOTD, runtime, share and var directories.</li>
+<li>Added optional project Description input to `create-workspace`; the description is stored in project definitions and reused by generated repository material.</li>
+<li>Added generated project README, changelog, license placeholder, default SolidGroundUX icon and Git placeholders for otherwise-empty canonical workspace directories.</li>
+</ul>
+<h4 class="ct-L3Sectionheader">Changed</h4>
+<ul>
+<li>Moved `create-workspace`, `deploy-workspace`, `prepare-release`, release management, documentation generation/rendering/processing, wrapper generation and canonical normalization into the SDK product boundary.</li>
+<li>`create-workspace` now derives generated README identity from project definitions: Title, Version.Build, Copyright, project name and Description. Generated README navigation points to installed documentation, changelog and license and no longer embeds Framework-specific marketing captions.</li>
+<li>`create-workspace` now creates the full canonical workspace tree even when individual directories are not initially used; empty directories are retained in Git with placeholders that are excluded from release content.</li>
+<li>Convenience templates are discovered by product ownership and copied into workspace-local templates for project use. Starter scripts receive the new project identity and canonical Version/Build defaults.</li>
+<li>`doc-generator` now treats duplicate module basenames across products as deterministic first-wins collisions: the duplicate is warned about and skipped rather than overwriting or aborting the collection.</li>
+<li>`prepare-release` now treats product identity independently from repository identity and keeps release metadata/baseline state with each selected product. Bundles inherit Version/Build from the primary product.</li>
+<li>SDK executables running from a non-root SDK development tree now resolve Framework-owned resources through the Framework resolver while preserving their own SDK development context.</li>
+</ul>
+<h4 class="ct-L3Sectionheader">Fixed</h4>
+<ul>
+<li>Fixed `create-workspace` prematurely aborting after starter-script generation when the final selected template was non-executable; subsequent definitions, MOTD, README, changelog, license and placeholder generation now runs normally.</li>
+<li>Fixed `normalize-canon` assuming canonical Framework fragments existed beneath the SDK development root; canonical fragments now resolve from the actual local or installed Framework.</li>
+<li>Fixed `prepare-release` product identity updates for canonically indented `*_VERSION` and `*_BUILD` assignments and improved failure reporting for identity/header/checksum update failures.</li>
+<li>Fixed release baseline discovery so the Framework product-name prefix does not absorb similarly named companion products such as Management Console Modules.</li>
+<li>Fixed documentation output behavior so duplicate modules and assets are reported without silently replacing previously collected product content.</li>
+</ul>
+</main>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Source required core libraries</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Source required core libraries</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / sgnd-bootstrap.sh / Main sequence helpers + EXIT dispatch / _source_corelibs</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Load the fixed set of framework core libraries in bootstrap order.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Rebases directories before resolving library paths.</div>
+<div class="ct-functionbody">  - Iterates SGND_CORE_LIBS in order.</div>
+<div class="ct-functionbody">  - Sources each core library from SGND_COMMON_LIB.</div>
+<div class="ct-functionbody"></div>
+<p class="ct-functionbody">Inputs (globals):</p>
+<div class="ct-functionbody">  SGND_CORE_LIBS, SGND_COMMON_LIB</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 when all core libraries are sourced.</div>
+<div class="ct-functionbody">  Non-zero when a sourced library fails.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  _source_corelibs</div>
+</main>
+</body>
+</html>

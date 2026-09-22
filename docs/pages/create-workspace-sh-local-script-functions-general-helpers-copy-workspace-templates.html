@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Copy shared convenience templates into the workspace</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Copy shared convenience templates into the workspace</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / create-workspace.sh / Local script functions / General helpers / _copy_workspace_templates</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Seed the repository-shaped workspace with the installed SolidGroundUX templates.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Resolves the installed shared convenience-template directory.</div>
+<div class="ct-functionbody">  - Copies only the convenience templates selected for this workspace.</div>
+<div class="ct-functionbody">  - Records newly created template files in the workspace manifest.</div>
+<div class="ct-functionbody">  - Honors dry-run mode through _copy_template_file().</div>
+<div class="ct-functionbody"></div>
+<p class="ct-functionbody">Inputs (globals):</p>
+<div class="ct-functionbody">  SGND_COMMON_LIB</div>
+<div class="ct-functionbody">  PROJECT_FOLDER</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 on success.</div>
+<div class="ct-functionbody">  1 when a selected template is missing or a copy fails.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  _copy_workspace_templates</div>
+</main>
+</body>
+</html>

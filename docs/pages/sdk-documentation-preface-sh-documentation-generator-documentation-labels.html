@@ -1,0 +1,68 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Documentation Labels</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Documentation Labels</div>
+  <div class="doc-breadcrumb">sdk-documentation_preface.sh::Documentation Generator:Documentation Labels:</div>
+</header>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Structured documentation lines use a small set of labels to identify the type of content being documented.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The primary labels are:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="doc-aligned-block" style="grid-template-columns:max-content minmax(0, 1fr)">
+<div class="ct-L2Sectionbody doc-aligned-cell">fn:</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">Function or method documentation</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">var:</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">Variable documentation</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">cls:</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">Class documentation</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">doc:</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">General documentation</div>
+</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Each label can be followed by either a colon or a dollar sign.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">A colon indicates a normal documentation item:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="doc-aligned-block" style="grid-template-columns:max-content minmax(0, 1fr)">
+<div class="ct-L2Sectionbody doc-aligned-cell">fn:</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">Normal function or method documentation</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">var:</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">Normal variable documentation</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">cls:</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">Normal class documentation</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">doc:</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">Normal general documentation</div>
+</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">A dollar sign indicates a template documentation item:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="doc-aligned-block" style="grid-template-columns:max-content minmax(0, 1fr)">
+<div class="ct-L2Sectionbody doc-aligned-cell">fn$</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">Template function documentation</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">var$</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">Template variable documentation</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">cls$</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">Template class documentation</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">doc$</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">Template general documentation</div>
+</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Template items are primarily intended for reusable examples and template files. The renderer can treat them differently from normal framework items, depending on the group or context in which they appear.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The documentation dialect is language-neutral where the host language supports the same comment marker. Bash and Python both use # comments, so fn:, var:, cls:, and doc: use the same syntax in both languages. Python functions and class methods both use fn:; the containing cls: item supplies the class context.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The file doc-sample.sh demonstrates the supported labels and should be treated as the practical reference for the documentation syntax.</p>
+<div class="ct-L2Sectionbody"></div>
+</main>
+</body>
+</html>

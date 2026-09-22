@@ -1,0 +1,113 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Appendix Y: Change Log</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Appendix Y: Change Log</div>
+  <div class="doc-breadcrumb">SolidGroundUX Management Console Modules / Appendices / Appendix Y: Change Log</div>
+</header>
+<h2 class="ct-L1Sectionheader">Changelog</h2>
+<p class="ct-documentbody">All notable changes to SolidGroundUX Management Console Modules are documented in this file.</p>
+<p class="ct-documentbody">The format is inspired by *Keep a Changelog* while remaining focused on practical framework development.</p>
+<h3 class="ct-L2Sectionheader">Unreleased</h3>
+<h4 class="ct-L3Sectionheader">Added</h4>
+<ul>
+<li>Added the canonical per-module validation contract: `validate_module_&lt;module-id-with-hyphens-replaced-by-underscores&gt;`, `SGND_MODULE_VALIDATION_MESSAGE`, and standard Passed/Failed/Warning/Skipped return states.</li>
+<li>Added Framework Test orchestration that combines Framework-owned smoke/installation tests with Management Console-owned registration and module validation.</li>
+<li>Added metadata discovery from canonical module headers so the console can show ID, Version/Build, Description, Visibility and Source without sourcing modules.</li>
+<li>Added explicit development-context reporting for the console host and console application when either runs from a non-production root.</li>
+</ul>
+<h4 class="ct-L3Sectionheader">Changed</h4>
+<ul>
+<li>Completed ownership of the SolidGround Management Console host (`management-console.sh`) and public `sgnd-console` command in this product. The reusable runtime and `sgnd-menu` API remain Framework-owned.</li>
+<li>Framework smoke-test ownership moved to the SolidGroundUX Framework; Management Console Modules invokes the public `sgnd-smoketest` command rather than shipping a duplicate smoke-test executable.</li>
+<li>Module applicability is determined by each module&#x27;s canonical validator; the Framework Test runner no longer hardcodes server-role knowledge.</li>
+<li>The Management Console module template is owned by this product; generic executable/library/documentation/wrapper templates are no longer treated as MCM-owned.</li>
+<li>Standardized corrected module/action presentation around SolidGroundUX section headers, spacing, current-state display and return-flow conventions.</li>
+<li>Continued the module/executable split so console modules remain presentation/orchestration layers and persistent operations are delegated to management executables.</li>
+<li>Development-root console execution now consumes the installed Framework when no local Framework is present, while application-local MCM executables and modules continue to resolve from the MCM development tree.</li>
+</ul>
+<h4 class="ct-L3Sectionheader">Removed</h4>
+<ul>
+<li>Removed the former Management Console-owned `framework-smoketest.sh` and `sgnd-framework-smoketest` wrapper; these are superseded by Framework-owned `sgnd-smoketest`.</li>
+<li>Removed duplicated runtime Version/Description module metadata in favor of canonical comment-header metadata.</li>
+</ul>
+<h4 class="ct-L3Sectionheader">Fixed</h4>
+<ul>
+<li>Fixed framework/module test integration after the product split, including console registration validation, module validator dispatch, smoke-test menu behavior and public-command execution.</li>
+<li>Fixed cross-module helper ownership exposed by lazy loading by moving shared helpers to their appropriate Framework or subject-specific libraries.</li>
+<li>Fixed Active Directory, Storage, Samba, Web Server, SQL Server and Docker module validation/presentation issues found during the 2.1 correction pass.</li>
+<li>Fixed Management Console development startup against an installed Framework after the repository split, including Framework bootstrap, UI style/palette and license resolution.</li>
+<li>Fixed duplicate/development module registration issues encountered while separating the SDK tooling from the Management Console product.</li>
+</ul>
+<h3 class="ct-L2Sectionheader">Release 1.2.2626021</h3>
+<h4 class="ct-L3Sectionheader">Changed</h4>
+<ul>
+<li>Moved all existing console management modules and their dependencies to a separate repository, to be released as a separate product.</li>
+<li>Defined Management Console Modules as an independently versioned and distributable product, while allowing tested compatible module releases to be bundled with full SolidGroundUX framework releases.</li>
+<li>Kept `90-development.sh` as a thin integration module over the existing public `sgnd-*` development commands, with no additional management executable required.</li>
+<li>Refactored console modules toward a presentation-and-orchestration role, moving persistent management operations into dedicated management executables.</li>
+<li>Refactored `40-solidgroundux.sh` to separate Management Console presentation and orchestration from persistent framework-management operations.</li>
+<li>Preserved runtime-sensitive framework state operations within the console module, with local DRYRUN protection.</li>
+<li>Propagated console DRYRUN mode to delegated management executables and release-management actions.</li>
+<li>Refactored SolidGroundUX framework testing into a thin console orchestration module, preparing framework-owned smoke testing and Management Console-owned registration/module validation to be separated cleanly.</li>
+<li>Refactored `30-samba-file-server.sh` to separate Samba File Server presentation and orchestration from persistent Samba management operations.</li>
+<li>Refactored `15-storage.sh` to separate Storage console presentation and orchestration from persistent storage-management operations.</li>
+<li>Standardized DRYRUN reporting for management actions, using `DRYRUN: Would ...` during previews and an explicit retrospective completion message.</li>
+<li>Improved Samba selection-dialog presentation with caller-owned section headers, spacing, and option layout.</li>
+<li>Refactored Active Directory Server, Client, and Directory Management modules into thin console presentation and orchestration modules backed by dedicated management executables.</li>
+<li>Consolidated shared Active Directory discovery, validation, addressing, and domain-state helpers into `active-directory-management.sh`.</li>
+<li>Refactored `50-web-server.sh` into a thin console module backed by dedicated web-server management and publishing executables.</li>
+<li>Separated Nginx server/site configuration from web-content publishing, keeping web-server management responsible for how content is served and publishing responsible for how content is deployed.</li>
+<li>Generalized web-content publishing so ordinary Nginx sites can be published from local directories, remote machines, or Git repositories; SolidGroundUX documentation remains a specialized publishing workflow.</li>
+<li>Refactored `60-sqlserver.sh` into a thin console module backed by `manage-sqlserver.sh`, preserving the existing SQL Server host-management scope.</li>
+<li>Added the initial `70-docker-server.sh` console module with separate Docker host and container-management executables.</li>
+</ul>
+<h4 class="ct-L3Sectionheader">Added</h4>
+<ul>
+<li>Added `manage-solidgroundux.sh` for persistent framework configuration management and logfile rotation.</li>
+<li>Added consistent DRYRUN handling to SolidGroundUX management actions, including detailed previews of intended persistent changes.</li>
+<li>Added the Framework Test console page and the initial validation/smoke-test orchestration used during the product split.</li>
+<li>Added `manage-samba-file-server.sh` for Samba File Server installation, preparation, service management, validation, and status operations.</li>
+<li>Added dedicated Samba share-management support for creating, removing, structuring, validating, and assigning access to managed shares.</li>
+<li>Added `manage-storage.sh` for persistent storage provisioning, mounting, expansion, access management, validation, and status operations.</li>
+<li>Added storage configuration reconciliation to detect an existing `SGND_STORAGE` volume and repair stale SolidGroundUX `storage.cfg` state without reprovisioning the volume.</li>
+<li>Added storage persistence reconciliation to detect and remove stale SolidGroundUX-managed `/etc/fstab` entries while preserving the active storage volume.</li>
+<li>Added reconciliation checks to storage provisioning validation, including configured-versus-detected storage state and managed `fstab` consistency.</li>
+<li>Added `manage-active-directory-server.sh` for Active Directory Domain Controller provisioning, preparation, validation, and status operations.</li>
+<li>Added `manage-active-directory-client.sh` for Active Directory client joining, reconciliation, validation, status, and leave operations.</li>
+<li>Added `manage-active-directory.sh` for Active Directory user, group, and computer management.</li>
+<li>Added Active Directory client reconciliation for repairing DNS, machine identity, SSSD state, and client DNS registration without silently rejoining the domain.</li>
+<li>Expanded Active Directory validation to cover domain membership, Kerberos and LDAP discovery, SSSD, DNS configuration and registration, and directory enumeration.</li>
+<li>Added `manage-web-server.sh` for Nginx installation, content-root configuration, site lifecycle, service and firewall management, documentation-site configuration, validation, and status.</li>
+<li>Added `publish-web-content.sh` for generic Nginx content publishing from local directories, remote machines, and Git repositories.</li>
+<li>Added reusable Git repository publishing with branch/tag and repository-subdirectory selection for ordinary web sites.</li>
+<li>Preserved SolidGroundUX documentation publishing as a specialized workflow using installed documentation, local or remote sources, or a Git repository.</li>
+<li>Added `manage-sqlserver.sh` for SQL Server repository setup, engine and tools installation, storage, network, memory, service, firewall, validation, and status operations.</li>
+<li>Added `manage-docker-server.sh` for Docker Engine installation, host storage configuration, service management, validation, and status.</li>
+<li>Added `manage-docker-containers.sh` for basic container and image lifecycle operations, including create, start, stop, restart, remove, inspect, logs, image listing, and image pulls.</li>
+</ul>
+<h4 class="ct-L3Sectionheader">Fixed</h4>
+<ul>
+<li>Fixed delegated executable argument parsing so framework built-in options such as `--dryrun` are parsed correctly.</li>
+<li>Fixed Samba File Server management action declaration so enum action values are correctly registered with the SolidGroundUX argument parser.</li>
+<li>Fixed framework smoke-test validation to load all console modules before validating registered console handlers.</li>
+<li>Fixed storage recovery when an existing `SGND_STORAGE` volume is valid but `storage.cfg` points to a stale mount point.</li>
+<li>Fixed validation coverage for stale SolidGroundUX-managed `/etc/fstab` storage entries.</li>
+<li>Fixed Samba management dependence on stale storage configuration by consistently consuming the reconciled SolidGroundUX storage configuration.</li>
+<li>Fixed Active Directory shared-library loading so application-owned AD helpers resolve correctly from the Management Modules development or production tree.</li>
+<li>Fixed stale private Active Directory helper references introduced during the module/executable split and restored client context collection using the shared AD helpers.</li>
+<li>Fixed web publishing DRYRUN behavior so publishing state, SSH setup, Git checkout activity, and destination content are not persistently changed during preview.</li>
+<li>Fixed malformed enum argument specifications in `framework-smoketest.sh`, `manage-solidgroundux.sh`, and `set-identity.sh` so allowed values are registered correctly.</li>
+<li>Fixed a stray token in `framework-smoketest.sh` that prevented the script from parsing.</li>
+</ul>
+</main>
+</body>
+</html>

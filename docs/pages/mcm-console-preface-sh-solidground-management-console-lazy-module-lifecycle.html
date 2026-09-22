@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Lazy Module Lifecycle</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Lazy Module Lifecycle</div>
+  <div class="doc-breadcrumb">mcm_console_preface.sh::SolidGround Management Console:Lazy Module Lifecycle:</div>
+</header>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Module loading follows four rules:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    1. Discover all enabled module files at startup.</div>
+<div class="ct-L2Sectionbody">    2. Do not source a module until its page is selected.</div>
+<div class="ct-L2Sectionbody">    3. Source each module at most once per console process.</div>
+<div class="ct-L2Sectionbody">    4. Keep a loaded module resident until the console exits.</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Keeping previously used modules loaded is intentional, bounded process state rather than a leak. It avoids repeated parsing and preserves any module state required by later actions during the same console session.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">While a page is active, sgnd-menu filters registered groups and items by the source module. Registrations belonging to previously loaded pages therefore remain present in the model without appearing on the current page.</p>
+<div class="ct-L2Sectionbody"></div>
+</main>
+</body>
+</html>

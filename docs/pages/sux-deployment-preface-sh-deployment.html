@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Deployment</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Deployment</div>
+  <div class="doc-breadcrumb">sux-deployment_preface.sh:::Deployment:</div>
+</header>
+<div class="ct-L1Sectionbody"></div>
+<p class="ct-L1Sectionbody">SolidGroundUX deployment is built around three complementary tools:</p>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody">    prepare-release.sh</div>
+<div class="ct-L1Sectionbody">        Builds complete, versioned release artifacts from a workspace.</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody">    deploy-workspace.sh</div>
+<div class="ct-L1Sectionbody">        Streams selected development files directly to a target machine.</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody">    release-manager.sh</div>
+<div class="ct-L1Sectionbody">        Standalone release acquisition, installation, update, rollback,</div>
+<div class="ct-L1Sectionbody">        reinstallation, and removal.</div>
+<div class="ct-L1Sectionbody"></div>
+<p class="ct-L1Sectionbody">Together they cover the two main deployment scenarios:</p>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody">    Development deployment</div>
+<div class="ct-L1Sectionbody">        Fast transfer of selected workspace files without creating a formal release.</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody">    Release deployment</div>
+<div class="ct-L1Sectionbody">        Creation, validation, installation, update, rollback, and removal of</div>
+<div class="ct-L1Sectionbody">        complete SolidGroundUX releases.</div>
+<div class="ct-L1Sectionbody"></div>
+<p class="ct-L1Sectionbody">The release manager is deliberately self-sufficient. It always carries a small standalone UI and default-theme fallback so it can bootstrap a clean machine or recover a damaged installation. When a healthy SolidGroundUX framework is available at the selected target root, the manager may reuse the normal framework UI primitives and active theme without making the release engine dependent on them.</p>
+<div class="ct-L1Sectionbody"></div>
+</main>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Integrity and Recovery</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Integrity and Recovery</div>
+  <div class="doc-breadcrumb">sdk-deployment_preface.sh::Deployment:Integrity and Recovery:</div>
+</header>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Release integrity is validated before installation by checking the supplied SHA-256 sidecar files and release paths.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The release engine intentionally remains independent of the installed framework. Its standalone UI and default-theme fallback are always available. Framework UI primitives and the active theme are used only when they can be loaded successfully.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">As a result, the canonical copy at:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    /var/lib/solidgroundux/release-manager.sh</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">remains usable for update, rollback, reinstallation, or removal even if the live SolidGroundUX installation is incomplete or damaged.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">This independence is a core deployment design principle.</p>
+</main>
+</body>
+</html>

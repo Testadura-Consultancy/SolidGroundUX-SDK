@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Detect default</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Detect default</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / doc-processor.sh / Local definitions / Detectors / _detect_default</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Internal helper for detect default.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Supports the module implementation; not intended as a public framework API.</div>
+<div class="ct-functionbody">  - Extracts the optional leading documentation style hint from normal content.</div>
+<div class="doc-aligned-block" style="grid-template-columns:max-content minmax(0, 1fr)">
+<div class="ct-functionbody doc-aligned-cell">- Leaves the remaining content intact, including :: table separators and the renderer-owned</div>
+<div class="ct-functionbody doc-aligned-cell doc-aligned-last">alignment token.</div>
+</div>
+<div class="ct-functionbody">  - This keeps table syntax renderer-owned: `. Table` starts a table, the first row may</div>
+<div class="ct-functionbody">    use `!` as its style hint, and a blank documentation line ends the table.</div>
+<div class="ct-functionbody">  - Uses framework UI/output conventions for terminal or dialog interaction.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Arguments</div>
+<div class="ct-functionbody">  $1  ARG1 - Positional value used by this function.</div>
+<div class="ct-functionbody">  $2  ARG2 - Positional value used by this function.</div>
+<div class="ct-functionbody">  $3  ARG3 - Positional value used by this function.</div>
+<div class="ct-functionbody">  $4  ARG4 - Positional value used by this function.</div>
+<div class="ct-functionbody">  $5  ARG5 - Positional value used by this function.</div>
+<div class="ct-functionbody">  $6  ARG6 - Positional value used by this function.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Side effects</div>
+<div class="ct-functionbody">  May read, write, create, update, or remove files/directories required by the workflow.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 on success unless the called command returns a different status.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  _detect_default &quot;string&quot; &quot;&quot; &quot;&quot; &quot;&quot; &quot;SolidGroundUX&quot;</div>
+</main>
+</body>
+</html>

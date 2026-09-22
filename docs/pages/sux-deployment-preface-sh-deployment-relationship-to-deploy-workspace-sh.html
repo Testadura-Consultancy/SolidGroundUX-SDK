@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Relationship to deploy-workspace.sh</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Relationship to deploy-workspace.sh</div>
+  <div class="doc-breadcrumb">sux-deployment_preface.sh::Deployment:Relationship to deploy-workspace.sh:</div>
+</header>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">deploy-workspace.sh serves a different purpose from release-manager.sh.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">It is intended for rapid development deployment, where selected files from a workspace need to be transferred directly to a test or development machine.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">It supports:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    - Local or SSH deployment.</div>
+<div class="ct-L2Sectionbody">    - Optional directory filtering.</div>
+<div class="ct-L2Sectionbody">    - Filenames and shell-style masks.</div>
+<div class="ct-L2Sectionbody">    - Changed-after filtering.</div>
+<div class="ct-L2Sectionbody">    - Deployment since the last successful transfer.</div>
+<div class="ct-L2Sectionbody">    - Dry-run operation.</div>
+<div class="ct-L2Sectionbody">    - Persistent deployment settings.</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Example:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    deploy-workspace.sh # &gt;         --remote sysadmin@td-pdc # &gt;         --source ~/dev/target-root # &gt;         --match &#x27;*.sh&#x27;</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Incremental deployment:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    deploy-workspace.sh # &gt;         --remote sysadmin@td-pdc # &gt;         --since-last</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">deploy-workspace.sh does not create an installed release record and does not participate in archive-based rollback. It is therefore ideal during development, while prepare-release.sh plus release-manager.sh provide the formal release path.</p>
+<div class="ct-L2Sectionbody"></div>
+</main>
+</body>
+</html>

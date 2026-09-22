@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Build a readline-safe ask prompt</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Build a readline-safe ask prompt</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / ui-ask.sh / Internal helpers / _ask_build_prompt</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Build the colored prompt string used by ask-style input functions.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Applies optional left padding and visible label width alignment.</div>
+<div class="ct-functionbody">  - Adds readline control markers around non-printing ANSI sequences.</div>
+<div class="ct-functionbody">  - Applies label and input colors according to the colorize mode.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Arguments</div>
+<div class="ct-functionbody">  $1 - Label text.</div>
+<div class="ct-functionbody">  $2 - Visible label width, or empty to avoid width padding.</div>
+<div class="ct-functionbody">  $3 - Number of leading spaces to add before the label.</div>
+<div class="ct-functionbody">  $4 - ANSI sequence used for the label color.</div>
+<div class="ct-functionbody">  $5 - ANSI sequence used for the input color.</div>
+<div class="ct-functionbody">  $6 - Colorize mode: none, label, input, or both.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Output</div>
+<div class="ct-functionbody">  Writes the prompt string to stdout.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 when the prompt string was written.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  prompt=&quot;$(_ask_build_prompt &quot;User name&quot; 25 2 $&#x27;\e[36m&#x27; $&#x27;\e[37m&#x27; both)&quot;; printf &#x27;%s\n&#x27; &quot;$prompt&quot;</div>
+</main>
+</body>
+</html>

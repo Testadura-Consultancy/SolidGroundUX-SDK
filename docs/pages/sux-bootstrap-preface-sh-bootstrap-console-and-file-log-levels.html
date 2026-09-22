@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Console and File Log Levels</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Console and File Log Levels</div>
+  <div class="doc-breadcrumb">sux-bootstrap_preface.sh::Bootstrap:Console and File Log Levels:</div>
+</header>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Console output and logfile output are controlled independently.</p>
+<div class="ct-L2Sectionbody">  </div>
+<p class="ct-L2Sectionbody">`SGND_CONSOLE_LOG_LEVEL` controls which `say()` messages are rendered to the terminal. `SGND_FILE_LOG_LEVEL` controls which messages are appended to the resolved logfile. Both settings support the levels:</p>
+<div class="ct-L2Sectionbody">  </div>
+<div class="ct-L2Sectionbody">    silent, quiet, normal, verbose, debug, trace</div>
+<div class="ct-L2Sectionbody">  </div>
+<p class="ct-L2Sectionbody">A message can therefore be suppressed on screen while still being recorded in the logfile, or displayed on screen while file logging is effectively disabled. Setting `SGND_FILE_LOG_LEVEL` to `silent` disables logfile output without requiring a separate enable flag.</p>
+<div class="ct-L2Sectionbody">  </div>
+<p class="ct-L2Sectionbody">`say()` evaluates the console and file thresholds separately. Matching logfile entries are always written with a date/time prefix using `SAY_DATE_FORMAT`, regardless of whether timestamps are currently shown on the console.</p>
+<div class="ct-L2Sectionbody">  </div>
+<p class="ct-L2Sectionbody">The active log levels are part of `SGND_FRAMEWORK_STATE`, so changes saved during one framework instance become the starting values for later SolidGroundUX executables run by the same user.</p>
+<div class="ct-L2Sectionbody"></div>
+</main>
+</body>
+</html>

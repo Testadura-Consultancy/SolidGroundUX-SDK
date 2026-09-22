@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Rendering and Layout</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Rendering and Layout</div>
+  <div class="doc-breadcrumb">sux-ui_preface.sh::User Interface:Rendering and Layout:</div>
+</header>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The rendering layer in `ui.sh` provides reusable functions for structured console output. It handles visible string length, ANSI-aware padding, terminal width, themes, foreground and background colors, text attributes, title bars, section headers, filled lines, labeled values, and formatted cells.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Width-sensitive functions use visible character length rather than raw byte length wherever possible. ANSI control sequences therefore do not disturb label alignment or layout calculations.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Frequently used rendering functions include:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    sgnd_print_titlebar</div>
+<div class="ct-L2Sectionbody">    sgnd_print_sectionheader</div>
+<div class="ct-L2Sectionbody">    sgnd_print_labeledvalue</div>
+<div class="ct-L2Sectionbody">    sgnd_print_fill</div>
+<div class="ct-L2Sectionbody">    sgnd_print</div>
+<div class="ct-L2Sectionbody">    sgnd_print_single</div>
+<div class="ct-L2Sectionbody">    sgnd_print_file</div>
+<div class="ct-L2Sectionbody">    sgnd_print_cell</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Application code should prefer these helpers over local `printf` formatting when the output represents a standard SolidGroundUX UI element.</p>
+<div class="ct-L2Sectionbody"></div>
+</main>
+</body>
+</html>

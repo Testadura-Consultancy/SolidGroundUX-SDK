@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Release Manager</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Release Manager</div>
+  <div class="doc-breadcrumb">sdk-deployment_preface.sh::Deployment:Release Manager:</div>
+</header>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">release-manager.sh is the canonical installation and release-lifecycle tool.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">It replaces the former separate installer, updater, and uninstaller scripts.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Its state model is intentionally filesystem-based and project-aware.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">SolidGroundUX retains the canonical locations:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    /var/lib/solidgroundux/releases</div>
+<div class="ct-L2Sectionbody">    /var/lib/solidgroundux/archive/&lt;release&gt;</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Additional projects keep their own state beneath:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    /var/lib/solidgroundux/projects/&lt;project&gt;/releases</div>
+<div class="ct-L2Sectionbody">    /var/lib/solidgroundux/projects/&lt;project&gt;/archive/&lt;release&gt;</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The highest versioned archive directory represents the currently installed release for that project. No separate current-version database is required.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">A first install consists of validating and extracting a complete release archive.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">A later install is treated as an update. The new release is extracted normally, and its .removed manifest is applied so files that disappeared from the release are removed from the active installation.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Rollback installs a selected archived release again and removes files that belong only to the newer release. Newer archived releases are returned to releases/ so the highest remaining archive directory continues to represent the active version.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Removal removes the active release contents and returns archived release sets to releases/, preserving them for later reinstallation.</p>
+<div class="ct-L2Sectionbody"></div>
+</main>
+</body>
+</html>

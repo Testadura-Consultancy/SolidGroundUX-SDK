@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>First Installation</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">First Installation</div>
+  <div class="doc-breadcrumb">sux-deployment_preface.sh::Deployment:First Installation:</div>
+</header>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">SolidGroundUX release ZIPs contain release-manager.sh together with the complete prepared release set and release-package.info.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">A first installation therefore remains deliberately small:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    cd /tmp</div>
+<div class="ct-L2Sectionbody">    unzip SolidGroundUX-&lt;version&gt;-release.zip</div>
+<div class="ct-L2Sectionbody">    sudo ./release-manager.sh</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Because the ZIP-root manager is not yet running from its canonical installed location, the default target root is `/`. In interactive mode the target root is still asked explicitly before installation proceeds.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">On first run, release-manager.sh:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    - Reads release-package.info and identifies the package.</div>
+<div class="ct-L2Sectionbody">    - Asks for or resolves the target root and other stateful parameters.</div>
+<div class="ct-L2Sectionbody">    - Creates the required release-management directories.</div>
+<div class="ct-L2Sectionbody">    - Validates the release artifacts, checksums, manifests, and archive paths.</div>
+<div class="ct-L2Sectionbody">    - Admits the release into the selected project&#x27;s releases directory.</div>
+<div class="ct-L2Sectionbody">    - Installs the complete tar archive into the selected target root.</div>
+<div class="ct-L2Sectionbody">    - Moves the installed release set into that project&#x27;s archive history.</div>
+<div class="ct-L2Sectionbody">    - Uses the release-manager.sh installed by the SolidGroundUX tar as the canonical</div>
+<div class="ct-L2Sectionbody">      `/var/lib/solidgroundux/release-manager.sh` copy.</div>
+<div class="ct-L2Sectionbody">    - Creates or verifies the public release-manager wrapper.</div>
+<div class="ct-L2Sectionbody">    - Cleans only known temporary bootstrap files after successful installation.</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The bootstrap copy never overwrites the canonical manager merely because it is executing from another path. The installed release owns the permanent manager copy.</p>
+<div class="ct-L2Sectionbody"></div>
+</main>
+</body>
+</html>

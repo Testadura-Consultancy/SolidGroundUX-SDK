@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Automatic Library Loading</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Automatic Library Loading</div>
+  <div class="doc-breadcrumb">sux-bootstrap_preface.sh::Bootstrap:Automatic Library Loading:</div>
+</header>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">SolidGroundUX uses a dependency declaration mechanism to determine which libraries should be available to a script.</p>
+<div class="ct-L2Sectionbody">  </div>
+<p class="ct-L2Sectionbody">Scripts can populate `SGND_USING` to declare framework libraries they depend on. During bootstrap, the framework resolves these entries and sources the required files automatically.</p>
+<div class="ct-L2Sectionbody">  </div>
+<p class="ct-L2Sectionbody">This keeps executable scripts smaller and makes dependencies explicit near the top of the file. Instead of scattering `source` statements throughout the script, the script declares what it needs and lets the bootstrap layer perform the actual loading.</p>
+<div class="ct-L2Sectionbody">  </div>
+<p class="ct-L2Sectionbody">Core libraries needed by bootstrap are loaded automatically. Project definitions are sourced explicitly as foundational globals rather than through `SGND_USING`; additional libraries are then loaded from the script&#x27;s declared requirements.</p>
+<div class="ct-L2Sectionbody"></div>
+</main>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Console registration</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Console registration</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / 20-active-directory-server.sh / Console registration</div>
+</header>
+<p class="ct-L1Sectionbody">Registers Samba Active Directory domain-controller management actions. Persistent implementation is delegated to manage-active-directory-server.sh; individual steps remain exposed for diagnosis and recovery.</p>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-highlight">Menu items</div>
+<div class="ct-L1Sectionbody sh-emphasis">Provision domain</div>
+<div class="ct-L1Sectionbody">  &gt; Run the complete Active Directory server provisioning sequence.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _adsvr_provision_domain</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-emphasis">Install AD server prerequisites</div>
+<div class="ct-L1Sectionbody">  &gt; Install Samba AD/DC, Kerberos, and DNS utilities.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _adsvr_step_install_packages</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-emphasis">Validate provisioning inputs</div>
+<div class="ct-L1Sectionbody">  &gt; Collect realm settings and validate the machine before changes.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _adsvr_step_preflight</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-emphasis">Prepare domain controller identity</div>
+<div class="ct-L1Sectionbody">  &gt; Prepare and validate the domain controller FQDN.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _adsvr_step_identity</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-emphasis">Provision Samba domain</div>
+<div class="ct-L1Sectionbody">  &gt; Create the Samba directory database and Active Directory configuration.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _adsvr_step_provision</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-emphasis">Apply initial domain settings</div>
+<div class="ct-L1Sectionbody">  &gt; Set Administrator policy and the upstream DNS forwarder.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _adsvr_step_domain_settings</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-emphasis">Install Kerberos configuration</div>
+<div class="ct-L1Sectionbody">  &gt; Install and validate Samba&#x27;s generated krb5.conf.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _adsvr_step_kerberos</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-emphasis">Configure AD resolver</div>
+<div class="ct-L1Sectionbody">  &gt; Point the domain controller at Samba DNS and free IPv4 port 53.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _adsvr_step_resolver</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-emphasis">Start AD/DC service</div>
+<div class="ct-L1Sectionbody">  &gt; Start Samba AD/DC and validate Samba-owned IPv4 DNS.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _adsvr_step_start</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-emphasis">Register domain controller DNS</div>
+<div class="ct-L1Sectionbody">  &gt; Register and validate the DC A, SOA, Kerberos, and LDAP records.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _adsvr_step_register_dns</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-emphasis">Validate AD server</div>
+<div class="ct-L1Sectionbody">  &gt; Validate service, DNS, directory, and Kerberos discovery.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _adsvr_validate</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-emphasis">Show AD server status</div>
+<div class="ct-L1Sectionbody">  &gt; Show the configured Samba role, realm, and service state.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _adsvr_status</div>
+</main>
+</body>
+</html>

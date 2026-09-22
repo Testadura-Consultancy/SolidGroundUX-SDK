@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Copy generated documentation into the repository docs directory</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Copy generated documentation into the repository docs directory</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / doc-generator.sh / Local script functions / _copy_docs_to_git</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Publish the generated documentation tree into the Git repository&#x27;s</div>
+<div class="ct-functionbody">  top-level docs directory without relying on symbolic links.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Resolves the Git repository root from VAL_SRCDIR.</div>
+<div class="ct-functionbody">  - Uses &lt;repo-root&gt;/docs as the destination.</div>
+<div class="ct-functionbody">  - Replaces the previous published copy so removed pages do not remain stale.</div>
+<div class="ct-functionbody">  - Excludes internal documentation cache directories from the Git copy.</div>
+<div class="ct-functionbody">  - Does nothing when FLAG_COPY_TO_GIT is disabled.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 when copying is disabled or completes successfully.</div>
+<div class="ct-functionbody">  1 when the repository or source documentation directory cannot be resolved.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  _copy_docs_to_git</div>
+</main>
+</body>
+</html>

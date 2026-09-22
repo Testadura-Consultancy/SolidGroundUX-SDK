@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Show metadata for discovered console modules</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Show metadata for discovered console modules</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / management-console.sh / Built-in menu registration / _sgnd_console_show_module_metadata</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Display lightweight metadata for every console module present in the configured</div>
+<div class="ct-functionbody">  module source without sourcing module implementations.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Available only from a root console session.</div>
+<div class="ct-functionbody">  - Discovers all module files, including modules not yet lazy-loaded and modules</div>
+<div class="ct-functionbody">    currently hidden from the console index.</div>
+<div class="ct-functionbody">  - Displays ID, name, version, description, visibility state, and source file.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 after displaying metadata; 126 when not running as root or discovery fails.</div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  _sgnd_console_show_module_metadata</div>
+</main>
+</body>
+</html>

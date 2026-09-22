@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Record which deployment settings were supplied explicitly</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Record which deployment settings were supplied explicitly</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / deploy-workspace.sh / Parameter collection / _capture_cli_parameters</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Distinguish command-line values from state/default values so explicit settings</div>
+<div class="ct-functionbody">  are not prompted again.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Arguments</div>
+<div class="ct-functionbody">  $@  Original executable arguments.</div>
+<div class="ct-functionbody"></div>
+<p class="ct-functionbody">Outputs (globals)</p>
+<div class="ct-functionbody">  CLI_DEPLOY_TRANSPORT, CLI_REMOTE_TARGET, CLI_SRC_ROOT, CLI_DEST_ROOT,</div>
+<div class="ct-functionbody">  CLI_SELECT_DIRECTORY, CLI_SELECT_MATCH, CLI_CHANGED_AFTER,</div>
+<div class="ct-functionbody">  CLI_SINCE_LAST, CLI_RECEIVER_PATH</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 always.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  _capture_cli_parameters &quot;$@&quot;</div>
+</main>
+</body>
+</html>

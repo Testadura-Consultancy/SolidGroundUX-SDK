@@ -1,0 +1,301 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Appendix B: Glossary</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Appendix B: Glossary</div>
+  <div class="doc-breadcrumb">SolidGroundUX SDK / Appendices / Appendix B: Glossary</div>
+</header>
+<div class="ct-documentbody">This appendix lists documented functions and variables, sorted alphabetically by name.</div>
+<section class="doc-glossary-block">
+<h2 class="ct-L2Sectionheader">Functions</h2>
+<table class="doc-data-table">
+<thead><tr><th>Function</th><th>Title</th><th>Purpose</th><th>Module</th></tr></thead>
+<tbody>
+<tr><td>__init__</td><td>Initialize renderer instance</td><td>Initialize renderer instance for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>_action_headerend</td><td>Emit module-level header data</td><td>Store collected file header metadata in module-level data tables.</td><td>doc-processor.sh</td></tr>
+<tr><td>_add_selected_file</td><td>Add one deployable file to the normalized selection</td><td></td><td>deploy-workspace.sh</td></tr>
+<tr><td>_apply_version_bump</td><td>Apply release metadata policy to managed source files</td><td>Apply Version and Build according to A/C/N policy and always refresh Checksum for files whose source or metadata changed.</td><td>prepare-release.sh</td></tr>
+<tr><td>_archive_release_manifest</td><td>Persist the current manifest for future removal baselines</td><td>Store the successfully packaged release manifest in persistent manifest history.</td><td>prepare-release.sh</td></tr>
+<tr><td>_build_content_ref</td><td>Build a stable documentation content reference</td><td>Create the canonical reference key used to link content to a module, section, and item context.</td><td>doc-processor.sh</td></tr>
+<tr><td>_capture_cli_parameters</td><td>Record which deployment settings were supplied explicitly</td><td>Distinguish command-line values from state/default values so explicit settings are not prompted again.</td><td>deploy-workspace.sh</td></tr>
+<tr><td>_cleanup_archive</td><td>Remove the temporary received archive</td><td></td><td>receive-files.sh</td></tr>
+<tr><td>_cleanup_old_render_exports</td><td>Clean old renderer export folders</td><td>Remove stale temporary documentation renderer export folders from /tmp.</td><td>doc-renderer.sh</td></tr>
+<tr><td>_cleanup_staging</td><td>Remove gathered staging data</td><td>Remove the release-specific staging directory if cleanup is enabled.</td><td>prepare-release.sh</td></tr>
+<tr><td>_clear_render_cache</td><td>Remove cached renderer input data</td><td>Delete the persistent renderer cache when explicitly requested.</td><td>doc-renderer.sh</td></tr>
+<tr><td>_collect_license_lines</td><td>Collect active license text for appendix rendering</td><td>Load the active framework license file into the renderer license table.</td><td>doc-renderer.sh</td></tr>
+<tr><td>_copy_docs_to_git</td><td>Copy generated documentation into the repository docs directory</td><td>Publish the generated documentation tree into the Git repository&#x27;s top-level docs directory without relying on symbolic links.</td><td>doc-generator.sh</td></tr>
+<tr><td>_copy_template_file</td><td>Copy one template file into the workspace</td><td>Copy a single template file to a target location.</td><td>create-workspace.sh</td></tr>
+<tr><td>_copy_workspace_templates</td><td>Copy shared convenience templates into the workspace</td><td>Seed the repository-shaped workspace with the installed SolidGroundUX templates.</td><td>create-workspace.sh</td></tr>
+<tr><td>_create_empty_directory_placeholders</td><td>Preserve the canonical workspace tree in Git</td><td></td><td>create-workspace.sh</td></tr>
+<tr><td>_create_gitignore_file</td><td>Create the workspace .gitignore file</td><td>Create the workspace .gitignore file.</td><td>create-workspace.sh</td></tr>
+<tr><td>_create_project_definitions</td><td>Create project-wide definition globals</td><td>Create &lt;project&gt;-definitions.sh in the deployable SolidGroundUX globals folder. Usage _create_project_definitions</td><td>create-workspace.sh</td></tr>
+<tr><td>_create_project_motd</td><td>Create a minimal project MOTD identity entry</td><td></td><td>create-workspace.sh</td></tr>
+<tr><td>_create_release_package</td><td>Create the complete distributable release ZIP</td><td>Package the standalone release manager and release payload into one ZIP.</td><td>prepare-release.sh</td></tr>
+<tr><td>_create_releaseignore_file</td><td>Create the workspace .release-ignore file</td><td></td><td>create-workspace.sh</td></tr>
+<tr><td>_create_repository</td><td>Create the repository directory structure</td><td>Create the project repository structure and copy template files.</td><td>create-workspace.sh</td></tr>
+<tr><td>_create_starter_scripts</td><td>Instantiate configured starter files from workspace templates</td><td></td><td>create-workspace.sh</td></tr>
+<tr><td>_create_tar</td><td>Create the release tar archive</td><td>Create the release tar archive.</td><td>prepare-release.sh</td></tr>
+<tr><td>_create_workspace_file</td><td>Create the VS Code workspace file</td><td>Create the VS Code workspace file.</td><td>create-workspace.sh</td></tr>
+<tr><td>_create_workspace_project_files</td><td>Create README, CHANGELOG, LICENSE, and project logo</td><td></td><td>create-workspace.sh</td></tr>
+<tr><td>_create_wrappers</td><td>Create wrappers for selected scripts</td><td>Match selected scripts and create canonical sgnd-* wrappers. Returns 0 when all matching wrappers are handled successfully; 1 otherwise. Usage _create_wrappers</td><td>create-wrappers.sh</td></tr>
+<tr><td>_definition_description</td><td>Read the canonical Description section</td><td></td><td>create-workspace.sh</td></tr>
+<tr><td>_definition_value</td><td>Read one generated project definition value</td><td></td><td>create-workspace.sh</td></tr>
+<tr><td>_deploy</td><td>Select files and stream them to the configured receiver</td><td></td><td>deploy-workspace.sh</td></tr>
+<tr><td>_detect_commentseparator</td><td>Ignore visual comment separators</td><td>Detect separator-only comment lines and prevent them from becoming content.</td><td>doc-processor.sh</td></tr>
+<tr><td>_detect_default</td><td>Detect default</td><td>Internal helper for detect default.</td><td>doc-processor.sh</td></tr>
+<tr><td>_detect_global_array_entry</td><td>Detect global declaration array entries</td><td>Parse entries inside SGND_FRAMEWORK_GLOBALS, SGND_RUNTIME_GLOBALS, and SGND_SCRIPT_GLOBALS.</td><td>doc-processor.sh</td></tr>
+<tr><td>_detect_global_array_start</td><td>Detect framework/runtime/script globals array declarations</td><td>Detect SGND_FRAMEWORK_GLOBALS, SGND_RUNTIME_GLOBALS, and SGND_SCRIPT_GLOBALS array blocks.</td><td>doc-processor.sh</td></tr>
+<tr><td>_detect_headerfields</td><td>Detect metadata and attribution fields</td><td>Extract named header fields and map them to mod_* variables.</td><td>doc-processor.sh</td></tr>
+<tr><td>_detect_headermarker</td><td>Detect module header boundary lines</td><td>Detect the opening and closing marker of the file-level documentation header.</td><td>doc-processor.sh</td></tr>
+<tr><td>_detect_headersectionheader</td><td>Detect named header sections</td><td>Detect named sections inside the module header, such as Metadata and Attribution, without emitting render content.</td><td>doc-processor.sh</td></tr>
+<tr><td>_detect_items</td><td>Detect documented items</td><td>Detect structured item markers such as functions, classes, variables, and general documentation blocks.</td><td>doc-processor.sh</td></tr>
+<tr><td>_detect_moduletitle</td><td>Detect the module title line</td><td>Extract product and title information from the first title line in the file header.</td><td>doc-processor.sh</td></tr>
+<tr><td>_detect_noncommentline</td><td>Detect non-comment source lines</td><td>Stop documentation parsing for source lines that are not structured comments.</td><td>doc-processor.sh</td></tr>
+<tr><td>_detect_section</td><td>Detect documentation section headers</td><td>Detect structured level 1, 2, and 3 documentation section headers.</td><td>doc-processor.sh</td></tr>
+<tr><td>_doc_collect_changed_files</td><td>Collect Git additions, modifications, deletions, and renames</td><td>Build incremental parse/removal lists from changes relative to HEAD plus untracked files.</td><td>doc-generator.sh</td></tr>
+<tr><td>_doc_collect_selected_files</td><td>Resolve explicitly selected update files</td><td>Convert the comma-separated selected-file argument into parse and removal lists.</td><td>doc-generator.sh</td></tr>
+<tr><td>_doc_collection_slug</td><td>Convert a collection name into a filesystem-safe directory name</td><td></td><td>doc-generator.sh</td></tr>
+<tr><td>_doc_count_lines</td><td>Count physical lines in a file</td><td>Return the number of lines in a regular file.</td><td>doc-generator.sh</td></tr>
+<tr><td>_doc_discover_products</td><td>Discover product definitions beneath the selected source root</td><td>Treat usr/local/lib/solidgroundux/globals/*-definitions.sh as the product registry for the selected source tree. Outputs (globals) SGND_DOC_DISCOVERED_PRODUCTS, SGND_DOC_DISCOVERED_VERSIONS, SGND_DOC_DISCOVERED_BUILDS, SGND_DOC_DISCOVERED_DEFINITIONS.</td><td>doc-generator.sh</td></tr>
+<tr><td>_doc_finalize_outdir</td><td>Resolve the final collection output directory</td><td></td><td>doc-generator.sh</td></tr>
+<tr><td>_doc_force_product_on_new_modules</td><td>Attribute newly parsed modules to a product</td><td></td><td>doc-generator.sh</td></tr>
+<tr><td>_doc_iterate_explicit_files</td><td>Parse an explicit list of source files</td><td></td><td>doc-generator.sh</td></tr>
+<tr><td>_doc_iterate_selected_product_roots</td><td>Parse every selected product source tree</td><td></td><td>doc-generator.sh</td></tr>
+<tr><td>_doc_load_cache</td><td>Restore all parser tables from the previous render cache</td><td>Initialize incremental generation from the last complete documentation dataset.</td><td>doc-generator.sh</td></tr>
+<tr><td>_doc_parse_product_file</td><td>Apply ignore/duplicate policy before parsing a product file</td><td></td><td>doc-generator.sh</td></tr>
+<tr><td>_doc_path_is_ignored</td><td>Test a source file against the active product .docignore</td><td></td><td>doc-generator.sh</td></tr>
+<tr><td>_doc_path_matches_filespec</td><td>Test whether a path matches the active source masks</td><td>Match a source path against one or more comma-separated shell-style masks.</td><td>doc-generator.sh</td></tr>
+<tr><td>_doc_product_config_id</td><td>Convert a product name into a stable config filename stem</td><td></td><td>doc-generator.sh</td></tr>
+<tr><td>_doc_progress_line</td><td>Update active-module line progress</td><td>Update progress slot 1 for the line currently being parsed inside the active module.</td><td>doc-generator.sh</td></tr>
+<tr><td>_doc_prompt_primary_product</td><td>Select the lead product for the collection</td><td></td><td>doc-generator.sh</td></tr>
+<tr><td>_doc_prompt_products</td><td>Prompt for one, several, or all discovered products</td><td></td><td>doc-generator.sh</td></tr>
+<tr><td>_doc_remove_modules</td><td>Remove stale rows for one or more modules</td><td>Purge all parser-owned records associated with selected module basenames.</td><td>doc-generator.sh</td></tr>
+<tr><td>_doc_remove_modules_from_table</td><td>Remove module rows from a named table</td><td>Delete stale rows for modules that will be reparsed or were removed.</td><td>doc-generator.sh</td></tr>
+<tr><td>_doc_render_cache_dir</td><td>Resolve the persistent renderer cache directory</td><td>Return the active renderer cache directory for the current output tree.</td><td>doc-renderer.sh</td></tr>
+<tr><td>_doc_resolve_ignore_file</td><td>Resolve/create the per-product .docignore file</td><td></td><td>doc-generator.sh</td></tr>
+<tr><td>_doc_select_products</td><td>Resolve the requested product scope</td><td></td><td>doc-generator.sh</td></tr>
+<tr><td>_emit_contentline</td><td>Append a normalized documentation content line</td><td>Emit the current normalized content state into DOC_CONTENT_LINES.</td><td>doc-processor.sh</td></tr>
+<tr><td>_emit_globalrecord</td><td>Append a framework/runtime/script global declaration record</td><td>Store a detected global variable declaration in the module globals table.</td><td>doc-processor.sh</td></tr>
+<tr><td>_emit_itemrecord</td><td>Append a documented item record</td><td>Store the current documented item in the module item index.</td><td>doc-processor.sh</td></tr>
+<tr><td>_emit_sectionrecord</td><td>Append a documentation section record</td><td>Store the current section context in the module section index.</td><td>doc-processor.sh</td></tr>
+<tr><td>_ensure_public_command_wrappers</td><td>Ensure public wrappers exist for top-level libexec scripts</td><td>Ensure every executable top-level shell script under the SolidGroundUX libexec directory has a matching public command wrapper in /usr/local/bin.</td><td>prepare-release.sh</td></tr>
+<tr><td>_ensure_remote_receiver_sudo</td><td>Ensure the remote receiver may run without a sudo password</td><td>Create and validate a narrowly scoped sudoers rule for receive-files.sh on the remote destination when the rule does not already exist.</td><td>deploy-workspace.sh</td></tr>
+<tr><td>_export_product_manifests</td><td>Export discovered product metadata for product-owned appendices</td><td></td><td>doc-renderer.sh</td></tr>
+<tr><td>_export_render_config</td><td>Export renderer configuration to a PSV file</td><td>Write document-level render settings in the same table format used by exported parser data.</td><td>doc-renderer.sh</td></tr>
+<tr><td>_export_render_tables</td><td>Export parser tables for the Python renderer</td><td>Persist normalized documentation tables into a renderer hand-off directory.</td><td>doc-renderer.sh</td></tr>
+<tr><td>_extract_archive</td><td>Extract the validated archive beneath DEST_ROOT</td><td></td><td>receive-files.sh</td></tr>
+<tr><td>_find_release_manager_source</td><td>Resolve the release-manager source file</td><td>Locate release-manager.sh in the managed source tree.</td><td>prepare-release.sh</td></tr>
+<tr><td>_framework_path</td><td>Resolve a path beneath a framework root</td><td>Convert a framework-relative path to an absolute path beneath the supplied framework root. Defaults to the active SGND_FRAMEWORK_ROOT. Arguments $1 Relative path. $2 Framework root (optional). Returns 0 always. Usage path=&quot;$(_framework_path &quot;usr/local/bin&quot; &quot;$root&quot;)&quot;</td><td>create-wrappers.sh</td></tr>
+<tr><td>_framework_root_from_path</td><td>Resolve the framework root owning a selected path</td><td>Derive the canonical SolidGroundUX framework root from an absolute source path, using the same last usr/etc/var component rule as _framework_locator(). Returns 0 with the resolved root on stdout; 1 when the path cannot be resolved. Usage _framework_root_from_path &quot;&lt;path&gt;&quot; &quot;&lt;framework_root&gt;&quot;</td><td>create-wrappers.sh</td></tr>
+<tr><td>_get_parameters</td><td>Collect wrapper-generation parameters</td><td>Resolve source selection and wrapper target directory. Returns 0 on success; 1 on cancellation/invalid input. Usage _get_parameters</td><td>create-wrappers.sh</td></tr>
+<tr><td>_get_parameters</td><td>Collect prepare-release parameters</td><td>Collect prepare-release parameters.</td><td>prepare-release.sh</td></tr>
+<tr><td>_get_project_directories</td><td>Resolve the standard project directory layout</td><td></td><td>create-workspace.sh</td></tr>
+<tr><td>_get_section_comments</td><td>Get section comments</td><td>Internal helper for get section comments.</td><td>doc-processor.sh</td></tr>
+<tr><td>_get_userinput</td><td>Collect documentation generator input</td><td>Interactively collect and confirm documentation generator parameters.</td><td>doc-generator.sh</td></tr>
+<tr><td>_getparameters</td><td>Collect deployment parameters from CLI values, state, and ask</td><td>Resolve command-line overrides first, use saved state as prompt defaults, and combine directory, filename/mask, and changed-after filters.</td><td>deploy-workspace.sh</td></tr>
+<tr><td>_guess_nextcontenttype</td><td>Advance content type after emitted headers</td><td>Prepare the parser for body content following a recognized header line.</td><td>doc-processor.sh</td></tr>
+<tr><td>_init_localvars</td><td>Initialize parser state variables</td><td>Reset source, module, item, section, and emission state before parsing a file.</td><td>doc-processor.sh</td></tr>
+<tr><td>_init_metadata</td><td>Initialize document-level render metadata</td><td>Populate renderer metadata from document configuration values.</td><td>doc-renderer.sh</td></tr>
+<tr><td>_init_parameters</td><td>Initialize documentation generator parameters</td><td>Initialize parameter variables from defaults when still unset.</td><td>doc-generator.sh</td></tr>
+<tr><td>_initialize_git_repository</td><td>Initialize and commit the new workspace</td><td>Initialize a local Git repository using main as the primary branch.</td><td>create-workspace.sh</td></tr>
+<tr><td>_initialize_github_repository</td><td>Create and push the workspace repository</td><td>Create a GitHub repository using the authenticated gh CLI account.</td><td>create-workspace.sh</td></tr>
+<tr><td>_is_deployable_path</td><td>Test whether a relative workspace path is deployable</td><td></td><td>deploy-workspace.sh</td></tr>
+<tr><td>_iterate_files</td><td>Iterate source files and collect documentation data</td><td>Iterate over files in a directory using comma-separated file masks, optionally recursing into subdirectories.</td><td>doc-generator.sh</td></tr>
+<tr><td>_iterate_files</td><td>Iterate source files and collect documentation data</td><td>Iterate over files in a directory using comma-separated file masks, optionally recursing into subdirectories.</td><td>doc-generator.sh</td></tr>
+<tr><td>_manifest_init</td><td>Initialize the workspace creation manifest</td><td>Initialize the workspace creation manifest.</td><td>create-workspace.sh</td></tr>
+<tr><td>_manifest_record_dir</td><td>Record a created directory in the manifest</td><td>Append a directory entry to the workspace manifest.</td><td>create-workspace.sh</td></tr>
+<tr><td>_manifest_record_file</td><td>Record a created file in the manifest</td><td>Append a file entry to the workspace manifest.</td><td>create-workspace.sh</td></tr>
+<tr><td>_normalize_relative_path</td><td>Normalize and validate a workspace-relative path</td><td></td><td>deploy-workspace.sh</td></tr>
+<tr><td>_parse_module_file</td><td>Parse one module source file</td><td>Parse a source file and collect normalized documentation tables.</td><td>doc-processor.sh</td></tr>
+<tr><td>_persist_render_cache</td><td>Persist a complete renderer export set</td><td>Replace the persistent renderer cache with a validated export directory.</td><td>doc-renderer.sh</td></tr>
+<tr><td>_prepare_output_directory</td><td>Create and optionally clean the documentation output directory</td><td>Ensure the configured output directory exists and is ready for rendering.</td><td>doc-renderer.sh</td></tr>
+<tr><td>_print_deployment_summary</td><td>Display the completed deployment details</td><td>Show which workspace files were selected and where they were sent.</td><td>deploy-workspace.sh</td></tr>
+<tr><td>_project_key</td><td>Return the variable-safe project key</td><td></td><td>create-workspace.sh</td></tr>
+<tr><td>_project_slug</td><td>Return the filesystem-safe project slug</td><td></td><td>create-workspace.sh</td></tr>
+<tr><td>_quote_remote_arg</td><td>Shell-quote one argument for the remote receive command</td><td></td><td>deploy-workspace.sh</td></tr>
+<tr><td>_receive_stream</td><td>Store the incoming tar stream in a temporary archive</td><td>Capture standard input so the archive can be validated before extraction.</td><td>receive-files.sh</td></tr>
+<tr><td>_relative_to_framework_root</td><td>Convert an absolute source path to framework-relative</td><td>Ensure a selected source belongs to the supplied framework root and return its normalized path relative to that root. Returns 0 when source is beneath the framework root; 1 otherwise. Usage rel=&quot;$(_relative_to_framework_root &quot;$file&quot;)&quot;</td><td>create-wrappers.sh</td></tr>
+<tr><td>_render_cached_site</td><td>Render HTML from the persistent renderer cache</td><td>Rebuild the generated site without rescanning or reparsing source files.</td><td>doc-renderer.sh</td></tr>
+<tr><td>_render_site</td><td>Render collected documentation data</td><td>Provide the renderer hand-off point for collected documentation tables.</td><td>doc-renderer.sh</td></tr>
+<tr><td>_resolve_convenience_template_selection</td><td>Select convenience templates for the workspace</td><td>Discover installed convenience templates and let the user choose which copies should be placed in the new workspace.</td><td>create-workspace.sh</td></tr>
+<tr><td>_resolve_starter_scripts</td><td>Configure optional starter files for selected templates</td><td></td><td>create-workspace.sh</td></tr>
+<tr><td>_sample_internal_function</td><td>Internal function documentation</td><td>Demonstrate an internal function.</td><td>doc-sample.sh</td></tr>
+<tr><td>_select_files</td><td>Resolve the combined workspace filters into a concrete file list</td><td>Select deployable files by optional directory, filename or mask, and modification time.</td><td>deploy-workspace.sh</td></tr>
+<tr><td>_set_script_header_version</td><td>Set an explicit version in a managed script header</td><td></td><td>prepare-release.sh</td></tr>
+<tr><td>_sgnd_doc_is_valid_stylehint</td><td>Validate documentation style hint</td><td>Check whether a style hint is part of the supported documentation style registry.</td><td>doc-processor.sh</td></tr>
+<tr><td>_sgnd_doc_list_contains</td><td>Test whether a value exists in a named array</td><td>Provide a small membership helper for semantic registries.</td><td>doc-processor.sh</td></tr>
+<tr><td>_sgnd_release_list_manifest_history</td><td>List removal-baseline manifests for an artifact</td><td>List persistent manifest-history files for one explicit release artifact identity, newest build first.</td><td>prepare-release.sh</td></tr>
+<tr><td>_sgnd_release_select_baseline_for_artifact</td><td>Select one artifact removal baseline</td><td>Resolve the manifest against which removed paths are calculated for one release artifact rather than for the prepare-release run as a whole.</td><td>prepare-release.sh</td></tr>
+<tr><td>_sgnd_release_select_bundle_baseline</td><td>Select baseline for the assembled bundle</td><td></td><td>prepare-release.sh</td></tr>
+<tr><td>_sgnd_release_select_product_baseline</td><td>Select baseline for one product release</td><td></td><td>prepare-release.sh</td></tr>
+<tr><td>_sgnd_release_write_removed_manifest</td><td>Write removed-path delta</td><td>Create the release removal manifest by comparing the selected baseline and current package manifests.</td><td>prepare-release.sh</td></tr>
+<tr><td>_specialize_generated_file</td><td>Apply selected metadata to a generated starter file</td><td></td><td>create-workspace.sh</td></tr>
+<tr><td>_specialize_workspace_template</td><td>Make a copied canonical template product-aware</td><td></td><td>create-workspace.sh</td></tr>
+<tr><td>_starter_target_path</td><td>Resolve conventional target path for a starter template</td><td></td><td>create-workspace.sh</td></tr>
+<tr><td>_stream_local</td><td>Stream selected workspace files to the local receiver</td><td></td><td>deploy-workspace.sh</td></tr>
+<tr><td>_stream_remote</td><td>Stream selected workspace files to the remote receiver over SSH</td><td></td><td>deploy-workspace.sh</td></tr>
+<tr><td>_summary</td><td>Print documentation generation summary</td><td>Generate a summary of the documentation data collected.</td><td>doc-generator.sh</td></tr>
+<tr><td>_template_metadata_value</td><td>Read one Metadata field from a template</td><td></td><td>create-workspace.sh</td></tr>
+<tr><td>_uncreate_from_manifest</td><td>Remove artifacts recorded in the create manifest</td><td>Remove files and directories listed in a workspace manifest.</td><td>create-workspace.sh</td></tr>
+<tr><td>_validate_archive</td><td>Validate all received archive entries</td><td>Reject unsafe paths and non-regular archive entry types before extraction.</td><td>receive-files.sh</td></tr>
+<tr><td>_validate_parameters</td><td>Validate the resolved deployment settings</td><td></td><td>deploy-workspace.sh</td></tr>
+<tr><td>_validate_render_cache</td><td>Validate cached renderer input</td><td>Verify that Render mode has the complete minimum PSV input set.</td><td>doc-renderer.sh</td></tr>
+<tr><td>_validate_target</td><td>Validate and prepare the destination root</td><td>Ensure the destination is an absolute directory path suitable for extraction.</td><td>receive-files.sh</td></tr>
+<tr><td>_workspace_convenience_template_dir</td><td>Resolve the installed shared template library</td><td></td><td>create-workspace.sh</td></tr>
+<tr><td>_workspace_default_logo</td><td>Resolve the default logo copied into new workspaces</td><td></td><td>create-workspace.sh</td></tr>
+<tr><td>_workspace_layout_file</td><td>Resolve the SDK-owned workspace layout configuration</td><td></td><td>create-workspace.sh</td></tr>
+<tr><td>_wrapper_name_for_script</td><td>Return the public wrapper command name</td><td>Resolve an optional Metadata/Wrapper override, falling back to the current sgnd-&lt;script&gt; naming convention when no override is present.</td><td>create-wrappers.sh</td></tr>
+<tr><td>_wrapper_template_path</td><td>Resolve the canonical wrapper template path</td><td>Resolve the wrapper template beneath SGND_FRAMEWORK_ROOT. Returns 0 with the template path on stdout. Usage template=&quot;$(_wrapper_template_path)&quot;</td><td>create-wrappers.sh</td></tr>
+<tr><td>_write_wrapper</td><td>Create one framework-relative wrapper</td><td>Generate a wrapper from the canonical wrapper template. Behavior - Resolves the source path relative to SGND_FRAMEWORK_ROOT. - Loads the canonical wrapper template from SGND_FRAMEWORK_ROOT. - Replaces the &lt;target&gt; placeholder with the framework-relative target. - Preserves overwrite and dry-run behavior. Returns 0 on success; 1 on failure or declined overwrite. Usage _write_wrapper &quot;$source&quot; &quot;$wrapper&quot;</td><td>create-wrappers.sh</td></tr>
+<tr><td>add_module_node</td><td>Add module node</td><td>Add module node for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>add_standalone_doc_node</td><td>Add standalone doc node</td><td>Add standalone doc node for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>apply_theme_effect</td><td>Apply theme effect</td><td>Map the SolidGroundUX SGR effect constants used by themes to CSS.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>attribution_ref</td><td>Build attribution ref</td><td>Build attribution ref for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>branding_asset_exists</td><td>Branding asset exists</td><td>Branding asset exists for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>breadcrumb_from_contentref</td><td>Breadcrumb from contentref</td><td>Breadcrumb from contentref for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>build_content_index</td><td>Build content index</td><td>Build content index for the documentation rendering workflow. Usage self.build_content_index()</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>build_doc_hierarchy</td><td>Build doc hierarchy</td><td>Build doc hierarchy for the documentation rendering workflow. Usage self.build_doc_hierarchy()</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>canonical_ref</td><td>Build canonical ref</td><td>Build canonical ref for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>changelog_ref</td><td>Build changelog ref</td><td>Build changelog ref for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>close_list</td><td>Close list</td><td>Close list for the documentation rendering workflow. Usage self.close_list()</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>collect_glossary_rows</td><td>Collect glossary rows</td><td>Collect glossary rows for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>collect_landing_summary</td><td>Collect landing summary</td><td>Collect landing summary for the documentation rendering workflow. Usage self.collect_landing_summary()</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>content_ref</td><td>Build content ref</td><td>Build content ref for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>copy_branding_assets</td><td>Copy branding assets</td><td>Copy optional documentation branding images into the generated site. Usage self.copy_branding_assets()</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>copy_documentation_images</td><td>Copy shared documentation images</td><td>Copy the framework-wide documentation image collection into the generated site. Usage self.copy_documentation_images()</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>count_source_lines</td><td>Count source lines</td><td>Count source lines for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>css_style_attr</td><td>Css style attr</td><td>Css style attr for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>default_theme_css</td><td>Provide default theme css</td><td>Provide default theme css for the documentation rendering workflow. Usage self.default_theme_css()</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>display_name_with_title</td><td>Resolve display name with title</td><td>Resolve display name with title for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>ensure_theme_css</td><td>Ensure theme css</td><td>Ensure theme css for the documentation rendering workflow. Usage self.ensure_theme_css()</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>enums_ref</td><td>Build enums ref</td><td>Build enums ref for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>esc</td><td>Esc</td><td>Esc for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>extract_item_purpose</td><td>Extract item purpose</td><td>Extract item purpose for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>flush_paragraph</td><td>Flush paragraph</td><td>Flush paragraph for the documentation rendering workflow. Usage self.flush_paragraph()</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>get_first_item_page</td><td>Get first item page</td><td>Get first item page for the documentation rendering workflow. Usage self.get_first_item_page()</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>globals_ref</td><td>Build globals ref</td><td>Build globals ref for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>glossary_ref</td><td>Build glossary ref</td><td>Build glossary ref for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>group_comment_role</td><td>Group comment role</td><td>Group comment role for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>has_renderable_page</td><td>Determine whether renderable page</td><td>Determine whether renderable page for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>image_source</td><td>Image source</td><td>Image source for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>init_metadata</td><td>Initialize metadata</td><td>Initialize metadata for the documentation rendering workflow. Usage self.init_metadata()</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>install_ref</td><td>Build install ref</td><td>Build install ref for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>integrity_ref</td><td>Build integrity ref</td><td>Build integrity ref for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>is_appendix_ref</td><td>Determine whether appendix ref</td><td>Determine whether appendix ref for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>is_direct_child_section</td><td>Determine whether direct child section</td><td>Determine whether direct child section for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>is_endtable_marker</td><td>Determine whether end-table marker</td><td>Determine whether a documentation row explicitly ends a table block.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>is_flowing_prose_row</td><td>Determine whether flowing prose row</td><td>Return True when a row may be reflowed into a logical paragraph.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>is_images_marker</td><td>Determine whether images marker</td><td>Determine whether images marker for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>is_item_node</td><td>Determine whether item node</td><td>Determine whether item node for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>is_module_level_special_page</td><td>Determine whether module level special page</td><td>Determine whether module level special page for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>is_table_marker</td><td>Determine whether table marker</td><td>Determine whether a documentation row starts a table block.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>is_template_module</td><td>Determine whether template module</td><td>Determine whether template module for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>is_theme_module</td><td>Determine whether theme module</td><td>Return True for numbered SolidGroundUX semantic style modules.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>license_ref</td><td>Build license ref</td><td>Build license ref for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>load_input</td><td>Load input</td><td>Load input for the documentation rendering workflow. Usage self.load_input()</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>main</td><td>Run the executable main sequence</td><td>Run the executable main sequence.</td><td>create-workspace.sh</td></tr>
+<tr><td>main</td><td>Run wrapper generation</td><td>Initialize SolidGroundUX and create selected command wrappers. Usage main &quot;$@&quot;</td><td>create-wrappers.sh</td></tr>
+<tr><td>main</td><td>Run the workspace deployment workflow</td><td></td><td>deploy-workspace.sh</td></tr>
+<tr><td>main</td><td>Run the executable main sequence - Run the executable main sequence</td><td>Provide the canonical executable entry point for the documentation generator.</td><td>doc-generator.sh</td></tr>
+<tr><td>main</td><td>Run the executable main sequence - Run the executable main sequence</td><td>Execute the release preparation workflow.</td><td>prepare-release.sh</td></tr>
+<tr><td>main</td><td>Receive, validate, and extract a streamed workspace archive</td><td></td><td>receive-files.sh</td></tr>
+<tr><td>main</td><td>Run documentation renderer</td><td>Run documentation renderer for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>modules_by_product</td><td>Modules by product</td><td>Modules by product for the documentation rendering workflow. Usage self.modules_by_product()</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>normalize_key</td><td>Normalize key</td><td>Normalize key for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>page_href_from_contentref</td><td>Build page href from contentref</td><td>Build page href from contentref for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>parse_alignment_row</td><td>Parse an aligned documentation row</td><td>Split the renderer-owned &lt;&gt; alignment token into presentation columns.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>parse_image_entry</td><td>Parse image entry</td><td>Parse image entry for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>parse_sgr_color</td><td>Parse sgr color</td><td>Extract a CSS foreground color from a literal SGR assignment.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>parse_shell_assignments</td><td>Parse shell assignments</td><td>Read simple top-level shell assignments without executing the file.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>parse_table_row</td><td>Parse table row</td><td>Split one double-colon-delimited documentation table row into cells.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>prepare_output</td><td>Prepare output</td><td>Prepare output for the documentation rendering workflow. Usage self.prepare_output()</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>product_comment_role</td><td>Product comment role</td><td>Product comment role for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>product_has_appendices</td><td>Determine whether generated appendices belong to a product</td><td>Generated framework appendices are SolidGroundUX product documentation and must not be synthesized for companion products in the same collection. Usage self.product_has_appendices(product_name)</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>read_config</td><td>Read config</td><td>Read config for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>read_optional_project_document</td><td>Read optional project document</td><td>Read optional project document for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>read_psv</td><td>Read psv</td><td>Read a pipe-separated table with a schema/header row.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>regular_module_rows</td><td>Regular module rows</td><td>Regular module rows for the documentation rendering workflow. Usage self.regular_module_rows()</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>render_alignment_block</td><td>Render aligned documentation rows</td><td>Align corresponding &lt;&gt; columns across consecutive documentation lines.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>render_assets</td><td>Render assets</td><td>Render assets for the documentation rendering workflow. Usage self.render_assets()</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>render_attribution_body</td><td>Render attribution body</td><td>Render attribution body for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>render_attribution_page</td><td>Render attribution page</td><td>Render attribution page for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>render_canonical_page</td><td>Render canonical page</td><td>Render canonical page for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>render_changelog_page</td><td>Render changelog page</td><td>Render changelog page for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>render_content_for_ref</td><td>Render content for ref</td><td>Render content for ref for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>render_content_page</td><td>Render content page</td><td>Render content page for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>render_content_page_for_ref</td><td>Render content page for ref</td><td>Render content page for ref for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>render_content_pages</td><td>Render content pages</td><td>Render content pages for the documentation rendering workflow. Usage self.render_content_pages()</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>render_enums_body</td><td>Render enums body</td><td>Render enums body for the documentation rendering workflow. Usage self.render_enums_body()</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>render_enums_page</td><td>Render enums page</td><td>Render enums page for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>render_globals_body</td><td>Render globals body</td><td>Render globals body for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>render_globals_page</td><td>Render globals page</td><td>Render globals page for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>render_globals_table</td><td>Render globals table</td><td>Render globals table for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>render_glossary_body</td><td>Render glossary body</td><td>Render glossary body for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>render_glossary_page</td><td>Render glossary page</td><td>Render glossary page for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>render_glossary_table</td><td>Render glossary table</td><td>Render glossary table for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>render_image_group</td><td>Render image group</td><td>Render image group for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>render_index_page</td><td>Render index page</td><td>Render index page for the documentation rendering workflow. Usage self.render_index_page()</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>render_install_page</td><td>Render install page</td><td>Render install page for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>render_integrity_body</td><td>Render integrity body</td><td>Render integrity body for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>render_integrity_page</td><td>Render integrity page</td><td>Render integrity page for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>render_landing_summary</td><td>Render landing summary</td><td>Render landing summary for the documentation rendering workflow. Usage self.render_landing_summary()</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>render_layout_css</td><td>Render layout css</td><td>Render layout css for the documentation rendering workflow. Usage self.render_layout_css()</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>render_license_body</td><td>Render license body</td><td>Render license body for the documentation rendering workflow. Usage self.render_license_body()</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>render_license_page</td><td>Render license page</td><td>Render license page for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>render_markdown_document</td><td>Render markdown document</td><td>Render markdown document for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>render_module_content</td><td>Render module content</td><td>Render module content for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>render_nav_branding</td><td>Render nav branding</td><td>Render the Testadura publisher identity above the navigation index. Usage self.render_nav_branding()</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>render_navigation</td><td>Render navigation</td><td>Render navigation for the documentation rendering workflow. Usage self.render_navigation()</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>render_page_branding</td><td>Render page branding</td><td>Render the compact SolidGroundUX identity used on documentation pages. Usage self.render_page_branding()</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>render_project_document_page</td><td>Render project document page</td><td>Render project document page for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>render_rows</td><td>Render rows</td><td>Render rows for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>render_table</td><td>Render documentation table</td><td>Render parsed documentation table rows using the standard data-table styling.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>render_theme_specimen</td><td>Render theme specimen</td><td>Render a live HTML specimen derived from a SolidGroundUX style file.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>render_title_page</td><td>Render title page</td><td>Render title page for the documentation rendering workflow. Usage self.render_title_page()</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>resolve_theme_style</td><td>Resolve theme style</td><td>Resolve a semantic style variable to CSS without sourcing shell code.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>run</td><td>Run</td><td>Run for the documentation rendering workflow. Usage self.run()</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>sample_function_with_arguments</td><td>Sample function with arguments</td><td>Demonstrate how function arguments are documented.</td><td>doc-sample.sh</td></tr>
+<tr><td>sample_public_function</td><td>Sample public function</td><td>Sample public function.</td><td>doc-sample.sh</td></tr>
+<tr><td>section_has_body_content</td><td>Section has body content</td><td>Section has body content for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>section_has_visible_direct_items</td><td>Section has visible direct items</td><td>Section has visible direct items for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>section_key</td><td>Section key</td><td>Section key for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>section_level</td><td>Section level</td><td>Section level for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>should_render_item</td><td>Determine whether render item</td><td>Determine whether render item for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>should_render_section</td><td>Determine whether render section</td><td>Determine whether render section for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>slugify</td><td>Create slug for</td><td>Create slug for for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>split_special_comment_modules</td><td>Split special comment modules</td><td>Split special comment modules for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>strip_shell_inline_comment</td><td>Strip shell inline comment</td><td>Strip an unquoted shell comment from an assignment value.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>subgroup_comment_role</td><td>Subgroup comment role</td><td>Subgroup comment role for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>theme_pair</td><td>Theme pair</td><td>Theme pair for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>theme_sample</td><td>Theme sample</td><td>Theme sample for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>title_from_rows</td><td>Title from rows</td><td>Title from rows for the documentation rendering workflow.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>xterm_256_rgb</td><td>Xterm 256 rgb</td><td>Convert an xterm 256-color index to an RGB tuple.</td><td>sgnd_doc_renderer.py</td></tr>
+</tbody>
+</table>
+</section>
+<section class="doc-glossary-block">
+<h2 class="ct-L2Sectionheader">Variables</h2>
+<table class="doc-data-table">
+<thead><tr><th>Variable</th><th>Title</th><th>Purpose</th><th>Module</th></tr></thead>
+<tbody>
+<tr><td>_SAMPLE_INTERNAL_VARIABLE</td><td>Internal variable documentation</td><td>Demonstrate an internal variable.</td><td>doc-sample.sh</td></tr>
+<tr><td>Datamodel</td><td>Content tables for parsed documentation data</td><td>Define the parser-owned documentation tables.</td><td>doc-processor.sh</td></tr>
+<tr><td>DOC_HEADER_LOGO</td><td>Documentation page header branding asset</td><td>Name of the compact image displayed beside the documentation site title.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>DOC_INDEX_HERO</td><td>Documentation landing-page hero asset</td><td>Name of the current release/showcase image displayed on the documentation home page.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>DOC_INDEX_LOGO</td><td>Documentation index branding asset</td><td>Name of the image displayed above the documentation navigation index.</td><td>sgnd_doc_renderer.py</td></tr>
+<tr><td>DOC_RENDER_CACHE_DIR</td><td>Persistent renderer input cache directory</td><td>Hold the complete exported renderer input set for fast HTML-only rebuilds.</td><td>doc-renderer.sh</td></tr>
+<tr><td>SAMPLE_PUBLIC_VARIABLE</td><td>Public variable documentation</td><td>Demonstrate a normal documented variable.</td><td>doc-sample.sh</td></tr>
+</tbody>
+</table>
+</section>
+</main>
+</body>
+</html>

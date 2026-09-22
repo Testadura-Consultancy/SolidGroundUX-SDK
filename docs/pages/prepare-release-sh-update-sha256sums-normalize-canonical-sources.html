@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>_normalize_canonical_sources - Normalize canonical structures before metadata processing</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">_normalize_canonical_sources - Normalize canonical structures before metadata processing</div>
+  <div class="doc-breadcrumb">prepare-release.sh:::Update SHA256SUMS:_normalize_canonical_sources</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Apply the canonical framework locator and library guard to managed shell files</div>
+<div class="ct-functionbody">  before version/build/checksum metadata is evaluated.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Honors FLAG_NORMALIZE_CANON; disabled runs are skipped.</div>
+<div class="ct-functionbody">  - Uses normalize-canon.sh from the active framework libexec directory.</div>
+<div class="ct-functionbody">  - Passes the same recursive shell-file mask represented by SOURCE_DIR.</div>
+<div class="ct-functionbody">  - Runs the normalizer in --auto mode so prepare-release remains non-interactive.</div>
+<div class="ct-functionbody">  - Propagates dry-run mode when prepare-release is running dry.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 when normalization is disabled or completes successfully; non-zero otherwise.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  _normalize_canonical_sources</div>
+</main>
+</body>
+</html>

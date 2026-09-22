@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>SolidGroundUX SDK - Documentation Renderer</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">SolidGroundUX SDK - Documentation Renderer</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / doc-renderer.sh</div>
+</header>
+<div class="ct-modulebody sh-label">Description</div>
+<div class="ct-modulebody">  Converts parser-owned documentation tables into renderer input files and delegates</div>
+<div class="ct-modulebody">  final HTML generation to the Python documentation renderer.</div>
+<div class="ct-modulebody"></div>
+<div class="ct-modulebody sh-label">Design principles</div>
+<div class="ct-modulebody">  - Keep parsing, export preparation, and final rendering separate.</div>
+<div class="ct-modulebody">  - Use explicit table-shaped arrays and PSV files as intermediate models.</div>
+<div class="ct-modulebody">  - Preserve deterministic ordering and stable content references.</div>
+<div class="ct-modulebody">  - Avoid hidden relational behavior or synthetic database-like machinery.</div>
+<div class="ct-modulebody"></div>
+<div class="ct-modulebody sh-label">Role in framework</div>
+<div class="ct-modulebody">  - Post-processing and hand-off layer between doc-processor and concrete renderers.</div>
+<div class="ct-modulebody">  - Exports parser tables as the canonical input set for renderer implementations.</div>
+<div class="ct-modulebody">  - Invokes the Python HTML renderer for the current documentation output.</div>
+<div class="ct-modulebody"></div>
+<div class="ct-modulebody sh-label">Non-goals</div>
+<div class="ct-modulebody">  - Parsing source files.</div>
+<div class="ct-modulebody">  - Owning source comment grammar.</div>
+<div class="ct-modulebody">  - Performing final format-specific rendering directly in Bash.</div>
+<div class="ct-modulebody"></div>
+</main>
+</body>
+</html>

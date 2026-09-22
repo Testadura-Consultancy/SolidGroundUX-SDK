@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Write removed-path delta</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Write removed-path delta</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / prepare-release.sh / Local script functions / _sgnd_release_write_removed_manifest</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Create the release removal manifest by comparing the selected baseline and</div>
+<div class="ct-functionbody">  current package manifests.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Uses PREVIOUS_MANIFEST as the explicit removal baseline.</div>
+<div class="ct-functionbody">  - Computes paths present in the baseline but absent from the current manifest.</div>
+<div class="ct-functionbody">  - Writes one removed relative path per line in sorted order.</div>
+<div class="ct-functionbody">  - Excludes persistent *.cfg and *.state files from automatic removal.</div>
+<div class="ct-functionbody">  - Creates an empty removal manifest when no baseline was selected.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Arguments</div>
+<div class="ct-functionbody">  $1  CURRENT_MANIFEST - Newly generated release manifest.</div>
+<div class="ct-functionbody">  $2  REMOVED_MANIFEST - Output path for the removal manifest.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 on success; 1 when validation, comparison, or output creation fails.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  _sgnd_release_write_removed_manifest &quot;$manifest_path&quot; &quot;$removed_path&quot;</div>
+</main>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Resolve the console module source</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Resolve the console module source</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / management-console.sh / Console configuration / _sgnd_console_load_config</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Resolve the module file or directory used by this console instance.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Without --appcfg, loads the standard console-modules directory beside</div>
+<div class="ct-functionbody">    management-console.sh.</div>
+<div class="ct-functionbody">  - With --appcfg pointing to a .sh file, loads only that module.</div>
+<div class="ct-functionbody">  - With --appcfg pointing to a directory, loads every .sh file in it.</div>
+<div class="ct-functionbody">  - Normalizes the selected path to an absolute path.</div>
+<div class="ct-functionbody"></div>
+<p class="ct-functionbody">Inputs (globals):</p>
+<div class="ct-functionbody">  VAL_APPCFG</div>
+<div class="ct-functionbody">  SGND_SCRIPT_DIR</div>
+<div class="ct-functionbody"></div>
+<p class="ct-functionbody">Outputs (globals):</p>
+<div class="ct-functionbody">  SGND_CONSOLE_MODULE_PATH</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0   success</div>
+<div class="ct-functionbody">  126 module source does not exist or is not a readable .sh file/directory</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+</main>
+</body>
+</html>

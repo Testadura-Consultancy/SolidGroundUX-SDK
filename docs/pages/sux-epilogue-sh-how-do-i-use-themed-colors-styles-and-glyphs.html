@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Use themed colors, styles, and glyphs</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Use themed colors, styles, and glyphs</div>
+  <div class="doc-breadcrumb">sux_epilogue.sh::How do I...?:Use themed colors, styles, and glyphs:</div>
+</header>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Use the framework UI variables instead of hard-coded terminal escape sequences. Color and style variables keep output consistent across scripts, while glyph variables provide reusable symbols for status, navigation, prompts, and visual markers.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Typical use:</p>
+<div class="ct-L2Sectionbody">    printf &quot;%s%s%s\n&quot; &quot;$SGND_CLR_OK&quot; &quot;Operation completed&quot; &quot;$SGND_CLR_RESET&quot;</div>
+<div class="ct-L2Sectionbody">    printf &quot;%s %s\n&quot; &quot;$SGND_GLYPH_OK&quot; &quot;Validated&quot;</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Prefer the say and ask helpers for normal user interaction. Use color, style, and glyph variables directly only when a script needs custom formatted output.</p>
+<div class="ct-L2Sectionbody"></div>
+</main>
+</body>
+</html>

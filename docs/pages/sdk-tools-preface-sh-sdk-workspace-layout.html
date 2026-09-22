@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Workspace Layout</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Workspace Layout</div>
+  <div class="doc-breadcrumb">sdk-tools_preface.sh::SDK:Workspace Layout:</div>
+</header>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">SolidGroundUX projects follow a standardized directory structure.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">While individual projects may add folders as needed, the framework expects a number of well-known locations. The typical workspace structure mimics the expected deployment layout, making it easier to transition from development to deployment without reorganizing files.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The deployment tools depend on this structure to determine which files to include and where to place them during deployment. The structure also helps ensure that generated documentation, metadata, and supporting assets are maintained consistently across projects.</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody sh-emphasis">Deviate at your own peril.</div>
+<div class="ct-L2Sectionbody"></div>
+<div class="doc-image-group images-1">
+<figure class="doc-image">
+<img src="../assets/images/sdk-project-structure.png" alt="Folder structure of a typical SolidGroundUX project workspace." loading="lazy">
+<figcaption>Folder structure of a typical SolidGroundUX project workspace.</figcaption>
+</figure>
+</div>
+<p class="ct-L2Sectionbody">Executable applications are typically placed in bin and sbin, reusable libraries in lib, and internal implementation helpers in libexec.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">This separation helps distinguish public interfaces from internal implementation details and keeps larger projects maintainable.</p>
+<div class="ct-L2Sectionbody"></div>
+</main>
+</body>
+</html>

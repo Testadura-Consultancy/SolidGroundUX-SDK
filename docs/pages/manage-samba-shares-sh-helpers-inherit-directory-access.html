@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Copy a parent directory&#x27;s ownership and ACL model</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Copy a parent directory&#x27;s ownership and ACL model</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / manage-samba-shares.sh / Helpers / _inherit_directory_access</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Make a newly created subdirectory follow the selected share&#x27;s existing</div>
+<div class="ct-functionbody">  Unix ownership, mode, and POSIX ACL/default-ACL model instead of inventing</div>
+<div class="ct-functionbody">  per-user ownership from the directory name.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Arguments</div>
+<div class="ct-functionbody">  $1 PARENT</div>
+<div class="ct-functionbody">  $2 CHILD</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 when ownership/mode/ACL inheritance succeeds; non-zero otherwise.</div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  _inherit_directory_access &quot;&lt;parent&gt;&quot; &quot;&lt;child&gt;&quot;</div>
+</main>
+</body>
+</html>

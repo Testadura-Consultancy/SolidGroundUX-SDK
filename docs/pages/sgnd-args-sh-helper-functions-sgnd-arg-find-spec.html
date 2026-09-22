@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Find an argument specification</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Find an argument specification</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / sgnd-args.sh / Helper functions / _sgnd_arg_find_spec</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Locate the effective argument specification for a long or short option.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Iterates SGND_EFFECTIVE_ARGS_SPEC in declaration order.</div>
+<div class="ct-functionbody">  - Matches either the long option name or the short option letter.</div>
+<div class="ct-functionbody">  - Prints the matching raw specification to stdout.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Arguments</div>
+<div class="ct-functionbody">  $1  Long option name or short option letter to find.</div>
+<div class="ct-functionbody"></div>
+<p class="ct-functionbody">Inputs (globals):</p>
+<div class="ct-functionbody">  SGND_EFFECTIVE_ARGS_SPEC</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Output</div>
+<div class="ct-functionbody">  Matching raw argument specification on stdout.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 when a matching specification is found.</div>
+<div class="ct-functionbody">  1 when no matching specification exists.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  _sgnd_arg_find_spec &quot;example&quot; &quot;example-2&quot;</div>
+</main>
+</body>
+</html>

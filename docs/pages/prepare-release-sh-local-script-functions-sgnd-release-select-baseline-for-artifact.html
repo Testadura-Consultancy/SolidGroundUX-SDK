@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Select one artifact removal baseline</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Select one artifact removal baseline</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / prepare-release.sh / Local script functions / _sgnd_release_select_baseline_for_artifact</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Resolve the manifest against which removed paths are calculated for one release</div>
+<div class="ct-functionbody">  artifact rather than for the prepare-release run as a whole.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Arguments</div>
+<div class="ct-functionbody">  $1  Display label.</div>
+<div class="ct-functionbody">  $2  Artifact product name used to filter manifest history.</div>
+<div class="ct-functionbody">  $3  Name of the variable that receives the selected absolute manifest path.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Defaults to the matching manifest with the highest numeric build number.</div>
+<div class="ct-functionbody">  - Offers older manifests, a custom path, and an explicit baseless release.</div>
+<div class="ct-functionbody">  - In auto mode selects the latest matching manifest, or no baseline when none exists.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 on success; 1 on invalid/cancelled selection.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  _sgnd_release_select_baseline_for_artifact &quot;SolidGroundUX&quot; &quot;SolidGroundUX&quot; baseline</div>
+</main>
+</body>
+</html>

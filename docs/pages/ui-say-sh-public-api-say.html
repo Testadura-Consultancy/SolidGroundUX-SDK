@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Say</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Say</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / ui-say.sh / Public API / say</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Emit a standardized SolidGroundUX console message.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Renders a message using the framework message style maps.</div>
+<div class="ct-functionbody">  - Supports typed messages such as INFO, STRT, WARN, FAIL, CNCL, OK, END,</div>
+<div class="ct-functionbody">    DEBUG, and EMPTY.</div>
+<div class="ct-functionbody">  - Accepts the message type either as a positional first argument or through</div>
+<div class="ct-functionbody">    the --type option.</div>
+<div class="ct-functionbody">  - Applies optional date, label, icon, and symbol prefixes according to the</div>
+<div class="ct-functionbody">    active style configuration.</div>
+<div class="ct-functionbody">  - Applies optional colorization to the label, message, date, or all visible</div>
+<div class="ct-functionbody">    message parts.</div>
+<div class="ct-functionbody">  - Respects SGND_CONSOLE_LOG_LEVEL for console visibility.</div>
+<div class="ct-functionbody">  - Applies SGND_FILE_LOG_LEVEL independently and writes matching messages, even when console</div>
+<div class="ct-functionbody">    output is suppressed by the current log level.</div>
+<div class="ct-functionbody">  - Ensures pending progress output is followed by a clean line break before</div>
+<div class="ct-functionbody">    printing a normal message.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Arguments</div>
+<div class="ct-functionbody">  $1...  TYPE and/or MESSAGE</div>
+<div class="ct-functionbody">         When the first positional argument is a known message type, it is</div>
+<div class="ct-functionbody">         treated as TYPE and the remaining arguments form the message.</div>
+<div class="ct-functionbody">         Otherwise all positional arguments form the message and TYPE defaults</div>
+<div class="ct-functionbody">         to EMPTY.</div>
+<div class="ct-functionbody">  </div>
+<div class="ct-functionbody sh-highlight">options</div>
+<div class="ct-functionbody">  --type TYPE</div>
+<div class="ct-functionbody">      Explicitly set the message type.</div>
+<div class="ct-functionbody">  </div>
+<div class="ct-functionbody">  --date</div>
+<div class="ct-functionbody">      Prefix the message with the current date/time using SAY_DATE_FORMAT.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody">  --show VALUE</div>
+<div class="ct-functionbody">      Select which prefix elements are shown. Supported values are label,</div>
+<div class="ct-functionbody">      icon, symbol, all, or combinations using comma or plus separators.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody">  --colorize VALUE</div>
+<div class="ct-functionbody">      Select which parts are colorized. Supported values are none, label,</div>
+<div class="ct-functionbody">      msg, date, both, and all.</div>
+<div class="ct-functionbody"></div>
+<p class="ct-functionbody">Inputs (globals):</p>
+<div class="ct-functionbody">  SAY_DATE_DEFAULT, SAY_SHOW_DEFAULT, SAY_COLORIZE_DEFAULT, SAY_DATE_FORMAT</div>
+<div class="ct-functionbody">  SGND_CONSOLE_LOG_LEVEL, SGND_FILE_LOG_LEVEL, SGND_LINEBREAK_PENDING</div>
+<div class="ct-functionbody">  LBL_*, ICO_*, SYM_*, MSG_CLR_*, RESET</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Outputs</div>
+<div class="ct-functionbody">  Prints the rendered message to stdout when allowed by SGND_CONSOLE_LOG_LEVEL.</div>
+<div class="ct-functionbody">  Appends a timestamped best-effort logfile record when allowed by SGND_FILE_LOG_LEVEL.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 always. Unknown message types are normalized to EMPTY.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  say INFO &quot;Starting workspace deployment&quot;</div>
+<div class="ct-functionbody">  say --type WARN --date &quot;Configuration file not found&quot;</div>
+<div class="ct-functionbody">  say --show label,icon --colorize all OK &quot;Deployment completed&quot;</div>
+<div class="ct-functionbody">  say &quot;Plain output without a message prefix&quot;</div>
+</main>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Console registration</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Console registration</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / 27-active-directory-management.sh / Console registration</div>
+</header>
+<p class="ct-L1Sectionbody">Provides day-to-day Active Directory object management after a domain has been provisioned. The module exposes directory status plus focused user, group, and computer-account administration without replacing full directory tooling.</p>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-highlight">Directory</div>
+<div class="ct-L1Sectionbody sh-emphasis">Show directory status</div>
+<div class="ct-L1Sectionbody">  &gt; Show realm, controller state, and directory object counts.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _admg_status</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-emphasis">Validate directory management</div>
+<div class="ct-L1Sectionbody">  &gt; Validate controller state and directory object enumeration.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _admg_validate</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-highlight">Users</div>
+<div class="ct-L1Sectionbody sh-emphasis">List users</div>
+<div class="ct-L1Sectionbody">  &gt; List Active Directory users.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _admg_list_users</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-emphasis">Show user</div>
+<div class="ct-L1Sectionbody">  &gt; Show user details and direct group memberships.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _admg_show_user</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-emphasis">Create user</div>
+<div class="ct-L1Sectionbody">  &gt; Create an Active Directory user.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _admg_create_user</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-emphasis">Enable / disable user</div>
+<div class="ct-L1Sectionbody">  &gt; Toggle the selected user account state.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _admg_toggle_user</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-emphasis">Reset user password</div>
+<div class="ct-L1Sectionbody">  &gt; Reset the selected user&#x27;s password.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _admg_reset_user_password</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-emphasis">Set password never expires</div>
+<div class="ct-L1Sectionbody">  &gt; Disable password expiry for the selected user.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _admg_set_user_password_noexpiry</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-emphasis">Add user to groups</div>
+<div class="ct-L1Sectionbody">  &gt; Add a selected user to one or more groups.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _admg_user_add_groups</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-emphasis">Remove user from groups</div>
+<div class="ct-L1Sectionbody">  &gt; Remove selected direct group memberships.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _admg_user_remove_groups</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-emphasis">Delete user</div>
+<div class="ct-L1Sectionbody">  &gt; Delete a selected non-protected user account.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _admg_delete_user</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-highlight">Groups</div>
+<div class="ct-L1Sectionbody sh-emphasis">List groups</div>
+<div class="ct-L1Sectionbody">  &gt; List Active Directory groups.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _admg_list_groups</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-emphasis">Show group</div>
+<div class="ct-L1Sectionbody">  &gt; Show group details and direct members.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _admg_show_group</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-emphasis">Create group</div>
+<div class="ct-L1Sectionbody">  &gt; Create an Active Directory group.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _admg_create_group</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-emphasis">Add users to group</div>
+<div class="ct-L1Sectionbody">  &gt; Add one or more users to a selected group.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _admg_group_add_users</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-emphasis">Remove group members</div>
+<div class="ct-L1Sectionbody">  &gt; Remove one or more direct members from a selected group.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _admg_group_remove_members</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-emphasis">Delete group</div>
+<div class="ct-L1Sectionbody">  &gt; Delete a selected non-protected group.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _admg_delete_group</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-highlight">Computers</div>
+<div class="ct-L1Sectionbody sh-emphasis">List computers</div>
+<div class="ct-L1Sectionbody">  &gt; List Active Directory computer accounts.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _admg_list_computers</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-emphasis">Show computer</div>
+<div class="ct-L1Sectionbody">  &gt; Show the selected computer account.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _admg_show_computer</div>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L1Sectionbody sh-emphasis">Delete computer</div>
+<div class="ct-L1Sectionbody">  &gt; Delete a selected stale computer account.</div>
+<div class="ct-L1Sectionbody">  &gt; Handler: _admg_delete_computer</div>
+</main>
+</body>
+</html>

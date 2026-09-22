@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Preparing a Release</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Preparing a Release</div>
+  <div class="doc-breadcrumb">sdk-tools_preface.sh::SDK:Preparing a Release:</div>
+</header>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">prepare-release.sh creates the complete project release set consumed by the Release Manager. It resolves project identity from the project definitions file, maintains Version and Build metadata, refreshes changed-file checksums, verifies executable wrappers, and generates the archive, manifest, removal manifest, checksum sidecars, and the distributable release ZIP.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Every ZIP contains release-package.info so the package identifies its project, product, version, build, and release without inspecting the payload tar. SolidGroundUX framework ZIPs additionally include release-manager.sh as a clean-machine bootstrap entry point; generic project ZIPs use the already installed Release Manager.</p>
+<div class="ct-L2Sectionbody"></div>
+</main>
+</body>
+</html>

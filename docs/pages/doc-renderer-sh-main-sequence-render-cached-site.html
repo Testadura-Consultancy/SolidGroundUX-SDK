@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Render HTML from the persistent renderer cache</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Render HTML from the persistent renderer cache</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / doc-renderer.sh / Main sequence / _render_cached_site</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Rebuild the generated site without rescanning or reparsing source files.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Uses the complete renderer input set saved by a previous generation.</div>
+<div class="ct-functionbody">  - Preserves the parser cache and source tables unchanged.</div>
+<div class="ct-functionbody">  - Prepares the output directory without cleaning it.</div>
+<div class="ct-functionbody">  - Fails explicitly when no valid renderer cache exists.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Arguments</div>
+<div class="ct-functionbody">  $1  Output folder for generated documentation.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 when rendering completes and index.html exists.</div>
+<div class="ct-functionbody">  1 when the cache is missing/invalid or rendering fails.</div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  _render_cached_site &quot;&lt;output_folder&gt;&quot;</div>
+</main>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Sections and Structure</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Sections and Structure</div>
+  <div class="doc-breadcrumb">sdk-documentation_preface.sh::Documentation Generator:Sections and Structure:</div>
+</header>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Documentation comments can define product, module, section, subsection, and item content.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Structural headings use a hyphenated hierarchy. The number of hyphens immediately following the comment marker determines the heading level:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="doc-aligned-block" style="grid-template-columns:max-content minmax(0, 1fr)">
+<div class="ct-L2Sectionbody doc-aligned-cell"># - Heading      Level 1</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">primary/top-level section</div>
+<div class="ct-L2Sectionbody doc-aligned-cell"># -- Section     Level 2</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">section within the current level 1 heading</div>
+<div class="ct-L2Sectionbody doc-aligned-cell"># --- Subsection Level 3</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">subsection or paragraph-level grouping</div>
+</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The hierarchy is semantic, not decorative. Peer headings at the same structural level should use the same number of hyphens. In particular, top-level source sections must use `# -` and should not be written as `# --` or `# ---` merely for visual emphasis.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Section headers are used to group related functions, variables, configuration values, or explanatory text.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">This allows generated documentation to be organized as a navigable hierarchy instead of a flat list of extracted comments.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Good sectioning is especially important in larger modules, where a long list of functions would otherwise become difficult to read.</p>
+<div class="ct-L2Sectionbody"></div>
+</main>
+</body>
+</html>

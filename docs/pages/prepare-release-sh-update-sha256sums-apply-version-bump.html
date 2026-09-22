@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Apply release metadata policy to managed source files</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Apply release metadata policy to managed source files</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / prepare-release.sh / Update SHA256SUMS / _apply_version_bump</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Apply Version and Build according to A/C/N policy and always refresh Checksum</div>
+<div class="ct-functionbody">  for files whose source or metadata changed.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Detects source changes by comparing the stored checksum with the current</div>
+<div class="ct-functionbody">    managed-body checksum.</div>
+<div class="ct-functionbody">  - MODE_UPDATEVERSION: active product policy; A=all, C=changed, N=none.</div>
+<div class="ct-functionbody">  - MODE_UPDATEBUILD:   active product policy; A=all, C=changed, N=none.</div>
+<div class="ct-functionbody">  - Any file changed by source edits or metadata policy receives a refreshed</div>
+<div class="ct-functionbody">    checksum after metadata updates are applied.</div>
+<div class="ct-functionbody">  - Optional major/minor bump flags override explicit Version policy.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 on success; 1 when one or more managed files could not be updated.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  _apply_version_bump</div>
+</main>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Read one menu choice or navigation key</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Read one menu choice or navigation key</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / sgnd-menu.sh / Menu input and dispatch / sgnd_menu_read_choice</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Read menu input directly from /dev/tty and normalize navigation/control keys.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Q, q, and Ctrl+Q return EXIT.</div>
+<div class="ct-functionbody">  - R/r return RESET.</div>
+<div class="ct-functionbody">  - Ctrl+R returns REDRAW.</div>
+<div class="ct-functionbody">  - Esc returns ESC unless followed by a recognized arrow sequence.</div>
+<div class="ct-functionbody">  - Left/right arrows return &lt; and &gt;.</div>
+<div class="ct-functionbody">  - Single-character controls are returned immediately.</div>
+<div class="ct-functionbody">  - Multi-digit numeric selections are completed with Enter.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Arguments</div>
+<div class="ct-functionbody">  $1  OUTPUT_VAR - Variable receiving the normalized choice.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 on input; non-zero when /dev/tty cannot be read.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  sgnd_menu_read_choice choice</div>
+</main>
+</body>
+</html>

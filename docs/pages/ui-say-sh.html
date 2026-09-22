@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>SolidGroundUX - UI Messaging</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">SolidGroundUX - UI Messaging</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / ui-say.sh</div>
+</header>
+<div class="ct-modulebody sh-label">Description</div>
+<div class="ct-modulebody">  Implements consistent message output helpers for console applications.</div>
+<div class="ct-modulebody"></div>
+<div class="ct-modulebody sh-label">The library</div>
+<div class="ct-modulebody">    - Provides a unified message API via `say` and typed wrappers (info, ok, warn, etc.)</div>
+<div class="ct-modulebody">    - Applies consistent formatting, prefixes, and optional colorization</div>
+<div class="ct-modulebody">    - Supports console output control via verbosity, debug flags, and message-type filtering</div>
+<div class="ct-modulebody">    - Ensures all messages follow a unified visual and structural style</div>
+<div class="ct-modulebody">    - Optionally performs best-effort file logging when enabled</div>
+<div class="ct-modulebody"></div>
+<div class="ct-modulebody sh-label">Design principles</div>
+<div class="ct-modulebody">  - Consistent message semantics across all scripts</div>
+<div class="ct-modulebody">  - Separation of message intent (type) from rendering and output policy</div>
+<div class="ct-modulebody">  - Respect the framework log-level policy consistently</div>
+<div class="ct-modulebody">  - Keep output predictable and script-friendly</div>
+<div class="ct-modulebody"></div>
+<div class="ct-modulebody sh-label">Role in framework</div>
+<div class="ct-modulebody">  - Core messaging layer used by all SolidGroundUX scripts</div>
+<div class="ct-modulebody">  - Serves as the primary mechanism for user-facing output and diagnostics</div>
+<div class="ct-modulebody">  - Works alongside ui.sh for rendering and formatting</div>
+<div class="ct-modulebody"></div>
+<div class="ct-modulebody sh-label">Non-goals</div>
+<div class="ct-modulebody">  - Persistent logging frameworks or advanced log management</div>
+<div class="ct-modulebody">  - Complex formatting beyond message-level styling</div>
+<div class="ct-modulebody">  - Replacement for dedicated logging systems</div>
+<div class="ct-modulebody"></div>
+<div class="ct-modulebody sh-label">Notes</div>
+<div class="ct-modulebody">  - Console output is governed by SGND_CONSOLE_LOG_LEVEL; file output is governed by SGND_FILE_LOG_LEVEL.</div>
+<div class="ct-modulebody">  - File logging is optional and best-effort; failures do not affect execution.</div>
+<div class="ct-modulebody">  - Logfile writing is independent from console visibility.</div>
+<div class="ct-modulebody"></div>
+</main>
+</body>
+</html>

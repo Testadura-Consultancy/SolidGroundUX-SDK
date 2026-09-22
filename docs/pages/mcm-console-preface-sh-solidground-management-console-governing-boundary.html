@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Governing Boundary</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Governing Boundary</div>
+  <div class="doc-breadcrumb">mcm_console_preface.sh::SolidGround Management Console:Governing Boundary:</div>
+</header>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    Modules own menu content; the Framework-owned sgnd-menu library owns menu</div>
+<div class="ct-L2Sectionbody">    mechanics; the MCM-owned sgnd-console host owns application lifecycle and</div>
+<div class="ct-L2Sectionbody">    navigation between module pages.</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Domain logic does not belong in sgnd-console or sgnd-menu. Likewise, modules should not implement their own paging, title bars, input loops, or generic navigation. A helper required by more than one module belongs in an appropriately owned reusable library, not in one of the participating modules.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Public console/framework functions use `sgnd_*`. Helpers shared internally between cooperating SolidGroundUX libraries use `_sgnd_*` and are treated as framework-internal/protected rather than application-facing API. Plain `_helper` names remain local/private to their owning script or module.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Console modules also inherit the framework DRYRUN contract. A module that delegates work to an executable must propagate DRYRUN so the delegated operation cannot make persistent changes while the console is in dry-run mode.</p>
+<div class="ct-L2Sectionbody"></div>
+</main>
+</body>
+</html>

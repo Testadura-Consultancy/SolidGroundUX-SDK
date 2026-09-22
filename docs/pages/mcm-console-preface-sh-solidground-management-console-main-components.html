@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Main Components</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Main Components</div>
+  <div class="doc-breadcrumb">mcm_console_preface.sh::SolidGround Management Console:Main Components:</div>
+</header>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    management-console.sh</div>
+<div class="ct-L2Sectionbody">        Executable console host behind the public `sgnd-console` command. Resolves the framework runtime, loads console</div>
+<div class="ct-L2Sectionbody">        configuration and state, discovers page modules, renders the main index,</div>
+<div class="ct-L2Sectionbody">        lazy-loads selected modules, owns direct console controls, and runs the</div>
+<div class="ct-L2Sectionbody">        interaction loop.</div>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    sgnd-menu.sh</div>
+<div class="ct-L2Sectionbody">        Reusable menu engine. Owns group/item registration, page layout, numbering,</div>
+<div class="ct-L2Sectionbody">        rendering, paging, visibility filtering, status decoration, input parsing,</div>
+<div class="ct-L2Sectionbody">        and menu-item dispatch.</div>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    console-modules/*.sh</div>
+<div class="ct-L2Sectionbody">        Source-only functional modules. Each file represents one top-level console</div>
+<div class="ct-L2Sectionbody">        page and owns the menu groups, items, and action functions for that subject.</div>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    /usr/local/libexec/solidgroundux</div>
+<div class="ct-L2Sectionbody">        Standalone operational scripts used by console actions where the function</div>
+<div class="ct-L2Sectionbody">        is better implemented outside the module itself.</div>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    /usr/local/lib/solidgroundux/common</div>
+<div class="ct-L2Sectionbody">        Reusable framework libraries shared by executables and modules. Subject</div>
+<div class="ct-L2Sectionbody">        implementation should remain in its owning module unless it is genuinely</div>
+<div class="ct-L2Sectionbody">        shared or later proves large enough to justify a separate reusable library.</div>
+<div class="ct-L2Sectionbody"></div>
+</main>
+</body>
+</html>

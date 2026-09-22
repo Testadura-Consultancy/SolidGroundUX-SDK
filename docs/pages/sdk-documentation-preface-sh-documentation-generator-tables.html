@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Tables</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Tables</div>
+  <div class="doc-breadcrumb">sdk-documentation_preface.sh::Documentation Generator:Tables:</div>
+</header>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Documentation can embed tabular data directly in structured source comments. A table begins with a highlighted Table marker. The following documentation lines are collected as table rows until a blank documentation line ends the table.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Table cells are separated by a double colon (::). The first table row is always the semantic header row and is rendered using &lt;thead&gt; and &lt;th&gt;; following rows are rendered using &lt;tbody&gt; and &lt;td&gt;. Column widths are left to the browser and stylesheet.</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    # . Table</div>
+<div class="ct-L2Sectionbody">    # ! Name :: Description :: Status</div>
+<div class="ct-L2Sectionbody">    # Framework :: Core SolidGroundUX framework :: Active</div>
+<div class="ct-L2Sectionbody">    # Console :: Management console modules :: Active</div>
+<div class="ct-L2Sectionbody">    #</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The first row may use the emphasis marker (!) as a visual style hint. This does not change its table semantics: the first row remains the header. Following rows use normal documentation lines so they remain part of the table. The processor preserves the :: separators as content; table recognition, cell splitting, and HTML semantics belong to the renderer.</p>
+<div class="ct-L2Sectionbody"></div>
+</main>
+</body>
+</html>

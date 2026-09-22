@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Initialize parser state variables</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Initialize parser state variables</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / doc-processor.sh / Local definitions / _init_localvars</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Reset source, module, item, section, and emission state before parsing a file.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Clears source-line tracking values.</div>
+<div class="ct-functionbody">  - Clears module metadata values populated from the file header.</div>
+<div class="ct-functionbody">  - Resets current section, parent section, item, and style-hint context.</div>
+<div class="ct-functionbody">  - Resets documentation line counters and emission flags.</div>
+<div class="ct-functionbody"></div>
+<p class="ct-functionbody">Outputs (globals):</p>
+<div class="ct-functionbody">  src_line, src_linenr, src_linetype, src_haltlineprocessing</div>
+<div class="ct-functionbody">  doc_globalblock, doc_globalscope</div>
+<div class="ct-functionbody">  mod_product, mod_title, mod_name</div>
+<div class="ct-functionbody">  doc_section, doc_sectionlevel, doc_parentsection, doc_grandparentsection</div>
+<div class="ct-functionbody">  doc_item, doc_itemtitle, doc_itemtype, doc_itemmarker</div>
+<div class="ct-functionbody">  doc_itemvisibility, doc_itemrole</div>
+<div class="ct-functionbody">  doc_headersection, doc_stylehint, doc_linenr, doc_contenttype</div>
+<div class="ct-functionbody">  doc_content, doc_inheader, doc_started, doc_titleextracted, doc_emitline</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 on successful initialization.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  _init_localvars</div>
+</main>
+</body>
+</html>

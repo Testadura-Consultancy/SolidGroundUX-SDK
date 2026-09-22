@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Bootstrap Architecture</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Bootstrap Architecture</div>
+  <div class="doc-breadcrumb">sux_preface.sh::Architecture:Bootstrap Architecture:</div>
+</header>
+<div class="ct-L2Sectionbody"></div>
+<div class="doc-image-group images-1">
+<figure class="doc-image">
+<img src="../assets/images/sux-bootstrap-sequence.png" alt="Framework executable bootstrap sequence." loading="lazy">
+<figcaption>Framework executable bootstrap sequence.</figcaption>
+</figure>
+</div>
+<p class="ct-L2Sectionbody">Startup deliberately has a small pre-bootstrap boundary:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    executable</div>
+<div class="ct-L2Sectionbody">        -&gt; _framework_locator</div>
+<div class="ct-L2Sectionbody">        -&gt; sgnd-exe-common</div>
+<div class="ct-L2Sectionbody">        -&gt; sgnd-bootstrap</div>
+<div class="ct-L2Sectionbody">        -&gt; bootstrap environment/configuration/state</div>
+<div class="ct-L2Sectionbody">        -&gt; requested libraries</div>
+<div class="ct-L2Sectionbody">        -&gt; application main</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The locator and executable-common layer must work before the full Framework runtime exists. Once bootstrap has completed, applications should use normal Framework APIs rather than duplicating root, configuration, or library-resolution logic.</p>
+<div class="ct-L2Sectionbody"></div>
+</main>
+</body>
+</html>

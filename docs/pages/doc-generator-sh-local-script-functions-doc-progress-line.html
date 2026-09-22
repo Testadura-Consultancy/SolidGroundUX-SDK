@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Update active-module line progress</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Update active-module line progress</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / doc-generator.sh / Local script functions / _doc_progress_line</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Update progress slot 1 for the line currently being parsed inside the</div>
+<div class="ct-functionbody">  active module.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Intended to be called by the parser while it walks the current file.</div>
+<div class="ct-functionbody">  - Uses globals prepared by _iterate_files.</div>
+<div class="ct-functionbody">  - Does nothing when documentation progress is not active.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Arguments</div>
+<div class="ct-functionbody">  $1  CURRENT_LINE</div>
+<div class="ct-functionbody">  $2  TOTAL_LINES     optional; defaults to SGND_DOC_PROGRESS_LINE_TOTAL</div>
+<div class="ct-functionbody">  $3  LABEL           optional; defaults to SGND_DOC_PROGRESS_MODULE_NAME</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  _doc_progress_line &quot;$line_no&quot; &quot;$line_total&quot; &quot;$module_name&quot;</div>
+</main>
+</body>
+</html>

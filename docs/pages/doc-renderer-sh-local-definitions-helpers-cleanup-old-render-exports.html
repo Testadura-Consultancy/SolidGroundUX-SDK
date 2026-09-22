@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Clean old renderer export folders</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Clean old renderer export folders</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / doc-renderer.sh / Local definitions / Helpers / _cleanup_old_render_exports</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<p class="ct-functionbody">Remove stale temporary documentation renderer export folders from /tmp.</p>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">- Finds directories matching /tmp/sgnd-doc-render.*.</div>
+<div class="ct-functionbody">- Sorts them by modification time, newest first.</div>
+<div class="ct-functionbody">- Keeps the two newest render export folders.</div>
+<div class="ct-functionbody">- Deletes older render export folders.</div>
+<div class="ct-functionbody">- Ignores missing matches without raising an error.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Notes</div>
+<p class="ct-functionbody">This cleanup only affects temporary renderer input exports. It does not touch generated documentation output.</p>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<p class="ct-functionbody">0 after cleanup completes.</p>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<p class="ct-functionbody">_cleanup_old_render_exports</p>
+</main>
+</body>
+</html>

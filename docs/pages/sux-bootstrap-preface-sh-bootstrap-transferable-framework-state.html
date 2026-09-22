@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Transferable Framework State</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Transferable Framework State</div>
+  <div class="doc-breadcrumb">sux-bootstrap_preface.sh::Bootstrap:Transferable Framework State:</div>
+</header>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Every executable bootstraps its own SolidGroundUX framework instance. Ordinary shell globals therefore remain local to that process and are not automatically shared with executables started from it.</p>
+<div class="ct-L2Sectionbody">  </div>
+<p class="ct-L2Sectionbody">SolidGroundUX preserves selected user-level runtime choices through a transferable framework state file. The file is identified by `SGND_FRAMEWORK_STATEFILE` and is normally resolved as:</p>
+<div class="ct-L2Sectionbody">  </div>
+<div class="ct-L2Sectionbody">    $SGND_USRCFG_DIR/framework.state</div>
+<div class="ct-L2Sectionbody">  </div>
+<p class="ct-L2Sectionbody">After the normal framework configuration has been loaded, bootstrap recalculates this filename from the effective user configuration directory. If the file exists, the variables listed in `SGND_FRAMEWORK_STATE` are loaded from it. If it does not exist, bootstrap creates it from the current effective values.</p>
+<div class="ct-L2Sectionbody">  </div>
+<p class="ct-L2Sectionbody">The framework state is applied before the UI palette and style are loaded. This allows a theme or logging choice changed by one SolidGroundUX executable to be used by subsequently started executables, even though each executable creates its own framework instance.</p>
+<div class="ct-L2Sectionbody">  </div>
+<p class="ct-L2Sectionbody">Only explicitly listed variables are transferable. Process-specific values such as script metadata, progress state, start times, and application-local state remain private to the current executable. The framework state file is therefore a small runtime overlay, not a dump of all framework globals and not a replacement for the normal system and user configuration files.</p>
+<div class="ct-L2Sectionbody">  </div>
+<p class="ct-L2Sectionbody">The current transferable set is maintained in `SGND_FRAMEWORK_STATE` and includes the active console and file log levels, UI style and palette, and the date format used by `say()` output. Runtime functions that change one of these settings should update the framework state file when the change must remain visible to later framework instances.</p>
+<div class="ct-L2Sectionbody"></div>
+</main>
+</body>
+</html>

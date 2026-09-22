@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Built-in Arguments</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Built-in Arguments</div>
+  <div class="doc-breadcrumb">sux-bootstrap_preface.sh::Bootstrap:Built-in Arguments:</div>
+</header>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Bootstrapped executables receive a set of framework-provided command-line arguments.</p>
+<div class="ct-L2Sectionbody">  </div>
+<p class="ct-L2Sectionbody">These built-in options cover common framework behavior such as help output, version information, diagnostic output, tracing or debugging behavior, and configuration-related overrides.</p>
+<div class="ct-L2Sectionbody">  </div>
+<p class="ct-L2Sectionbody">Application-specific arguments can be added by the executable itself, but common framework behavior remains standardized across all bootstrapped tools.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Framework-provided and application-specific arguments may be freely intermixed on the command line. Bootstrap extracts recognized framework builtins while preserving application-specific options and positional values in their original order for the later script-level parse. Argument meaning therefore does not depend on whether a builtin appears before, between, or after application-specific options.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The standard `--` marker is an absolute end-of-options boundary. Once encountered, everything following it is preserved as positional data, even when a following value happens to resemble a framework or application option.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Script-specific command-line values are applied after script configuration and state have been loaded. Explicit command-line values can therefore override stored or configured script values while framework builtins remain available independently of their position on the command line.</p>
+<div class="ct-L2Sectionbody">  </div>
+<p class="ct-L2Sectionbody">This gives SolidGroundUX applications a shared command-line personality: once a user understands the standard options for one tool, the same expectations apply to the others.</p>
+<div class="ct-L2Sectionbody"></div>
+</main>
+</body>
+</html>

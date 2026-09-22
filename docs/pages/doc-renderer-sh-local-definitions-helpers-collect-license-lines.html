@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Collect active license text for appendix rendering</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Collect active license text for appendix rendering</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / doc-renderer.sh / Local definitions / Helpers / _collect_license_lines</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Load the active framework license file into the renderer license table.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Uses SGND_LICENSE_FILE as the active license source.</div>
+<div class="ct-functionbody">  - Skips gracefully when the license path is empty, missing, or unreadable.</div>
+<div class="ct-functionbody">  - Stores one row per source line with the original line order.</div>
+<div class="ct-functionbody">  - Replaces pipe characters because renderer hand-off tables are PSV based.</div>
+<div class="ct-functionbody"></div>
+<p class="ct-functionbody">Inputs (globals):</p>
+<div class="ct-functionbody">  SGND_LICENSE_FILE</div>
+<div class="ct-functionbody"></div>
+<p class="ct-functionbody">Outputs (globals):</p>
+<div class="ct-functionbody">  DOC_LICENSE_LINES</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 always; missing license text is represented as an empty export table.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  _collect_license_lines</div>
+</main>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Console application context</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Console application context</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / management-console.sh / Console application context</div>
+</header>
+<p class="ct-L3Sectionbody">fn$: _sgnd_console_resolve_app_root - Resolve the application root from a module source</p>
+<div class="ct-L3Sectionbody sh-highlight">Purpose</div>
+<div class="ct-L3Sectionbody">  Derive the root of the management application tree independently from the</div>
+<div class="ct-L3Sectionbody">  SolidGroundUX framework root. This allows an installed management console to</div>
+<div class="ct-L3Sectionbody">  host modules and module-owned executables from a staged/development tree.</div>
+<div class="ct-L3Sectionbody"></div>
+<div class="ct-L3Sectionbody sh-highlight">Behavior</div>
+<div class="ct-L3Sectionbody">  - Uses the normalized module file/directory path selected through --appcfg.</div>
+<div class="ct-L3Sectionbody">  - Uses the last usr, etc, or var path component as the application-tree marker,</div>
+<div class="ct-L3Sectionbody">    matching the framework locator convention.</div>
+<div class="ct-L3Sectionbody">  - Resolves /usr, /etc, or /var based application sources to root (/).</div>
+<div class="ct-L3Sectionbody">  - Resolves staged trees to the path prefix preceding that canonical component.</div>
+<div class="ct-L3Sectionbody">  - Falls back to SGND_FRAMEWORK_ROOT when no canonical component is present;</div>
+<div class="ct-L3Sectionbody">    this preserves support for arbitrary module-only directories.</div>
+<div class="ct-L3Sectionbody"></div>
+<div class="ct-L3Sectionbody sh-highlight">Output</div>
+<div class="ct-L3Sectionbody">  Writes the resolved application root to stdout.</div>
+<div class="ct-L3Sectionbody"></div>
+<div class="ct-L3Sectionbody sh-highlight">Usage</div>
+<div class="ct-L3Sectionbody">  SGND_CONSOLE_APP_ROOT=&quot;$(_sgnd_console_resolve_app_root &quot;$module_path&quot;)&quot;</div>
+</main>
+</body>
+</html>

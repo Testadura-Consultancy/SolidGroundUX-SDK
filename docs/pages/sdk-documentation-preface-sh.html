@@ -1,0 +1,334 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>SolidGroundUX SDK - Documentation Generator Overview</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">SolidGroundUX SDK - Documentation Generator Overview</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / sdk-documentation_preface.sh</div>
+</header>
+<div class="ct-L1Sectionheader">Documentation Generator</div>
+<div class="ct-L1Sectionbody"></div>
+<p class="ct-L1Sectionbody">Documentation-only sources may live in the canonical `usr/local/share/solidgroundux/doc-sources` directory of any product. Full recursive generation discovers them like other supported source files; their Product, Group, and Subgroup metadata controls logical placement rather than their physical directory. Product-prefixed basenames are recommended because module identity is basename-based.</p>
+<div class="ct-L1Sectionbody"></div>
+<p class="ct-L1Sectionbody">The Documentation Generator subgroup contains the tools used to extract, process, render, and generate SolidGroundUX documentation.</p>
+<div class="ct-L1Sectionbody"></div>
+<p class="ct-L1Sectionbody">The documentation system is built around the idea that documentation should live close to the code it describes. Instead of maintaining a separate manual by hand, source files contain structured comment blocks that can be converted into a navigable HTML documentation set.</p>
+<div class="ct-L1Sectionbody"></div>
+<p class="ct-L1Sectionbody">The file doc-sample.sh demonstrates the supported documentation conventions and should be treated as the practical reference for writing documentation comments.</p>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L2Sectionheader">Documentation Workflow</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The generator coordinates product discovery, source collection, parsing, cached documentation data, rendering, and final output. One documentation collection can contain one or more selected products. A primary product is selected as the lead product and is processed first; the remaining products retain deterministic order.</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="doc-image-group images-1">
+<figure class="doc-image">
+<img src="../assets/images/sdk-documentation-generation.png" alt="Documentation generation pipeline" loading="lazy">
+<figcaption>Documentation generation pipeline</figcaption>
+</figure>
+</div>
+<p class="ct-L2Sectionbody">For each selected product, the generator resolves its source root and applies the configured source file masks. A per-product documentation ignore file is resolved from user configuration first and system configuration second. Ignored files are excluded before parsing, and duplicate module basenames are skipped with a warning.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The processor reads the selected source files and extracts module metadata, sections, items, documentation lines, attribution data, and integrity information into normalized tables. These tables are persisted as documentation cache data and form the input to the renderer.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The renderer turns the normalized data into HTML pages, navigation, appendices, glossary entries, branding, and supporting assets. Each selected product may also contribute documentation assets from its canonical usr/local/assets directory.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Four generation modes are available:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="doc-aligned-block" style="grid-template-columns:max-content max-content minmax(0, 1fr)">
+<div class="ct-L2Sectionbody doc-aligned-cell">1</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">Full</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">Reparse all matching source files for the selected products</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">2</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">Selected</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">Reparse only explicitly selected matching files</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">3</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">Changed</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">Reparse matching Git changes relative to HEAD, plus untracked files</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">4</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">Render existing</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">Rebuild HTML from the persisted renderer data only</div>
+</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Creating a new collection in Full mode starts with a clean output directory. A Full update of an existing collection instead loads the existing cache and refreshes the selected products without clearing the collection. Selected and Changed modes also load the existing cache and replace or remove only the affected modules.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Successful parse modes pass the normalized data to the renderer and persist the data required for later incremental or render-only runs. Render existing mode bypasses source parsing completely and regenerates renderer-owned output from cached data. The generated site can optionally be copied to the primary product repository&#x27;s docs directory after rendering.</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionheader">Module Headers</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Documentation begins with the module header.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The Metadata section describes the module itself. Common fields include Version, Build, Checksum, Source, Type, Group, Subgroup, and Purpose.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Version and Build identify the documented module version. Checksum can be used for integrity tracking. Source identifies the original source file. Type classifies the module, Group determines its primary documentation area, Subgroup optionally introduces one additional grouping level, and Purpose provides a short description of why the module exists.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The Attribution section describes ownership and licensing information. Common fields include Developers, Company, Client, Copyright, and License.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">These fields are used to generate attribution and integrity appendices, and help keep generated documentation traceable back to the source files.</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionheader">Documentation Labels</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Structured documentation lines use a small set of labels to identify the type of content being documented.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The primary labels are:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="doc-aligned-block" style="grid-template-columns:max-content minmax(0, 1fr)">
+<div class="ct-L2Sectionbody doc-aligned-cell">fn:</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">Function or method documentation</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">var:</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">Variable documentation</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">cls:</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">Class documentation</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">doc:</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">General documentation</div>
+</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Each label can be followed by either a colon or a dollar sign.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">A colon indicates a normal documentation item:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="doc-aligned-block" style="grid-template-columns:max-content minmax(0, 1fr)">
+<div class="ct-L2Sectionbody doc-aligned-cell">fn:</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">Normal function or method documentation</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">var:</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">Normal variable documentation</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">cls:</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">Normal class documentation</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">doc:</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">Normal general documentation</div>
+</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">A dollar sign indicates a template documentation item:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="doc-aligned-block" style="grid-template-columns:max-content minmax(0, 1fr)">
+<div class="ct-L2Sectionbody doc-aligned-cell">fn$</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">Template function documentation</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">var$</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">Template variable documentation</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">cls$</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">Template class documentation</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">doc$</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">Template general documentation</div>
+</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Template items are primarily intended for reusable examples and template files. The renderer can treat them differently from normal framework items, depending on the group or context in which they appear.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The documentation dialect is language-neutral where the host language supports the same comment marker. Bash and Python both use # comments, so fn:, var:, cls:, and doc: use the same syntax in both languages. Python functions and class methods both use fn:; the containing cls: item supplies the class context.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The file doc-sample.sh demonstrates the supported labels and should be treated as the practical reference for the documentation syntax.</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionheader">Sections and Structure</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Documentation comments can define product, module, section, subsection, and item content.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Structural headings use a hyphenated hierarchy. The number of hyphens immediately following the comment marker determines the heading level:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="doc-aligned-block" style="grid-template-columns:max-content minmax(0, 1fr)">
+<div class="ct-L2Sectionbody doc-aligned-cell"># - Heading      Level 1</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">primary/top-level section</div>
+<div class="ct-L2Sectionbody doc-aligned-cell"># -- Section     Level 2</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">section within the current level 1 heading</div>
+<div class="ct-L2Sectionbody doc-aligned-cell"># --- Subsection Level 3</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">subsection or paragraph-level grouping</div>
+</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The hierarchy is semantic, not decorative. Peer headings at the same structural level should use the same number of hyphens. In particular, top-level source sections must use `# -` and should not be written as `# --` or `# ---` merely for visual emphasis.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Section headers are used to group related functions, variables, configuration values, or explanatory text.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">This allows generated documentation to be organized as a navigable hierarchy instead of a flat list of extracted comments.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Good sectioning is especially important in larger modules, where a long list of functions would otherwise become difficult to read.</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionheader">Style Hints</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Documentation lines may include an optional leading marker that either identifies plain documentation content or assigns a renderer style hint.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The plain documentation marker is:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    &gt;           Plain documentation line</div>
+<div class="ct-L2Sectionbody">    &gt;           When used without text, emits an intentional blank line</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Style hints are presentation hints layered on top of the structural content type. The renderer reads the exported stylehint value for each documentation line. When the style hint is normal, no additional style class is added. When another value is supplied, the renderer adds a corresponding sh-&lt;stylehint&gt; CSS class.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The currently supported style hints are:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="doc-aligned-block" style="grid-template-columns:max-content minmax(0, 1fr)">
+<div class="ct-L2Sectionbody doc-aligned-cell">normal</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">Standard rendered text</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">label</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">(:) Label or small subheader text</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">highlight</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">(.) Highlighted text</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">emphasis</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">(!) Emphasized text</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">underline</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">(_) Underlined text</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">quote</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">(~) Quoted or aside text</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">listitem</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">(-) Bullet-style list item</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">indent</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">Reserved indentation style</div>
+</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Marker characters are only interpreted when they are the first token after the comment marker. Leading whitespace after &quot;# &quot; is preserved as author layout and prevents marker interpretation.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">These symbols are intended as visual cues and make it easier to identify the purpose of a line while scanning a page.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Style hints should be used for presentation only. They do not replace content labels such as fn:, fn$, var:, var$, doc:, or doc$.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The file doc-sample.sh should be treated as the practical reference for the supported documentation syntax.</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionheader">Aligned Documentation</div>
+<div class="ct-L2Sectionbody"></div>
+<div class="doc-aligned-block" style="grid-template-columns:max-content minmax(0, 1fr)">
+<div class="ct-L2Sectionbody doc-aligned-cell">The renderer recognizes @</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">as an alignment token in ordinary documentation content.</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">Consecutive lines containing @</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">form one aligned block. Corresponding fields share</div>
+</div>
+<p class="ct-L2Sectionbody">the same browser-calculated column width, so proportional fonts remain correctly aligned. The token is removed from rendered output.</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="doc-aligned-block" style="grid-template-columns:max-content minmax(0, 1fr)">
+<div class="ct-L2Sectionbody doc-aligned-cell"># &gt; fn:</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">Function or method documentation</div>
+<div class="ct-L2Sectionbody doc-aligned-cell"># &gt; var:</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">Variable documentation</div>
+<div class="ct-L2Sectionbody doc-aligned-cell"># &gt; cls:</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">Class documentation</div>
+<div class="ct-L2Sectionbody doc-aligned-cell"># &gt; doc:</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">General documentation</div>
+</div>
+<div class="ct-L2Sectionbody"></div>
+<div class="doc-aligned-block" style="grid-template-columns:max-content minmax(0, 1fr)">
+<div class="ct-L2Sectionbody doc-aligned-cell">More than two columns are allowed by using @</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">more than once on each line. Alignment</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">ends when the next rendered documentation line does not contain @</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">. The processor</div>
+</div>
+<p class="ct-L2Sectionbody">preserves the token as content; alignment is intentionally renderer-owned.</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionheader">Tables</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Documentation can embed tabular data directly in structured source comments. A table begins with a highlighted Table marker. The following documentation lines are collected as table rows until a blank documentation line ends the table.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Table cells are separated by a double colon (::). The first table row is always the semantic header row and is rendered using &lt;thead&gt; and &lt;th&gt;; following rows are rendered using &lt;tbody&gt; and &lt;td&gt;. Column widths are left to the browser and stylesheet.</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    # . Table</div>
+<div class="ct-L2Sectionbody">    # ! Name :: Description :: Status</div>
+<div class="ct-L2Sectionbody">    # Framework :: Core SolidGroundUX framework :: Active</div>
+<div class="ct-L2Sectionbody">    # Console :: Management console modules :: Active</div>
+<div class="ct-L2Sectionbody">    #</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The first row may use the emphasis marker (!) as a visual style hint. This does not change its table semantics: the first row remains the header. Following rows use normal documentation lines so they remain part of the table. The processor preserves the :: separators as content; table recognition, cell splitting, and HTML semantics belong to the renderer.</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionheader">Images</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Documentation can embed one image or a group of images directly from structured source comments. An image block begins with a label or highlight line whose content is exactly Image or Images, followed by one or more normal documentation lines. A blank documentation line ends the image block.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The common construction is:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    # : Images</div>
+<div class="ct-L2Sectionbody">    # File name.png</div>
+<div class="ct-L2Sectionbody">    # Another image.png :: Optional caption</div>
+<div class="ct-L2Sectionbody">    #</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Singular Image is also accepted:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    # : Image</div>
+<div class="ct-L2Sectionbody">    # Architecture.png :: Framework architecture</div>
+<div class="ct-L2Sectionbody">    #</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The marker may use either the label (:) or highlight (.) style hint. Image entries themselves must remain normal documentation lines. The optional caption is separated from the filename or source by a double colon (::). When no caption is supplied, the renderer derives alternative text from the filename.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Relative filenames are resolved beneath the generated assets/images directory. Each selected documentation product may provide documentation assets beneath:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    &lt;product-source-root&gt;/usr/local/assets</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The generator supplies these product asset directories to the renderer. Their flat contents are merged into the generated documentation assets/images directory without renaming files, so asset filenames are expected to be globally unique across products. Sources beginning with assets/ are resolved relative to the generated documentation asset root. Absolute paths, http/https URLs, and data URLs are also accepted by the renderer.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Consecutive image entries are rendered as one responsive image group. The renderer selects layouts for one, two, three, or four-column groups automatically; larger groups continue using the four-column layout.</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionheader">Generated Output</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The generated documentation consists of an HTML index, content pages, stylesheet assets, images, appendices, glossary pages, integrity information, and renderer-owned site branding. Documented SolidGroundUX style modules can also receive generated semantic theme specimens derived from their actual style and palette assignments.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Project-level appendices are supplied from repository/project sources such as the canonical architecture/conventions document, CHANGELOG, INSTALL guide, and license. These prose sources should be maintained alongside the project and regenerated into the HTML set rather than editing generated appendix pages directly.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The output is intentionally static HTML so it can be viewed in any browser without requiring a web server, database, or application runtime.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">This makes the documentation easy to publish, archive, review, and distribute together with a release package.</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionheader">Prefaces and Epilogues</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Documentation-only sources can provide introductory or closing content for a product, group, or subgroup. The renderer recognizes these sources as prefaces or epilogues and places them in the generated index around the normal content at the corresponding hierarchy level.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The role is primarily selected by the Metadata Purpose value:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="doc-aligned-block" style="grid-template-columns:max-content minmax(0, 1fr)">
+<div class="ct-L2Sectionbody doc-aligned-cell">Product preface</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">First documentation entry beneath the product</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">Product epilogue</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">Final documentation entry beneath the product</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">Group preface</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">First documentation entry beneath the named Group</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">Group epilogue</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">Final documentation entry beneath the named Group</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">Subgroup preface</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">First documentation entry beneath the named Subgroup</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">Subgroup epilogue</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">Final documentation entry beneath the named Subgroup</div>
+</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Group and Subgroup metadata determine where group- and subgroup-level sources are placed. Product-level sources belong directly to their product. A preface is emitted before the normal modules at that level; an epilogue is emitted after them. These files therefore affect both page order and the generated navigation index.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Filename recognition is also supported as a compatibility fallback. The renderer recognizes conventional names based on the product, group, or subgroup name followed by a preface or epilogue suffix. Names are normalized for matching, so hyphens, spaces, and underscores in the logical name do not define the hierarchy themselves.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">New documentation sources should make the role explicit through Purpose rather than relying on filename inference. This keeps placement independent of the physical doc-sources filename and leaves Group and Subgroup metadata as the authoritative description of where the content belongs.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Example group preface metadata:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    Group       : Deployment</div>
+<div class="ct-L2Sectionbody">    Purpose     : Group preface</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Example subgroup epilogue metadata:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    Group       : SDK</div>
+<div class="ct-L2Sectionbody">    Subgroup    : Documentation Generator</div>
+<div class="ct-L2Sectionbody">    Purpose     : Subgroup epilogue</div>
+<div class="ct-L2Sectionbody"></div>
+<div class="doc-image-group images-1">
+<figure class="doc-image">
+<img src="../assets/images/sdk-documentation-system.png" alt="Documentation System overview" loading="lazy">
+<figcaption>Documentation System overview</figcaption>
+</figure>
+</div>
+<div class="ct-L2Sectionheader">Documentation Conventions</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Documentation comments should be written as part of normal development, not as an afterthought at release time.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Module headers should be kept complete and current.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Public functions should include enough information for another developer to understand their purpose, expected inputs, output, return behavior, and typical usage.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Internal helpers may use shorter documentation, but should still explain intent when the behavior is not obvious.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Empty documentation separator lines should use a plain comment line rather than a quoted documentation line, to avoid stray quote markers in rendered output.</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionheader">Why Source-Based Documentation</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Script-heavy projects are especially vulnerable to documentation drift. Bash and Python source files are easy to change quickly, and separate documentation is easy to forget.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">SolidGroundUX avoids this by treating source comments as the primary documentation source.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">This does not remove the need for prose, examples, or architectural explanation, but it does make the reference documentation much more likely to stay close to the implementation.</p>
+</main>
+</body>
+</html>

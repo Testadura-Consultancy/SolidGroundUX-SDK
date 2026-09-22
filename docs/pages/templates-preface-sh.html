@@ -1,0 +1,79 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>SolidGroundUX - Script templates </title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">SolidGroundUX - Script templates </div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / templates_preface.sh</div>
+</header>
+<div class="ct-L1Sectionheader">Templates</div>
+<div class="ct-L1Sectionbody"></div>
+<p class="ct-L1Sectionbody">The Templates group contains the starting points for creating new SolidGroundUX-compatible scripts, libraries, console modules, and wrappers.</p>
+<div class="ct-L1Sectionbody"></div>
+<p class="ct-L1Sectionbody">These templates are intended to capture the current recommended structure for each type of component. Starting from a template helps keep bootstrap logic, metadata headers, documentation comments, guards, naming conventions, and runtime behavior consistent across projects.</p>
+<div class="ct-L1Sectionbody"></div>
+<div class="ct-L2Sectionheader">Template Overview</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The group contains four main templates:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    exe-template.sh</div>
+<div class="ct-L2Sectionbody">        Template for executable command-line tools.</div>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    lib-template.sh</div>
+<div class="ct-L2Sectionbody">        Template for reusable source-only libraries.</div>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    mod-template.sh</div>
+<div class="ct-L2Sectionbody">        Template for SolidGround Management Console page modules.</div>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    wrapper-template</div>
+<div class="ct-L2Sectionbody">        Template for lightweight launcher scripts.</div>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionheader">Executable Template</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The executable template is used for scripts that are intended to be run directly by a user, administrator, scheduled task, or another process.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">It contains the canonical executable locator/bootstrap structure. The locator derives the active framework root from the script path and loads `sgnd-exe-common.sh`; the template then declares dependencies, arguments, state/config contracts, and enters the framework through `sgnd_exe_start` from `main`.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">New command-line tools should normally start from this template rather than copying bootstrap code from an existing script. The template represents the current intended executable structure.</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionheader">Library Template</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The library template is used for reusable Bash libraries that are meant to be sourced, not executed directly.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">It contains the standard library guard pattern. The guard prevents accidental direct execution, avoids repeated initialization when the same library is sourced more than once, and marks the library as loaded before normal initialization continues.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Libraries created from this template should expose reusable functionality through public functions and keep implementation helpers internal where appropriate.</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionheader">Console Module Template</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The module template is used for page modules loaded by the SolidGround Management Console. A module is source-only and is sourced only when its page is first opened. It registers menu groups and items through the public `sgnd_menu_*` API, but should not perform the actual action until the user selects the corresponding menu item.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The main index discovers pages before sourcing them, so each module must expose its page name and description as literal `*_MODULE_NAME=&quot;...&quot;` and `*_MODULE_DESC=&quot;...&quot;` assignments. Computed values cannot be used for these two discovery fields.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Modules must not depend on another lazy-loaded page having been opened first. A helper required by multiple modules belongs in `console-helpers.sh` or another appropriately scoped common library.</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionheader">Wrapper Template</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The wrapper template is used for small launcher scripts.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">A wrapper should contain as little logic as possible. Its primary job is to locate and invoke the real implementation script in the expected framework location.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Wrappers keep user-facing commands short and stable while allowing the implementation to live in the appropriate libexec or framework directory.</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionheader">Why Templates Matter</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The templates exist to prevent every script from becoming a slightly different interpretation of the same framework rules.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">They provide a known-good starting point for metadata, bootstrap structure, documentation comments, guards, dependency declarations, and main execution flow.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">When framework conventions evolve, the templates should be updated first. New scripts can then inherit the improved pattern without requiring developers to rediscover the correct structure by reading older files.</p>
+</main>
+</body>
+</html>

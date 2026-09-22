@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>SolidGroundUX - System Utilities</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">SolidGroundUX - System Utilities</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / sgnd-system.sh</div>
+</header>
+<div class="ct-modulebody sh-label">Description</div>
+<div class="ct-modulebody">  Contains environment-aware helpers that sit above sgnd-core.</div>
+<div class="ct-modulebody"></div>
+<div class="ct-modulebody sh-label">The library</div>
+<div class="ct-modulebody">    - Provides root/sudo/runtime guards</div>
+<div class="ct-modulebody">    - Exposes OS, network, and service-state helpers</div>
+<div class="ct-modulebody">    - Includes ownership and permission normalization helpers</div>
+<div class="ct-modulebody">    - Keeps operational/debug output close to procedural system actions</div>
+<div class="ct-modulebody"></div>
+<div class="ct-modulebody sh-label">Design principles</div>
+<div class="ct-modulebody">  - Keep system behavior out of sgnd-core</div>
+<div class="ct-modulebody">  - Depend on framework bootstrap guarantees for minimal say* functions</div>
+<div class="ct-modulebody">  - Prefer explicit operational helpers over mixing host logic into generic primitives</div>
+<div class="ct-modulebody">  - Keep behavior predictable and side effects documented</div>
+<div class="ct-modulebody"></div>
+<div class="ct-modulebody sh-label">Role in framework</div>
+<div class="ct-modulebody">  - System/runtime layer above sgnd-core</div>
+<div class="ct-modulebody">  - Used by installers, setup routines, and host-aware modules</div>
+<div class="ct-modulebody">  - Centralizes platform and privilege helpers</div>
+<div class="ct-modulebody"></div>
+<div class="ct-modulebody sh-label">Non-goals</div>
+<div class="ct-modulebody">  - Business logic or application-specific behavior</div>
+<div class="ct-modulebody">  - Interactive UI rendering or menu behavior</div>
+<div class="ct-modulebody">  - Generic string/array/text helpers (handled in sgnd-core)</div>
+<div class="ct-modulebody"></div>
+</main>
+</body>
+</html>

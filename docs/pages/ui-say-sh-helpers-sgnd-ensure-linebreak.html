@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Ensure linebreak</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Ensure linebreak</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / ui-say.sh / Helpers / _sgnd_ensure_linebreak</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Ensure the next message starts on a clean line after progress output.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Preserves the existing SolidGroundUX console/UI behavior.</div>
+<div class="ct-functionbody">  - Uses current palette, style, runtime, or logging globals where applicable.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Arguments</div>
+<div class="ct-functionbody">  $@ - Values consumed by the helper. See usage for the expected call shape.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Output</div>
+<div class="ct-functionbody">  Writes formatted text or computed values to stdout unless the function targets /dev/tty.</div>
+<div class="ct-functionbody"></div>
+<p class="ct-functionbody">Outputs (globals):</p>
+<div class="ct-functionbody">  Updates SolidGroundUX UI/runtime globals documented by the function body.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 on success.</div>
+<div class="ct-functionbody">  Non-zero when validation, resolution, I/O, or user cancellation fails.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  _sgnd_ensure_linebreak &quot;example&quot;</div>
+</main>
+</body>
+</html>

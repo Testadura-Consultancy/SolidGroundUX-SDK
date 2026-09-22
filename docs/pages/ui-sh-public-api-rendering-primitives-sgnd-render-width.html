@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Resolve an effective console render width</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Resolve an effective console render width</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / ui.sh / Public API / Rendering primitives / sgnd_render_width</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Resolve the width used by SolidGroundUX console rendering primitives.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Measures the current terminal width whenever the function is called.</div>
+<div class="ct-functionbody">  - Uses an explicit requested width when supplied and smaller than the terminal.</div>
+<div class="ct-functionbody">  - Otherwise uses the full current terminal width.</div>
+<div class="ct-functionbody">  - Treats a requested width of 0 as the current terminal width.</div>
+<div class="ct-functionbody">  - Never exceeds the current terminal width.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Arguments</div>
+<div class="ct-functionbody">  $1  REQUESTED_WIDTH (optional)</div>
+<div class="ct-functionbody">      Requested render width.</div>
+<div class="ct-functionbody">      Empty or 0 uses the current terminal width.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Output</div>
+<div class="ct-functionbody">  Writes the resolved width to stdout.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 always.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  sgnd_render_width</div>
+<div class="ct-functionbody">  sgnd_render_width 120</div>
+</main>
+</body>
+</html>

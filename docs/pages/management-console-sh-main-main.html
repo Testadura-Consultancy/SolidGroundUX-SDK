@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Run the SolidGround management console</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Run the SolidGround management console</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / management-console.sh / Main / main</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Initialize the framework, discover console pages, and run the interactive host.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Resolves and starts the SolidGroundUX framework runtime.</div>
+<div class="ct-functionbody">  - Loads console configuration and persisted console state.</div>
+<div class="ct-functionbody">  - Creates the menu model and registers built-in navigation items.</div>
+<div class="ct-functionbody">  - Discovers enabled module files and registers lightweight index-page metadata.</div>
+<div class="ct-functionbody">  - Does not source a page module until that page is first opened.</div>
+<div class="ct-functionbody">  - Retains loaded page modules for the remainder of the console session.</div>
+<div class="ct-functionbody">  - Runs the interactive index/page navigation and action-dispatch loop.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Arguments</div>
+<div class="ct-functionbody">  $@  Framework and console command-line arguments.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  Exits with the resulting status from framework startup or console execution.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  main &quot;$@&quot;</div>
+</main>
+</body>
+</html>

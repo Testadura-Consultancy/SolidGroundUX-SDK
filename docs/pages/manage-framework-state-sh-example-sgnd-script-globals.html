@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Script globals participating in configuration loading# var: SGND_SCRIPT_GLOBALS - Script globals participating in configuration loading</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Script globals participating in configuration loading# var: SGND_SCRIPT_GLOBALS - Script globals participating in configuration loading</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / manage-framework-state.sh / Example / SGND_SCRIPT_GLOBALS</div>
+</header>
+<p class="ct-variablebody">Explicit declaration of global variables intentionally used by this script.</p>
+<div class="ct-variablebody"></div>
+<div class="ct-variablebody sh-highlight">Purpose</div>
+<div class="ct-variablebody">  - Declares which globals are part of the script’s public/config contract.</div>
+<div class="ct-variablebody">  - Enables optional configuration loading when non-empty.</div>
+<div class="ct-variablebody"></div>
+<div class="ct-variablebody sh-highlight">Behavior</div>
+<div class="ct-variablebody">  - If this array is non-empty, sgnd_bootstrap enables config integration.</div>
+<div class="ct-variablebody">  - Variables listed here may be populated from configuration files.</div>
+<div class="ct-variablebody">  - Unlisted globals will NOT be auto-populated.</div>
+<div class="ct-variablebody"></div>
+<p class="ct-variablebody">Use this to:</p>
+<div class="ct-variablebody">  - Document intentional globals</div>
+<div class="ct-variablebody">  - Prevent accidental namespace leakage</div>
+<div class="ct-variablebody">  - Make configuration behavior explicit and predictable</div>
+<div class="ct-variablebody"></div>
+<p class="ct-variablebody">Only list:</p>
+<div class="ct-variablebody">  - Variables that must be globally accessible</div>
+<div class="ct-variablebody">  - Variables that may be defined in config files</div>
+<div class="ct-variablebody"></div>
+<p class="ct-variablebody">Leave empty if:</p>
+<div class="ct-variablebody">  - The script does not use configuration-driven globals</div>
+</main>
+</body>
+</html>

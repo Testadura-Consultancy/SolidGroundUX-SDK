@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Persistent renderer input cache directory</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Persistent renderer input cache directory</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / doc-renderer.sh / Local definitions / DOC_RENDER_CACHE_DIR</div>
+</header>
+<div class="ct-variablebody sh-highlight">Purpose</div>
+<div class="ct-variablebody">  Hold the complete exported renderer input set for fast HTML-only rebuilds.</div>
+<div class="ct-variablebody"></div>
+<div class="ct-variablebody sh-highlight">Behavior</div>
+<div class="ct-variablebody">  - Defaults to a hidden directory beneath VAL_OUTDIR.</div>
+<div class="ct-variablebody">  - Is refreshed after Full, Selected, and Changed generation.</div>
+<div class="ct-variablebody">  - Is consumed directly by Render mode without reparsing source files.</div>
+<div class="ct-variablebody">  - May be overridden by callers before rendering.</div>
+</main>
+</body>
+</html>

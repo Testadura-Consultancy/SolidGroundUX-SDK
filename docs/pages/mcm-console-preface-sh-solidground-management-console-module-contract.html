@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Module Contract</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Module Contract</div>
+  <div class="doc-breadcrumb">mcm_console_preface.sh::SolidGround Management Console:Module Contract:</div>
+</header>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">A console module is a source-only Bash file and follows the canonical module pattern: metadata, library guard, module metadata, helpers/actions, then console registration.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Its page name remains available as a literal assignment for lightweight discovery:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    SGND_&lt;SUBJECT&gt;_MODULE_NAME=&quot;Display Name&quot;</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Version and description come from the canonical comment header and are read through the framework header-parser API.</p>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The module is sourced only after the page is selected. At that point it registers its detailed menu model with:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    sgnd_menu_register_group</div>
+<div class="ct-L2Sectionbody">    sgnd_menu_register_item</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">Functions must be defined before the registrations that reference them. Modules should use the standard source-only guard so loading remains idempotent. Shared cross-module helpers must be provided by a common library instead of relying on another lazy-loaded page to have been opened first.</p>
+<div class="ct-L2Sectionbody"></div>
+</main>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Persist module visibility state</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Persist module visibility state</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / management-console.sh / Module visibility / _sgnd_console_module_state_set</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Save one module&#x27;s enabled/disabled state without sourcing that module.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Arguments</div>
+<div class="ct-functionbody">  $1  MODULE_ID - Filename-derived console module ID.</div>
+<div class="ct-functionbody">  $2  STATE     - Either enabled or disabled.</div>
+<div class="ct-functionbody"></div>
+<p class="ct-functionbody">Side effects:</p>
+<div class="ct-functionbody">  Rewrites SGND_CONSOLE_MODULE_STATE_FILE atomically.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 when the state file is updated; 1 on filesystem failure; 2 for an invalid state.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  _sgnd_console_module_state_set &quot;storage&quot; &quot;disabled&quot;</div>
+</main>
+</body>
+</html>

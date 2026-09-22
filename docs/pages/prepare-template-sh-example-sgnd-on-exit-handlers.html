@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Script-specific exit handler list</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Script-specific exit handler list</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / prepare-template.sh / Example / SGND_ON_EXIT_HANDLERS</div>
+</header>
+<p class="ct-variablebody">List of functions to be invoked on script termination.</p>
+<div class="ct-variablebody"></div>
+<div class="ct-variablebody sh-highlight">Purpose</div>
+<div class="ct-variablebody">  - Allows scripts to register cleanup or finalization hooks.</div>
+<div class="ct-variablebody"></div>
+<div class="ct-variablebody sh-highlight">Behavior</div>
+<div class="ct-variablebody">  - Functions listed here are executed during framework exit handling.</div>
+<div class="ct-variablebody">  - Execution order follows array order.</div>
+<div class="ct-variablebody">  - Handlers run regardless of normal exit or controlled termination.</div>
+<div class="ct-variablebody"></div>
+<p class="ct-variablebody">Contract:</p>
+<div class="ct-variablebody">  - Functions must exist before exit occurs.</div>
+<div class="ct-variablebody">  - Handlers must not call exit directly.</div>
+<div class="ct-variablebody">  - Handlers should be idempotent (safe if executed once).</div>
+<div class="ct-variablebody"></div>
+<p class="ct-variablebody">Typical uses:</p>
+<div class="ct-variablebody">  - Cleanup temporary files</div>
+<div class="ct-variablebody">  - Persist additional state</div>
+<div class="ct-variablebody">  - Release locks</div>
+<div class="ct-variablebody"></div>
+<p class="ct-variablebody">Leave empty if:</p>
+<div class="ct-variablebody">  - No custom exit behavior is required.</div>
+</main>
+</body>
+</html>

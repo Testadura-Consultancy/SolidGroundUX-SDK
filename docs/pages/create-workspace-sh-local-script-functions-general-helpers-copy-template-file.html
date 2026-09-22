@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Copy one template file into the workspace</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Copy one template file into the workspace</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / create-workspace.sh / Local script functions / General helpers / _copy_template_file</div>
+</header>
+<div class="ct-functionbody sh-highlight">Purpose</div>
+<div class="ct-functionbody">  Copy a single template file to a target location.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Behavior</div>
+<div class="ct-functionbody">  - Verifies the source template exists.</div>
+<div class="ct-functionbody">  - Creates the destination parent directory when needed.</div>
+<div class="ct-functionbody">  - Honors dry-run mode by reporting the intended action only.</div>
+<div class="ct-functionbody">  - Records the destination file in the manifest only when it did not exist before.</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Arguments</div>
+<div class="ct-functionbody">  $1  Source template file</div>
+<div class="ct-functionbody">  $2  Destination file</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Returns</div>
+<div class="ct-functionbody">  0 on success</div>
+<div class="ct-functionbody">  1 on failure</div>
+<div class="ct-functionbody"></div>
+<div class="ct-functionbody sh-highlight">Usage</div>
+<div class="ct-functionbody">  _copy_template_file &quot;/tmp/sgnd-example.txt&quot; &quot;/tmp/sgnd-example.txt&quot; &quot;/tmp/sgnd-example.txt&quot;</div>
+</main>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>SolidGroundUX SDK - Create Workspace</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">SolidGroundUX SDK - Create Workspace</div>
+  <div class="doc-breadcrumb">SolidGroundUX Codex / create-workspace.sh</div>
+</header>
+<div class="ct-modulebody sh-label">Description</div>
+<div class="ct-modulebody">  Provides a developer utility that scaffolds a new project workspace</div>
+<div class="ct-modulebody">  into a target directory using the framework&#x27;s standard template layout.</div>
+<div class="ct-modulebody"></div>
+<div class="ct-modulebody sh-label">The script</div>
+<div class="ct-modulebody">    - Resolves project name and target folder</div>
+<div class="ct-modulebody">    - Creates a repository-shaped target-root structure</div>
+<div class="ct-modulebody">    - Lists installed convenience templates and lets the user choose which to copy</div>
+<div class="ct-modulebody">    - Copies the selected convenience templates into the new project workspace</div>
+<div class="ct-modulebody">    - Creates project-namespaced definitions in the SolidGroundUX globals folder</div>
+<div class="ct-modulebody">    - Optionally creates a simple 95-&lt;project&gt; MOTD identity entry</div>
+<div class="ct-modulebody">    - Generates a VS Code workspace file and standard .gitignore and .release-ignore</div>
+<div class="ct-modulebody">    - Optionally initializes Git and creates/pushes a GitHub repository using gh</div>
+<div class="ct-modulebody"></div>
+<div class="ct-modulebody sh-label">Design principles</div>
+<div class="ct-modulebody">  - Workspace creation is deterministic and repeatable</div>
+<div class="ct-modulebody">  - Follows SolidGroundUX project conventions</div>
+<div class="ct-modulebody">  - Supports dry-run for all filesystem operations</div>
+<div class="ct-modulebody"></div>
+<div class="ct-modulebody sh-label">Role in framework</div>
+<div class="ct-modulebody">  - Entry point for initializing new development workspaces</div>
+<div class="ct-modulebody">  - Ensures consistent project structure across environments</div>
+<div class="ct-modulebody"></div>
+<div class="ct-modulebody sh-label">Non-goals</div>
+<div class="ct-modulebody">  - Deployment or installation of runtime environments</div>
+<div class="ct-modulebody">  - Managing existing workspaces beyond initial scaffolding</div>
+<div class="ct-modulebody"></div>
+</main>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>SolidGround Management Console</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">SolidGround Management Console</div>
+  <div class="doc-breadcrumb">mcm_console_preface.sh:::SolidGround Management Console:</div>
+</header>
+<div class="doc-image-group images-1">
+<figure class="doc-image">
+<img src="../assets/images/mcm-console-overview.png" alt="SolidGround Management Console." loading="lazy">
+<figcaption>SolidGround Management Console.</figcaption>
+</figure>
+</div>
+<p class="ct-L1Sectionbody">The SolidGround Management Console is the interactive administration shell for SolidGroundUX. It is built from a generic console host, a reusable menu engine, and source-only functional modules.</p>
+<div class="ct-L1Sectionbody"></div>
+<p class="ct-L1Sectionbody">The console deliberately separates discovery from loading. At startup it discovers the available module files and reads only the literal module name and description required to build the main index. The module body is not sourced until its page is selected.</p>
+<div class="ct-L1Sectionbody"></div>
+<p class="ct-L1Sectionbody">Once a module has been opened it remains loaded for the lifetime of the console process. Returning to the index does not unload it, and opening the page again does not source it a second time.</p>
+<div class="ct-L1Sectionbody"></div>
+</main>
+</body>
+</html>

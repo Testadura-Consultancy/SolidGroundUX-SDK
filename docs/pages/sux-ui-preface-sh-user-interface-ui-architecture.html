@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>UI Architecture</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">UI Architecture</div>
+  <div class="doc-breadcrumb">sux-ui_preface.sh::User Interface:UI Architecture:</div>
+</header>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The UI group is divided into small layers with distinct responsibilities:</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    ui-glyphs.sh</div>
+<div class="ct-L2Sectionbody">        Shared symbols, separators, arrows, and fallback characters</div>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    ui.sh</div>
+<div class="ct-L2Sectionbody">        Core rendering, colors, themes, widths, title bars, sections, and values</div>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    ui-say.sh</div>
+<div class="ct-L2Sectionbody">        Message semantics, log-level filtering, console output, and file logging</div>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    ui-ask.sh</div>
+<div class="ct-L2Sectionbody">        Typed prompts, choices, validation, forms, and direct terminal input</div>
+<div class="ct-L2Sectionbody"></div>
+<div class="ct-L2Sectionbody">    ui-dlg.sh</div>
+<div class="ct-L2Sectionbody">        Higher-level decisions and dialog-oriented interaction flows</div>
+<div class="ct-L2Sectionbody"></div>
+<p class="ct-L2Sectionbody">The lower layers do not depend on application-specific behavior. Higher layers build on the rendering and input primitives below them. This keeps formatting, messaging, and interaction concerns separate while still presenting one coherent interface to applications.</p>
+<div class="ct-L2Sectionbody"></div>
+</main>
+</body>
+</html>

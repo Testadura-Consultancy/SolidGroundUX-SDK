@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Aligned Documentation</title>
+  <link rel="stylesheet" href="../assets/doc.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<main class="doc-page">
+<div class="doc-page-branding"><span class="doc-page-branding-title">SolidGroundUX Documentation</span><img src="../assets/branding/doc-header-logo.png" alt="SolidGroundUX"></div>
+<header class="doc-page-header">
+  <div class="doc-title">Aligned Documentation</div>
+  <div class="doc-breadcrumb">sdk-documentation_preface.sh::Documentation Generator:Aligned Documentation:</div>
+</header>
+<div class="ct-L2Sectionbody"></div>
+<div class="doc-aligned-block" style="grid-template-columns:max-content minmax(0, 1fr)">
+<div class="ct-L2Sectionbody doc-aligned-cell">The renderer recognizes @</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">as an alignment token in ordinary documentation content.</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">Consecutive lines containing @</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">form one aligned block. Corresponding fields share</div>
+</div>
+<p class="ct-L2Sectionbody">the same browser-calculated column width, so proportional fonts remain correctly aligned. The token is removed from rendered output.</p>
+<div class="ct-L2Sectionbody"></div>
+<div class="doc-aligned-block" style="grid-template-columns:max-content minmax(0, 1fr)">
+<div class="ct-L2Sectionbody doc-aligned-cell"># &gt; fn:</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">Function or method documentation</div>
+<div class="ct-L2Sectionbody doc-aligned-cell"># &gt; var:</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">Variable documentation</div>
+<div class="ct-L2Sectionbody doc-aligned-cell"># &gt; cls:</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">Class documentation</div>
+<div class="ct-L2Sectionbody doc-aligned-cell"># &gt; doc:</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">General documentation</div>
+</div>
+<div class="ct-L2Sectionbody"></div>
+<div class="doc-aligned-block" style="grid-template-columns:max-content minmax(0, 1fr)">
+<div class="ct-L2Sectionbody doc-aligned-cell">More than two columns are allowed by using @</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">more than once on each line. Alignment</div>
+<div class="ct-L2Sectionbody doc-aligned-cell">ends when the next rendered documentation line does not contain @</div>
+<div class="ct-L2Sectionbody doc-aligned-cell doc-aligned-last">. The processor</div>
+</div>
+<p class="ct-L2Sectionbody">preserves the token as content; alignment is intentionally renderer-owned.</p>
+<div class="ct-L2Sectionbody"></div>
+</main>
+</body>
+</html>
