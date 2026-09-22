@@ -4,8 +4,8 @@
 # -------------------------------------------------------------------------------------
 # Metadata:
 #   Version     : 2.1
-#   Build       : 2626414
-#   Checksum    : 80ad4344c8837911fb64ea077df90b6b568dec8c27b7cfb23e31d71fddcbcb68
+#   Build       : 2626501
+#   Checksum    : 41ba44738d62f339c0436e7121fcaabfd022772fae0f9e5c67f681ed963875ea
 #   Source      : receive-files.sh
 #   Type        : script
 #   Group       : SDK
@@ -118,7 +118,6 @@ set -uo pipefail
         # shellcheck source=/dev/null
         source "$exe_common"
     }
-
 # - Script metadata (identity) ------------------------------------------------------
     SGND_SCRIPT_FILE="$(readlink -f "${BASH_SOURCE[0]}")"
     SGND_SCRIPT_DIR="$(cd -- "$(dirname -- "$SGND_SCRIPT_FILE")" && pwd)"

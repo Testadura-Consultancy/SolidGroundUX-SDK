@@ -4,8 +4,8 @@
 # ------------------------------------------------------------------------------------
 # Metadata:
 #   Version     : 2.1
-#   Build       : 2626414
-#   Checksum    : ed65a744b1407f03da38396c930cb161af4d52fba6a8d5e197e869929d44d940
+#   Build       : 2626501
+#   Checksum    : ed10534f13f71920a1f2cc34a56a7aa032b5bac6e83f2091b47bc17a2bb4033c
 #   Source      : doc-generator.sh
 #   Type        : script
 #   Group       : SDK
@@ -132,7 +132,6 @@ set -uo pipefail
         # shellcheck source=/dev/null
         source "$exe_common"
     }
-
 # - Script identity ----------------------------------------------------------------
     SGND_SCRIPT_FILE="$(readlink -f "${BASH_SOURCE[0]}")"
     SGND_SCRIPT_DIR="$(cd -- "$(dirname -- "$SGND_SCRIPT_FILE")" && pwd)"

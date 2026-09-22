@@ -4,8 +4,8 @@
 # -------------------------------------------------------------------------------------
 # Metadata:
 #   Version     : 2.1
-#   Build       : 2626414
-#   Checksum    : 02d4ac758b6dcad45dbf09c6d7786b9bf982f041bb6e1edae1abbacbfe4972d9
+#   Build       : 2626501
+#   Checksum    : 19a413eb0e6f7b52eecbfbd8bb2f7cb581d53e0ef89283c817b4d00612a1f6f0
 #   Source      : create-wrappers.sh
 #   Type        : script
 #   Group       : SDK
@@ -130,7 +130,6 @@ set -uo pipefail
         # shellcheck source=/dev/null
         source "$exe_common"
     }
-
 # - Script identity ------------------------------------------------------------------
     SGND_SCRIPT_FILE="$(readlink -f "${BASH_SOURCE[0]}")"
     SGND_SCRIPT_DIR="$(cd -- "$(dirname -- "$SGND_SCRIPT_FILE")" && pwd)"

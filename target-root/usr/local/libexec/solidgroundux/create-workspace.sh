@@ -4,8 +4,8 @@
 # -------------------------------------------------------------------------------------
 # Metadata:
 #   Version     : 2.1
-#   Build       : 2626414
-#   Checksum    : deaa3d2211abae565ec2e9094ba9af573d66c1e99d29b28e1ee9ac4d0133d922
+#   Build       : 2626501
+#   Checksum    : 4ff35fd1d24ec419ee26760a6168ebca9d9e9048eef0b50fcb7e7c01d003aa92
 #   Source      : create-workspace.sh
 #   Type        : script
 #   Group       : SDK
@@ -133,7 +133,6 @@ set -uo pipefail
         # shellcheck source=/dev/null
         source "$exe_common"
     }
-
 # - Script metadata -----------------------------------------------------------------
     SGND_SCRIPT_FILE="$(readlink -f "${BASH_SOURCE[0]}")"
     SGND_SCRIPT_DIR="$(cd -- "$(dirname -- "$SGND_SCRIPT_FILE")" && pwd)"
@@ -172,6 +171,7 @@ set -uo pipefail
             #   - Parsed values become available in the configured target variables.
         SGND_ARGS_SPEC=(
             "project|p|value|PROJECT_NAME|Project name|"
+            "description||value|PROJECT_DESCRIPTION|Project description|"
             "product||value|PRODUCT_NAME|Product name|"
             "group||value|PROJECT_GROUP|Generated script group|"
             "subgroup||value|PROJECT_SUBGROUP|Generated script subgroup|"
@@ -251,6 +251,7 @@ set -uo pipefail
             PROJECT_GROUP
             PROJECT_SUBGROUP
             PROJECT_ROOT
+            PROJECT_DESCRIPTION
         )
 
         # SGND_ON_EXIT_HANDLERS
@@ -568,8 +569,12 @@ set -uo pipefail
             mkdir -p -- "$(dirname -- "$target")" || return 1
             _copy_template_file "$source" "$target" || return 1
             _specialize_generated_file "$target" "$name" "${STARTER_GROUPS[i]}" "${STARTER_SUBGROUPS[i]}" || return 1
-            [[ "$template" == "exe-template.sh" || "$template" == "mod-template.sh" || "$template" == "wrapper-template" || "$template" == "doc-template.sh" ]] && chmod +x -- "$target"
+            if [[ "$template" == "exe-template.sh" || "$template" == "mod-template.sh" || "$template" == "wrapper-template" || "$template" == "doc-template.sh" ]]; then
+                chmod +x -- "$target" || return 1
+            fi
         done
+
+        return 0
     }
 
     # fn: _copy_workspace_templates - Copy shared convenience templates into the workspace
@@ -616,26 +621,31 @@ set -uo pipefail
         return 0
     }
 
+    # fn: _workspace_layout_file - Resolve the SDK-owned workspace layout configuration
+    _workspace_layout_file() {
+        local candidate=""
+        local -a candidates=(
+            "${SGND_FRAMEWORK_ROOT%/}/usr/local/share/solidgroundux/workspace-layout.cfg"
+            "/usr/local/share/solidgroundux/workspace-layout.cfg"
+        )
+        for candidate in "${candidates[@]}"; do
+            [[ -r "$candidate" ]] && { printf '%s\n' "$candidate"; return 0; }
+        done
+        return 1
+    }
+
     # fn: _get_project_directories - Resolve the standard project directory layout
     _get_project_directories() {
         local -n out_ref=$1
-
-        out_ref=(
-            "target-root"
-            "target-root/assets"
-            "target-root/etc/systemd/system"
-            "target-root/etc/update-motd.d"
-            "target-root/usr/local/assets"
-            "target-root/usr/local/bin"
-            "target-root/usr/local/sbin"
-            "target-root/usr/local/lib"
-            "target-root/usr/local/lib/solidgroundux/globals"
-            "target-root/usr/local/lib/solidgroundux/templates"
-            "target-root/usr/local/libexec"
-            "target-root/usr/local/share/doc/$PROJECT_NAME"
-            "target-root/var/lib/solidgroundux/releases"
-            "target-root/var/state"
-        )
+        local layout_file="" line="" slug=""
+        layout_file="$(_workspace_layout_file)" || { sayfail "Workspace layout configuration not found: workspace-layout.cfg"; return 1; }
+        slug="$(_project_slug)"; out_ref=()
+        while IFS= read -r line || [[ -n "$line" ]]; do
+            line="${line%%#*}"; line="${line%${line##*[![:space:]]}}"; line="${line#${line%%[![:space:]]*}}"
+            [[ -n "$line" ]] || continue
+            line="${line//\{PROJECT_NAME\}/$PROJECT_NAME}"; line="${line//\{PROJECT_SLUG\}/$slug}"
+            out_ref+=( "$line" )
+        done < "$layout_file"
     }
 
  # -- Manifest helpers
@@ -869,6 +879,8 @@ set -uo pipefail
             PROJECT_GROUP="${PROJECT_GROUP:-}"
             PROJECT_SUBGROUP="${PROJECT_SUBGROUP:-}"
             ask --label "Product name " --var PRODUCT_NAME --default "$PRODUCT_NAME" --labelwidth "$lw"
+            PROJECT_DESCRIPTION="${PROJECT_DESCRIPTION:-}"
+            ask --label "Description " --var PROJECT_DESCRIPTION --default "$PROJECT_DESCRIPTION" --labelwidth "$lw"
             ask --label "Group " --var PROJECT_GROUP --default "$PROJECT_GROUP" --labelwidth "$lw"
             ask --label "Subgroup " --var PROJECT_SUBGROUP --default "$PROJECT_SUBGROUP" --labelwidth "$lw"
 
@@ -934,6 +946,7 @@ set -uo pipefail
 
             sgnd_print_labeledvalue --label "Project name"   --value "$PROJECT_NAME"
             sgnd_print_labeledvalue --label "Product name"   --value "$PRODUCT_NAME"
+            sgnd_print_labeledvalue --label "Description"    --value "${PROJECT_DESCRIPTION:--}"
             sgnd_print_labeledvalue --label "Group"          --value "$PROJECT_GROUP"
             sgnd_print_labeledvalue --label "Subgroup"       --value "${PROJECT_SUBGROUP:--}"
             sgnd_print_labeledvalue --label "Project root"   --value "$PROJECT_ROOT"
@@ -1042,75 +1055,45 @@ set -uo pipefail
         return 1
     }
 
-    # fn: _create_workspace_project_files - Create README, CHANGELOG, and project logo
+    # fn: _definition_value - Read one generated project definition value
+    _definition_value() {
+        local file="${1:?missing definitions file}" variable="${2:?missing variable}"
+        bash -c 'source "$1"; printf "%s\n" "${!2-}"' _ "$file" "$variable"
+    }
+
+    # fn: _definition_description - Read the canonical Description section
+    _definition_description() {
+        local file="${1:?missing definitions file}"
+        awk '/^# Description:/{f=1;next} f && /^# ===/{exit} f && /^#   /{sub(/^#   /,""); if ($0!="-") print}' "$file"
+    }
+
+    # fn: _create_workspace_project_files - Create README, CHANGELOG, LICENSE, and project logo
     _create_workspace_project_files() {
-        local readme_file="${PROJECT_FOLDER}/README.md"
-        local changelog_file="${PROJECT_FOLDER}/CHANGELOG.md"
-        local asset_dir="${PROJECT_FOLDER}/target-root/usr/local/assets"
-        local slug="" logo_source="" logo_name="" logo_target=""
-        local existed_readme=0 existed_changelog=0 existed_logo=0
-
-        slug="$(_project_slug)"
-        logo_name="${slug}.png"
-        logo_target="${asset_dir}/${logo_name}"
-
-        [[ -e "$readme_file" ]] && existed_readme=1
-        [[ -e "$changelog_file" ]] && existed_changelog=1
-        [[ -e "$logo_target" ]] && existed_logo=1
-
-        if (( ${FLAG_DRYRUN:-0} )); then
-            sayinfo "Would have created $readme_file"
-            sayinfo "Would have created $changelog_file"
-            if logo_source="$(_workspace_default_logo 2>/dev/null)"; then
-                sayinfo "Would have copied project logo $logo_source -> $logo_target"
-            else
-                saywarning "Default workspace logo not found; README logo would be omitted."
-            fi
-            return 0
-        fi
-
+        local readme_file="${PROJECT_FOLDER}/README.md" changelog_file="${PROJECT_FOLDER}/CHANGELOG.md" license_file="${PROJECT_FOLDER}/LICENSE"
+        local asset_dir="${PROJECT_FOLDER}/target-root/usr/local/assets" slug="" key="" definitions_file="" logo_source="" logo_name="" logo_target=""
+        local title="" version="" build="" copyright="" description="" documentation_path=""
+        local existed_readme=0 existed_changelog=0 existed_license=0 existed_logo=0
+        slug="$(_project_slug)"; key="$(_project_key)"; definitions_file="${PROJECT_FOLDER}/target-root/usr/local/lib/solidgroundux/globals/${slug}-definitions.sh"
+        logo_name="${slug}.png"; logo_target="${asset_dir}/${logo_name}"; documentation_path="target-root/usr/local/share/doc/${PROJECT_NAME}/index.html"
+        [[ -r "$definitions_file" ]] || { sayfail "Project definitions not found: $definitions_file"; return 1; }
+        title="$(_definition_value "$definitions_file" "SGND_${key}_TITLE")" || return 1; version="$(_definition_value "$definitions_file" "SGND_${key}_VERSION")" || return 1
+        build="$(_definition_value "$definitions_file" "SGND_${key}_BUILD")" || return 1; copyright="$(_definition_value "$definitions_file" "SGND_${key}_COPYRIGHT")" || return 1
+        description="$(_definition_description "$definitions_file")" || return 1
+        [[ -e "$readme_file" ]] && existed_readme=1; [[ -e "$changelog_file" ]] && existed_changelog=1; [[ -e "$license_file" ]] && existed_license=1; [[ -e "$logo_target" ]] && existed_logo=1
+        if (( ${FLAG_DRYRUN:-0} )); then sayinfo "Would have created $readme_file"; sayinfo "Would have created $changelog_file"; sayinfo "Would have created $license_file"; return 0; fi
         mkdir -p -- "$asset_dir" || return 1
-
-        if logo_source="$(_workspace_default_logo 2>/dev/null)"; then
-            cp -- "$logo_source" "$logo_target" || return 1
-            (( existed_logo )) || _manifest_record_file "$logo_target"
-        else
-            logo_name=""
-            saywarning "Default workspace logo not found; README created without a logo."
-        fi
-
+        if logo_source="$(_workspace_default_logo 2>/dev/null)"; then cp -- "$logo_source" "$logo_target" || return 1; (( existed_logo )) || _manifest_record_file "$logo_target"; else logo_name=""; saywarning "Default workspace logo not found; README created without a logo."; fi
         {
-            printf '# %s\n\n' "${PRODUCT_NAME:-$PROJECT_NAME}"
-            printf '<table>\n<tr>\n'
-            if [[ -n "$logo_name" ]]; then
-                printf '<td width="170" align="center" valign="middle">\n'
-                printf '  <img width="96" height="96" alt="%s logo" src="target-root/usr/local/assets/%s" />\n' "${PRODUCT_NAME:-$PROJECT_NAME}" "$logo_name"
-                printf '</td>\n'
-            fi
-            printf '<td valign="middle">\n'
-            printf '<em>Help me...</em><br>\n\n'
-            printf '## Treat Bash applications like software projects.\n\n'
-            printf '<em>...but get out of my way.</em>\n'
-            printf '</td>\n</tr>\n</table>\n\n'
-            printf '<table>\n<tr>\n'
-            printf '<td width="33%%" align="center">\n  <a href="target-root/usr/local/share/doc/%s/"><strong>Documentation</strong></a><br>\n  Project reference and guides\n</td>\n' "$PROJECT_NAME"
+            printf '<table>\n<tr>\n'; [[ -n "$logo_name" ]] && printf '<td width="170" align="center" valign="middle">\n  <img width="96" height="96" alt="%s logo" src="target-root/usr/local/assets/%s" />\n</td>\n' "$title" "$logo_name"
+            printf '<td valign="middle">\n<h1>%s</h1>\n<strong>Version %s.%s</strong>' "$title" "$version" "$build"; [[ -n "$copyright" ]] && printf ' &middot; %s' "$copyright"; printf '\n</td>\n</tr>\n</table>\n\n'
+            printf '<table>\n<tr>\n<td width="33%%" align="center">\n  <a href="%s"><strong>Documentation</strong></a><br>\n  Project reference and guides\n</td>\n' "$documentation_path"
             printf '<td width="33%%" align="center">\n  <a href="CHANGELOG.md"><strong>Changelog</strong></a><br>\n  Releases and development history\n</td>\n'
-            printf '<td width="33%%" align="center">\n  <strong>Project</strong><br>\n  %s\n</td>\n' "${PROJECT_NAME}"
-            printf '</tr>\n</table>\n'
+            printf '<td width="33%%" align="center">\n  <a href="LICENSE"><strong>License</strong></a><br>\n  Terms of use and redistribution\n</td>\n</tr>\n</table>\n\n---\n\n'
+            [[ -n "$description" ]] && printf '## About %s\n\n%s\n' "$PROJECT_NAME" "$description"
         } > "$readme_file" || return 1
-
-        {
-            printf '# Changelog\n\n'
-            printf 'All notable changes to %s are documented in this file.\n\n' "${PRODUCT_NAME:-$PROJECT_NAME}"
-            printf '## Unreleased\n\n'
-            printf '### Added\n\n'
-            printf '### Changed\n\n'
-            printf '### Deleted\n'
-        } > "$changelog_file" || return 1
-
-        (( existed_readme )) || _manifest_record_file "$readme_file"
-        (( existed_changelog )) || _manifest_record_file "$changelog_file"
-        return 0
+        { printf '# Changelog\n\nAll notable changes to %s are documented in this file.\n\n## Unreleased\n\n### Added\n\n### Changed\n\n### Deleted\n' "${PRODUCT_NAME:-$PROJECT_NAME}"; } > "$changelog_file" || return 1
+        if (( ! existed_license )); then printf 'LICENSE\n-------\n\nReplace this file with the license terms that apply to this project.\n' > "$license_file" || return 1; fi
+        (( existed_readme )) || _manifest_record_file "$readme_file"; (( existed_changelog )) || _manifest_record_file "$changelog_file"; (( existed_license )) || _manifest_record_file "$license_file"
     }
 
     # _create_workspace_file
@@ -1395,8 +1378,11 @@ set -uo pipefail
             printf '#   Type        : library\n'
             printf '#   Group       : Globals\n'
             printf '#   Purpose     : Project-wide identity and release globals\n'
+            printf '# Description:\n'
+            if [[ -n "${PROJECT_DESCRIPTION:-}" ]]; then printf '#   %s\n' "$PROJECT_DESCRIPTION"; else printf '#   -\n'; fi
             printf '# =====================================================================================\n'
             printf 'SGND_%s_PRODUCT=%q\n' "$key" "${PRODUCT_NAME:-$PROJECT_NAME}"
+            printf 'SGND_%s_TITLE=%q\n' "$key" "${PRODUCT_NAME:-$PROJECT_NAME}"
             printf 'SGND_%s_VERSION=%q\n' "$key" "1.0"
             printf 'SGND_%s_BUILD=%q\n' "$key" "$build"
             printf 'SGND_%s_COMPANY=%q\n' "$key" "${SGND_COMPANY:-Testadura Consultancy}"
@@ -1440,6 +1426,15 @@ set -uo pipefail
         chmod 0755 -- "$motd_file" || return 1
         _manifest_record_file "$motd_file"
         sayinfo "Created project MOTD: $motd_file"
+    }
+
+    # fn: _create_empty_directory_placeholders - Preserve the canonical workspace tree in Git
+    _create_empty_directory_placeholders() {
+        local dir="" keep=""
+        if (( ${FLAG_DRYRUN:-0} )); then sayinfo "Would have created .gitkeep files in empty workspace directories."; return 0; fi
+        while IFS= read -r -d '' dir; do
+            if [[ -z "$(find "$dir" -mindepth 1 -maxdepth 1 -print -quit 2>/dev/null)" ]]; then keep="$dir/.gitkeep"; : > "$keep" || return 1; _manifest_record_file "$keep"; fi
+        done < <(find "$PROJECT_FOLDER/target-root" "$PROJECT_FOLDER/user-root" -type d -print0 2>/dev/null)
     }
 
     # fn: _initialize_git_repository - Initialize and commit the new workspace
@@ -1702,11 +1697,12 @@ set -uo pipefail
             _manifest_init || exit $?
             _create_repository || exit $?
             _create_workspace_file || exit $?
-            _create_workspace_project_files || exit $?
             _create_gitignore_file || exit $?
             _create_releaseignore_file || exit $?
             _create_project_definitions || exit $?
+            _create_workspace_project_files || exit $?
             _create_project_motd || exit $?
+            _create_empty_directory_placeholders || exit $?
 
             if [[ "$FLAG_DRYRUN" -eq 1 ]]; then
                 sayinfo "Would have fixed ownership and permissions"

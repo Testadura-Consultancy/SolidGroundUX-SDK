@@ -4,8 +4,8 @@
 # -------------------------------------------------------------------------------------
 # Metadata:
 #   Version     : 2.1
-#   Build       : 2626415
-#   Checksum    : 4116c31e9650c3152786998b49390ac6cb40dbcb6147ed169a08f825fe8ef3e1
+#   Build       : 2626501
+#   Checksum    : dadcf047d1d1f25abf556990c16fef0d6f909059273024f323d141b8e1f65674
 #   Source      : prepare-release.sh
 #   Type        : script
 #   Group       : SDK
@@ -136,7 +136,6 @@ set -uo pipefail
         # shellcheck source=/dev/null
         source "$exe_common"
     }
-
 # - Script metadata (identity) ------------------------------------------------------
     SGND_SCRIPT_FILE="$(readlink -f "${BASH_SOURCE[0]}")"
     SGND_SCRIPT_DIR="$(cd -- "$(dirname -- "$SGND_SCRIPT_FILE")" && pwd)"
@@ -626,14 +625,40 @@ set -uo pipefail
 
         version_var="SGND_${key}_VERSION"
         build_var="SGND_${key}_BUILD"
-        grep -q "^${version_var}=" "$file" || return 1
-        grep -q "^${build_var}=" "$file" || return 1
-        sed -i -E "s|^${version_var}=.*$|${version_var}=$(printf '%q' "$VERSION")|" "$file" || return 1
-        sed -i -E "s|^${build_var}=.*$|${build_var}=$(printf '%q' "$BUILD")|" "$file" || return 1
-        sgnd_header_upsert_field "$file" "Metadata" "Version" "$VERSION" || return 1
-        sgnd_header_upsert_field "$file" "Metadata" "Build" "$BUILD" || return 1
-        checksum="$(sgnd_header_calc_checksum "$file")" || return 1
-        sgnd_header_upsert_field "$file" "Metadata" "Checksum" "$checksum"
+        # Project definitions are canonically indented, so assignment matching must
+        # accept leading whitespace just as identity discovery already does.
+        grep -Eq "^[[:space:]]*${version_var}[[:space:]]*=" "$file" || {
+            sayfail "Project version global missing from definitions: $version_var ($file)"
+            return 1
+        }
+        grep -Eq "^[[:space:]]*${build_var}[[:space:]]*=" "$file" || {
+            sayfail "Project build global missing from definitions: $build_var ($file)"
+            return 1
+        }
+        sed -i -E "s|^([[:space:]]*)${version_var}[[:space:]]*=.*$|\1${version_var}=$(printf '%q' "$VERSION")|" "$file" || {
+            sayfail "Could not update project version global: $version_var ($file)"
+            return 1
+        }
+        sed -i -E "s|^([[:space:]]*)${build_var}[[:space:]]*=.*$|\1${build_var}=$(printf '%q' "$BUILD")|" "$file" || {
+            sayfail "Could not update project build global: $build_var ($file)"
+            return 1
+        }
+        sgnd_header_upsert_field "$file" "Metadata" "Version" "$VERSION" || {
+            sayfail "Could not update definitions header Version: $file"
+            return 1
+        }
+        sgnd_header_upsert_field "$file" "Metadata" "Build" "$BUILD" || {
+            sayfail "Could not update definitions header Build: $file"
+            return 1
+        }
+        checksum="$(sgnd_header_calc_checksum "$file")" || {
+            sayfail "Could not calculate definitions checksum: $file"
+            return 1
+        }
+        sgnd_header_upsert_field "$file" "Metadata" "Checksum" "$checksum" || {
+            sayfail "Could not update definitions header Checksum: $file"
+            return 1
+        }
     }
 
     # fn$ _release_wrapper_name_for_script - Resolve wrapper metadata or conventional name

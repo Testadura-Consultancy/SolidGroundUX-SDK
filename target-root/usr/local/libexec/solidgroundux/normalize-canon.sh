@@ -4,8 +4,8 @@
 # -------------------------------------------------------------------------------------
 # Metadata:
 #   Version     : 2.1
-#   Build       : 2626414
-#   Checksum    : 7ed0ee2c1b287a207a6bf3fc3e3bba3257eb8105468610f9fe05e30feaf6b01c
+#   Build       : 2626501
+#   Checksum    : 10fb71bc64bb4bd00288a40bcb72b40d72f54522643bfde0905fac9d442cc221
 #   Source      : normalize-canon.sh
 #   Type        : script
 #   Group       : SDK
@@ -115,7 +115,6 @@ set -uo pipefail
         # shellcheck source=/dev/null
         source "$exe_common"
     }
-
 # - Script identity -----------------------------------------------------------------
     SGND_SCRIPT_FILE="$(readlink -f "${BASH_SOURCE[0]}")"
     SGND_SCRIPT_DIR="$(cd -- "$(dirname -- "$SGND_SCRIPT_FILE")" && pwd)"
@@ -266,12 +265,16 @@ set -uo pipefail
         # . Usage
         #   _resolve_canon_files
     _resolve_canon_files() {
-        if [[ "$SGND_FRAMEWORK_ROOT" == "/" ]]; then
-            SGND_CANON_DIRECTORY="/usr/local/lib/solidgroundux/templates/canon"
-        else
-            SGND_CANON_DIRECTORY="${SGND_FRAMEWORK_ROOT%/}/usr/local/lib/solidgroundux/templates/canon"
-        fi
+        local canon_directory=""
 
+        sgnd_framework_resolve_path \
+            "usr/local/lib/solidgroundux/templates/canon" \
+            canon_directory || {
+                sayfail "Canonical template directory not found in current or installed framework."
+                return 1
+            }
+
+        SGND_CANON_DIRECTORY="$canon_directory"
         SGND_CANON_LOCATOR="$SGND_CANON_DIRECTORY/framework-locator.sh"
         SGND_CANON_LIB_GUARD="$SGND_CANON_DIRECTORY/lib-guard.sh"
 

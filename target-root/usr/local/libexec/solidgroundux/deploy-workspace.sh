@@ -4,8 +4,8 @@
 # -------------------------------------------------------------------------------------
 # Metadata:
 #   Version     : 2.1
-#   Build       : 2626414
-#   Checksum    : 1a6215eb363eb64553ba0ed9444135600bf809f9ae0806a3982ddd6c4e152811
+#   Build       : 2626501
+#   Checksum    : 5b240466374eb4bf2e77382490b35bbcdc593cfc9008f0121bbd5cb5f8c4e5b4
 #   Source      : deploy-workspace.sh
 #   Type        : script
 #   Group       : SDK
@@ -119,7 +119,6 @@ set -uo pipefail
         # shellcheck source=/dev/null
         source "$exe_common"
     }
-
 # --- Script metadata (identity) ------------------------------------------------------
     SGND_SCRIPT_FILE="$(readlink -f "${BASH_SOURCE[0]}")"
     SGND_SCRIPT_DIR="$(cd -- "$(dirname -- "$SGND_SCRIPT_FILE")" && pwd)"

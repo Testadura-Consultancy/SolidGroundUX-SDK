@@ -4,8 +4,8 @@
 # ------------------------------------------------------------------------------------
 # Metadata:
 #   Version     : 2.1
-#   Build       : 2626414
-#   Checksum    : d86b7bef506fe9f9c57ead361851f936fc1b8fc1428307691eb6e19fecce5a16
+#   Build       : 2626501
+#   Checksum    : 79968b105bb7c0810163280b255e1e705ea82cd4d22c23604b5855961d28b6f5
 #   Source      : prepare-template.sh
 #   Type        : script
 #   Group       : SDK
@@ -109,7 +109,6 @@ set -uo pipefail
         # shellcheck source=/dev/null
         source "$exe_common"
     }
-
 # - Script identity ------------------------------------------------------------------
     # var: SGND_SCRIPT_FILE - Absolute path to the currently executing script
     SGND_SCRIPT_FILE="$(readlink -f "${BASH_SOURCE[0]}")"
