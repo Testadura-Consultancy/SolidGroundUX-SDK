@@ -4,7 +4,7 @@ All notable changes to SolidGroundUX SDK are documented in this file.
 
 ## Unreleased
 
-## Release 2.1.2626523
+## Release 2.1.2626612
 
 ### Added
 
@@ -18,7 +18,9 @@ All notable changes to SolidGroundUX SDK are documented in this file.
 - Added generated project README, changelog, license placeholder, default SolidGroundUX icon and Git placeholders for otherwise-empty canonical workspace directories.
 
 ### Changed
-
+- Made `deploy-workspace` product-aware: product repositories can now be discovered beneath a product root and deployed individually or together.
+- Added product selection, including an `All products` option, while retaining explicit single-source deployment compatibility.
+- Deployment filtering and reporting now operate per selected product.
 - Moved `create-workspace`, `deploy-workspace`, `prepare-release`, release management, documentation generation/rendering/processing, wrapper generation and canonical normalization into the SDK product boundary.
 - `create-workspace` now derives generated README identity from project definitions: Title, Version.Build, Copyright, project name and Description. Generated README navigation points to installed documentation, changelog and license and no longer embeds Framework-specific marketing captions.
 - `create-workspace` now creates the full canonical workspace tree even when individual directories are not initially used; empty directories are retained in Git with placeholders that are excluded from release content.

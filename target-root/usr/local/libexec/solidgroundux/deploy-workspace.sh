@@ -4,8 +4,8 @@
 # -------------------------------------------------------------------------------------
 # Metadata:
 #   Version     : 2.1
-#   Build       : 2626501
-#   Checksum    : 5b240466374eb4bf2e77382490b35bbcdc593cfc9008f0121bbd5cb5f8c4e5b4
+#   Build       : 2626612
+#   Checksum    : a0290e0b28c1d96ba1cd0f5dbb9ff6569e60e8ecc13e636488e3a7cd63648ee8
 #   Source      : deploy-workspace.sh
 #   Type        : script
 #   Group       : SDK
@@ -46,7 +46,10 @@ set -uo pipefail
         #   - Resolves production scripts beneath /usr, /etc, or /var to root (/).
         #   - Resolves staged/development trees to the path prefix preceding the detected
         #     usr, etc, or var component.
-        #   - Loads sgnd-exe-common.sh from the resolved framework root.
+        #   - Loads sgnd-exe-common.sh from the resolved framework root when available.
+        #   - For staged/development trees where the executable common library is not
+        #     present, falls back to the installed framework copy without changing
+        #     SGND_FRAMEWORK_ROOT.
         #
         # . Globals (write)
         #   SGND_FRAMEWORK_ROOT
@@ -109,6 +112,10 @@ set -uo pipefail
             exe_common="/usr/local/lib/solidgroundux/common/sgnd-exe-common.sh"
         else
             exe_common="${SGND_FRAMEWORK_ROOT%/}/usr/local/lib/solidgroundux/common/sgnd-exe-common.sh"
+
+            if [[ ! -r "$exe_common" ]]; then
+                exe_common="/usr/local/lib/solidgroundux/common/sgnd-exe-common.sh"
+            fi
         fi
 
         [[ -r "$exe_common" ]] || {
@@ -141,7 +148,9 @@ set -uo pipefail
         "auto|a|flag|FLAG_AUTO|Deploy immediately using saved settings|0|"
         "local|l|flag|FLAG_LOCAL|Deploy to the local system|0|"
         "remote|r|value|REMOTE_TARGET|Deploy through SSH to user@host|"
-        "source|s|value|SRC_ROOT|Workspace source root|"
+        "product-root||value|PRODUCT_ROOT|Development root containing product repositories|"
+        "products||value|PRODUCT_SELECTION|Product selection (A, comma list, or range)|"
+        "source|s|value|SRC_ROOT|Explicit single workspace source root (compatibility)|"
         "target|t|value|DEST_ROOT|Destination filesystem root|"
         "directory|d|value|SELECT_DIRECTORY|Optional directory below the workspace root|"
         "match|m|value|SELECT_MATCH|Comma-separated filenames or shell-style file masks|"
@@ -167,6 +176,8 @@ set -uo pipefail
     SGND_STATE_VARIABLES=(
         DEPLOY_TRANSPORT
         REMOTE_TARGET
+        PRODUCT_ROOT
+        PRODUCT_SELECTION
         SRC_ROOT
         DEST_ROOT
         SELECT_DIRECTORY
@@ -185,6 +196,8 @@ set -uo pipefail
 # --- Local declarations ---------------------------------------------------------------
     DEPLOY_TRANSPORT="${DEPLOY_TRANSPORT:-}"
     REMOTE_TARGET="${REMOTE_TARGET:-}"
+    PRODUCT_ROOT="${PRODUCT_ROOT:-}"
+    PRODUCT_SELECTION="${PRODUCT_SELECTION:-A}"
     SRC_ROOT="${SRC_ROOT:-}"
     DEST_ROOT="${DEST_ROOT:-}"
     SELECT_DIRECTORY="${SELECT_DIRECTORY:-}"
@@ -195,6 +208,8 @@ set -uo pipefail
 
     CLI_DEPLOY_TRANSPORT=0
     CLI_REMOTE_TARGET=0
+    CLI_PRODUCT_ROOT=0
+    CLI_PRODUCT_SELECTION=0
     CLI_SRC_ROOT=0
     CLI_DEST_ROOT=0
     CLI_SELECT_DIRECTORY=0
@@ -204,8 +219,148 @@ set -uo pipefail
     CLI_RECEIVER_PATH=0
 
     SELECTED_PATHS=()
+    SELECTED_PRODUCT_ROOTS=()
+    SELECTED_PRODUCT_NAMES=()
+    DEPLOYED_PATHS=()
     DEPLOY_STARTED_AT=""
     DEPLOY_FINISHED_AT=""
+
+# --- Product discovery ---------------------------------------------------------------
+    # fn$ _deploy_product_record - Read product metadata from one target-root
+    _deploy_product_record() {
+        local root="${1:?missing target root}"
+        local globals_dir="${root%/}/usr/local/lib/solidgroundux/globals" file="" record=""
+        [[ -d "$globals_dir" ]] || return 1
+
+        while IFS= read -r -d '' file; do
+            record="$(bash -c '
+                source "$1"
+                for var in $(compgen -A variable SGND_); do
+                    case "$var" in
+                        SGND_PRODUCT) printf "%s|%s|%s|%s\\n" "${SGND_PRODUCT-}" "${SGND_VERSION-}" "${SGND_BUILD-}" "$1"; exit ;;
+                        *_PRODUCT) prefix="${var%_PRODUCT}"; vv="${prefix}_VERSION"; bv="${prefix}_BUILD"; printf "%s|%s|%s|%s\\n" "${!var-}" "${!vv-}" "${!bv-}" "$1"; exit ;;
+                    esac
+                done
+            ' bash "$file" 2>/dev/null || true)"
+            [[ -n "$record" ]] && { printf '%s\n' "$record"; return 0; }
+        done < <(find "$globals_dir" -maxdepth 1 -type f \( -name 'sgnd-definitions.sh' -o -name '*-definitions.sh' \) -print0 2>/dev/null | sort -z)
+        return 1
+    }
+
+    # fn$ _deploy_parse_product_selection - Parse A/comma/range product selection
+    _deploy_parse_product_selection() {
+        local spec="${1:-}" max="${2:-0}" token="" begin="" finish="" i=0 idx=0
+        local -n out_ref=$3
+        local -A seen=()
+        local -a tokens=()
+
+        out_ref=()
+        spec="${spec//[[:space:]]/}"
+        [[ -n "$spec" ]] || return 1
+
+        if [[ "${spec^^}" == "A" ]]; then
+            for (( i=1; i<=max; i++ )); do out_ref+=("$i"); done
+            return 0
+        fi
+
+        IFS=',' read -r -a tokens <<< "$spec"
+        for token in "${tokens[@]}"; do
+            if [[ "$token" =~ ^([0-9]+)-([0-9]+)$ ]]; then
+                begin="${BASH_REMATCH[1]}"; finish="${BASH_REMATCH[2]}"
+                (( begin >= 1 && finish >= begin && finish <= max )) || return 1
+                for (( i=begin; i<=finish; i++ )); do
+                    [[ -n "${seen[$i]-}" ]] || { out_ref+=("$i"); seen[$i]=1; }
+                done
+            elif [[ "$token" =~ ^[0-9]+$ ]]; then
+                idx="$token"
+                (( idx >= 1 && idx <= max )) || return 1
+                [[ -n "${seen[$idx]-}" ]] || { out_ref+=("$idx"); seen[$idx]=1; }
+            else
+                return 1
+            fi
+        done
+        (( ${#out_ref[@]} > 0 ))
+    }
+
+    # fn$ _select_products - Discover and select deployable product repositories
+    _select_products() {
+        local repo="" root="" record="" product="" version="" build="" defs=""
+        local selection="" i=0 index=0
+        local current_repo="" current_root="$SGND_FRAMEWORK_ROOT"
+        local -a roots=() products=() versions=() builds=() selected_indexes=()
+
+        # An explicit --source retains the old single-tree behavior.
+        if (( CLI_SRC_ROOT )); then
+            [[ -d "$SRC_ROOT" ]] || { sayfail "Workspace root not found: $SRC_ROOT"; return 1; }
+            SELECTED_PRODUCT_ROOTS=("${SRC_ROOT%/}")
+            SELECTED_PRODUCT_NAMES=("Explicit source")
+            return 0
+        fi
+
+        [[ "$(basename -- "$current_root")" == "target-root" ]] && current_repo="$(dirname -- "$current_root")"
+        : "${PRODUCT_ROOT:=$(dirname -- "${current_repo:-$current_root}")}"
+
+        if (( ! CLI_PRODUCT_ROOT && ! ${FLAG_AUTO:-0} )); then
+            sgnd_print
+            sgnd_print_sectionheader "Product discovery" --padend 0
+            ask --label "Product root" --var PRODUCT_ROOT --default "$PRODUCT_ROOT" \
+                --validate sgnd_validate_dir_exists --colorize both --labelclr "${CYAN}" --labelwidth 30
+            sgnd_save_state || return $?
+        fi
+
+        PRODUCT_ROOT="${PRODUCT_ROOT%/}"
+        [[ -d "$PRODUCT_ROOT" ]] || { sayfail "Product root not found: $PRODUCT_ROOT"; return 1; }
+
+        while IFS= read -r -d '' repo; do
+            root="$repo/target-root"
+            [[ -d "$root" ]] || continue
+            record="$(_deploy_product_record "$root" 2>/dev/null || true)"
+            [[ -n "$record" ]] || continue
+            IFS='|' read -r product version build defs <<< "$record"
+            roots+=("$root"); products+=("$product"); versions+=("$version"); builds+=("$build")
+        done < <(find "$PRODUCT_ROOT" -mindepth 1 -maxdepth 1 -type d -print0 2>/dev/null | sort -z)
+
+        (( ${#roots[@]} > 0 )) || { sayfail "No SolidGroundUX products found below: $PRODUCT_ROOT"; return 1; }
+
+        sgnd_print
+        sgnd_print_sectionheader "Deploy products" --padend 0
+        for i in "${!roots[@]}"; do
+            sgnd_print "$((i+1)) : ${products[$i]}  v${versions[$i]}.${builds[$i]}"
+        done
+        (( ${#roots[@]} > 1 )) && sgnd_print "A : All products"
+        sgnd_print
+
+        while true; do
+            selection="${PRODUCT_SELECTION:-A}"
+            (( ${#roots[@]} == 1 )) && selection="1"
+
+            if (( CLI_PRODUCT_SELECTION || ${FLAG_AUTO:-0} )); then
+                _deploy_parse_product_selection "$selection" "${#roots[@]}" selected_indexes || {
+                    sayfail "Invalid product selection: $selection"
+                    return 1
+                }
+                break
+            fi
+
+            ask --label "Products (comma/range or A)" --var selection --default "$selection" \
+                --colorize both --labelclr "${CYAN}" --labelwidth 30
+            if _deploy_parse_product_selection "$selection" "${#roots[@]}" selected_indexes; then
+                break
+            fi
+            saywarning "Invalid product selection: $selection"
+        done
+
+        PRODUCT_SELECTION="$selection"
+        SELECTED_PRODUCT_ROOTS=()
+        SELECTED_PRODUCT_NAMES=()
+        for index in "${selected_indexes[@]}"; do
+            i=$((index-1))
+            SELECTED_PRODUCT_ROOTS+=("${roots[$i]}")
+            SELECTED_PRODUCT_NAMES+=("${products[$i]}")
+        done
+        sgnd_save_state || return $?
+        return 0
+    }
 
 # --- Selection helpers ---------------------------------------------------------------
     # fn: _is_deployable_path - Test whether a relative workspace path is deployable
@@ -389,6 +544,20 @@ set -uo pipefail
                     CLI_DEPLOY_TRANSPORT=1
                     CLI_REMOTE_TARGET=1
                     ;;
+                --product-root)
+                    CLI_PRODUCT_ROOT=1
+                    (( $# > 0 )) && shift
+                    ;;
+                --product-root=*)
+                    CLI_PRODUCT_ROOT=1
+                    ;;
+                --products)
+                    CLI_PRODUCT_SELECTION=1
+                    (( $# > 0 )) && shift
+                    ;;
+                --products=*)
+                    CLI_PRODUCT_SELECTION=1
+                    ;;
                 --source|-s)
                     CLI_SRC_ROOT=1
                     (( $# > 0 )) && shift
@@ -449,11 +618,20 @@ set -uo pipefail
         #   _validate_parameters || return $?
     _validate_parameters() {
         local directory=""
+        local product_root=""
+        local return_directory_found=0
 
-        [[ -d "$SRC_ROOT" ]] || {
-            sayfail "Workspace root not found: $SRC_ROOT"
-            return 1
-        }
+        if (( CLI_SRC_ROOT )); then
+            [[ -d "$SRC_ROOT" ]] || {
+                sayfail "Workspace root not found: $SRC_ROOT"
+                return 1
+            }
+        else
+            (( ${#SELECTED_PRODUCT_ROOTS[@]} > 0 )) || {
+                sayfail "No deployment products are selected."
+                return 1
+            }
+        fi
 
         case "$DEPLOY_TRANSPORT" in
             local) ;;
@@ -484,10 +662,15 @@ set -uo pipefail
                 sayfail "Invalid relative directory path: $SELECT_DIRECTORY"
                 return 1
             }
-            [[ -d "$SRC_ROOT/$directory" ]] || {
-                sayfail "Selection directory not found: $SRC_ROOT/$directory"
+            return_directory_found=0
+            for product_root in "${SELECTED_PRODUCT_ROOTS[@]}"; do
+                [[ -d "$product_root/$directory" ]] || continue
+                return_directory_found=1
+            done
+            if [[ "${return_directory_found:-0}" -ne 1 ]]; then
+                sayfail "Selection directory not found in any selected product: $directory"
                 return 1
-            }
+            fi
         fi
 
         [[ -n "${SELECT_MATCH:-}" ]] || SELECT_MATCH="*"
@@ -512,7 +695,7 @@ set -uo pipefail
         #   and combine directory, filename/mask, and changed-after filters.
         #
         # . Outputs (globals)
-        #   DEPLOY_TRANSPORT, REMOTE_TARGET, SRC_ROOT, DEST_ROOT, SELECT_DIRECTORY,
+        #   DEPLOY_TRANSPORT, REMOTE_TARGET, PRODUCT_ROOT, PRODUCT_SELECTION, DEST_ROOT, SELECT_DIRECTORY,
         #   SELECT_MATCH, CHANGED_AFTER, RECEIVER_PATH
         #
         # . Returns
@@ -532,7 +715,7 @@ set -uo pipefail
         fi
 
         : "${DEPLOY_TRANSPORT:=local}"
-        : "${SRC_ROOT:=$HOME/dev/target-root}"
+        : "${PRODUCT_SELECTION:=A}"
         : "${DEST_ROOT:=/}"
         : "${SELECT_DIRECTORY:=}"
         : "${SELECT_MATCH:=*}"
@@ -542,6 +725,8 @@ set -uo pipefail
         if [[ "${FLAG_SINCE_LAST:-0}" -eq 1 ]]; then
             since_last="Y"
         fi
+
+        _select_products || return $?
 
         if [[ "${FLAG_AUTO:-0}" -eq 1 ]]; then
             _validate_parameters || return $?
@@ -574,17 +759,6 @@ set -uo pipefail
                 fi
             else
                 REMOTE_TARGET=""
-            fi
-
-            if (( ! CLI_SRC_ROOT )); then
-                sgnd_print "Enter the local workspace root containing the deployable tree."
-                sgnd_print "All selected paths are resolved beneath this directory."
-
-                ask --label "Workspace root" \
-                    --var SRC_ROOT \
-                    --default "$SRC_ROOT" \
-                    --colorize both
-                sgnd_save_state || return $?
             fi
 
             if (( ! CLI_DEST_ROOT )); then
@@ -744,15 +918,15 @@ set -uo pipefail
         sgnd_print_sectionheader "Deployment summary"
         sgnd_print_labeledvalue --label "Result" --value "$result" --labelwidth 20
         sgnd_print_labeledvalue --label "Transport" --value "$DEPLOY_TRANSPORT" --labelwidth 20
-        sgnd_print_labeledvalue --label "Source root" --value "$SRC_ROOT" --labelwidth 20
+        sgnd_print_labeledmultivalue --label "Products" --labelwidth 20 --items "${SELECTED_PRODUCT_NAMES[@]}"
         sgnd_print_labeledvalue --label "Destination" --value "$destination" --labelwidth 20
         sgnd_print_labeledvalue --label "Receiver" --value "$RECEIVER_PATH" --labelwidth 20
         sgnd_print_labeledvalue --label "Started" --value "${DEPLOY_STARTED_AT:-Unknown}" --labelwidth 20
         sgnd_print_labeledvalue --label "Finished" --value "${DEPLOY_FINISHED_AT:-Unknown}" --labelwidth 20
         sgnd_print_labeledmultivalue \
-            --label "Changed files" \
+            --label "Deployed files" \
             --labelwidth 20 \
-            --items "${SELECTED_PATHS[@]}"
+            --items "${DEPLOYED_PATHS[@]}"
         sgnd_print
         sgnd_print_sectionheader ""
         return 0
@@ -867,33 +1041,53 @@ set -uo pipefail
         # . Usage
         #   _deploy || return $?
     _deploy() {
+        local i=0 product_name="" product_root=""
+
         DEPLOY_STARTED_AT="$(date --iso-8601=seconds)"
         DEPLOY_FINISHED_AT=""
-
-        SRC_ROOT="${SRC_ROOT%/}"
         DEST_ROOT="${DEST_ROOT%/}"
         [[ -n "$DEST_ROOT" ]] || DEST_ROOT="/"
+        DEPLOYED_PATHS=()
 
-        _select_files || return $?
+        for i in "${!SELECTED_PRODUCT_ROOTS[@]}"; do
+            product_root="${SELECTED_PRODUCT_ROOTS[$i]%/}"
+            product_name="${SELECTED_PRODUCT_NAMES[$i]}"
+            SRC_ROOT="$product_root"
 
-        saystart "Deploying ${#SELECTED_PATHS[@]} file(s) from $SRC_ROOT"
+            saystart "Selecting files for $product_name"
+            if ! _select_files; then
+                saywarning "No files selected for $product_name; skipping product."
+                continue
+            fi
 
-        case "$DEPLOY_TRANSPORT" in
-            local)
-                sayinfo "Receiver: local $RECEIVER_PATH"
-                _stream_local || {
-                    sayfail "Local receiver failed."
-                    return 1
-                }
-                ;;
-            remote)
-                sayinfo "Receiver: $REMOTE_TARGET:$RECEIVER_PATH"
-                _stream_remote || {
-                    sayfail "Remote receiver failed."
-                    return 1
-                }
-                ;;
-        esac
+            saystart "Deploying ${#SELECTED_PATHS[@]} file(s) from $product_name"
+
+            case "$DEPLOY_TRANSPORT" in
+                local)
+                    sayinfo "Receiver: local $RECEIVER_PATH"
+                    _stream_local || {
+                        sayfail "Local receiver failed for $product_name."
+                        return 1
+                    }
+                    ;;
+                remote)
+                    sayinfo "Receiver: $REMOTE_TARGET:$RECEIVER_PATH"
+                    _stream_remote || {
+                        sayfail "Remote receiver failed for $product_name."
+                        return 1
+                    }
+                    ;;
+            esac
+
+            for deployed_path in "${SELECTED_PATHS[@]}"; do
+                DEPLOYED_PATHS+=("$product_name: $deployed_path")
+            done
+        done
+
+        (( ${#DEPLOYED_PATHS[@]} > 0 )) || {
+            saywarning "No deployable files matched the selected products and filters."
+            return 1
+        }
 
         if [[ "${FLAG_DRYRUN:-0}" -eq 0 ]]; then
             LAST_DEPLOY_SUCCESS="$DEPLOY_STARTED_AT"
