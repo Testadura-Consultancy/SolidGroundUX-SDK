@@ -3,7 +3,7 @@
 # ----------------------------------------------------------------------------------
 # Metadata:
 #   Version     : 2.1
-#   Build       : 2626710
+#   Build       : 2626711
 #   Checksum    : 460b41e36c9256efaf2c245e6940ea6af9149f484a5ede9f0693a298af27783a
 #   Source      : doc-processor.sh
 #   Type        : library
