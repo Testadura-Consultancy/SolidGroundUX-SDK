@@ -4,8 +4,8 @@
 # ----------------------------------------------------------------------------------
 # Metadata:
 #   Version     : 2.1
-#   Build       : 2626711
-#   Checksum    : 2f937aa1b99b0438df5ef228684352998b6d5417c1c0c93c8a54dfcd2acc73ac
+#   Build       : 2626712
+#   Checksum    : 4c737927b28eb80ed80d9c33f19161fd9367de288b95c847de1b0350342155ed
 #   Source      : solidgroundux-sdk-definitions.sh
 #   Type        : library
 #   Group       : SDK
@@ -74,7 +74,7 @@ set -uo pipefail
 # - SDK identity --------------------------------------------------------------------
     SGND_SOLIDGROUNDUX_SDK_PRODUCT="SolidGroundUX SDK"
     SGND_SOLIDGROUNDUX_SDK_VERSION=2.1
-    SGND_SOLIDGROUNDUX_SDK_BUILD=2626711
+    SGND_SOLIDGROUNDUX_SDK_BUILD=2626712
     SGND_SOLIDGROUNDUX_SDK_COMPANY="Testadura Consultancy"
     SGND_SOLIDGROUNDUX_SDK_COPYRIGHT="© 2025 - 2026 Testadura Consultancy"
     SGND_SOLIDGROUNDUX_SDK_LICENSE="Testadura Non-Commercial License (TD-NC) v1.1."

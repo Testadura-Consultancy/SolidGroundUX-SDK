@@ -224,6 +224,7 @@ set -uo pipefail
     DEPLOYED_PATHS=()
     DEPLOY_STARTED_AT=""
     DEPLOY_FINISHED_AT=""
+    REMOTE_CONTROL_PATH=""
 
 # --- Product discovery ---------------------------------------------------------------
     # fn$ _deploy_product_record - Read product metadata from one target-root
@@ -971,6 +972,41 @@ set -uo pipefail
             sudo "${receiver_args[@]}"
     }
 
+    # fn: _start_remote_session - Open one shared SSH connection for the deployment
+        # . Purpose
+        #   Authenticate to the remote destination once and keep a ControlMaster connection
+        #   available for receiver setup and all selected product transfers.
+        #
+        # . Returns
+        #   0 when the shared SSH session is available.
+        #   Non-zero when SSH authentication or session creation fails.
+    _start_remote_session() {
+        [[ -n "${REMOTE_CONTROL_PATH:-}" ]] && return 0
+
+        REMOTE_CONTROL_PATH="/tmp/sgnd-deploy-${UID}-$$.sock"
+        rm -f -- "$REMOTE_CONTROL_PATH"
+
+        sayinfo "Opening shared SSH deployment session to $REMOTE_TARGET"
+        ssh -M -S "$REMOTE_CONTROL_PATH" -o ControlPersist=60 -fnNT "$REMOTE_TARGET" || {
+            rm -f -- "$REMOTE_CONTROL_PATH"
+            REMOTE_CONTROL_PATH=""
+            sayfail "Unable to establish remote SSH deployment session."
+            return 1
+        }
+
+        return 0
+    }
+
+    # fn: _stop_remote_session - Close the shared SSH deployment connection
+    _stop_remote_session() {
+        [[ -n "${REMOTE_CONTROL_PATH:-}" ]] || return 0
+
+        ssh -S "$REMOTE_CONTROL_PATH" -O exit "$REMOTE_TARGET" >/dev/null 2>&1 || true
+        rm -f -- "$REMOTE_CONTROL_PATH"
+        REMOTE_CONTROL_PATH=""
+        return 0
+    }
+
     # fn: _ensure_remote_receiver_sudo - Ensure the remote receiver may run without a sudo password
         # . Purpose
         #   Create and validate a narrowly scoped sudoers rule for receive-files.sh
@@ -990,10 +1026,9 @@ set -uo pipefail
 
         sudo_rule="$remote_user ALL=(root) NOPASSWD: $RECEIVER_PATH"
 
-        saywarning "Remote deployment may request your password up to three times:"
-        saywarning "  1. SSH authentication for receiver setup"
+        saywarning "Remote deployment may request your password up to two times:"
+        saywarning "  1. SSH authentication for the deployment session"
         saywarning "  2. Remote sudo authentication if the sudoers rule must be created"
-        saywarning "  3. SSH authentication for the file transfer"
 
         remote_setup="
             if [[ ! -f $(_quote_remote_arg "$sudoers_file") ]]; then
@@ -1004,7 +1039,7 @@ set -uo pipefail
             fi
         "
 
-        ssh -t "$REMOTE_TARGET" "$remote_setup" || {
+        ssh -S "$REMOTE_CONTROL_PATH" -t "$REMOTE_TARGET" "$remote_setup" || {
             sayfail "Unable to configure remote receiver sudo access."
             return 1
         }
@@ -1021,8 +1056,6 @@ set -uo pipefail
     _stream_remote() {
         local remote_command=""
 
-        _ensure_remote_receiver_sudo || return $?
-
         remote_command="sudo -n $(_quote_remote_arg "$RECEIVER_PATH") --target $(_quote_remote_arg "$DEST_ROOT")"
 
         if [[ "${FLAG_DRYRUN:-0}" -eq 1 ]]; then
@@ -1030,7 +1063,7 @@ set -uo pipefail
         fi
 
         tar -C "$SRC_ROOT" -cf - -- "${SELECTED_PATHS[@]}" |
-            ssh "$REMOTE_TARGET" "$remote_command"
+            ssh -S "$REMOTE_CONTROL_PATH" "$REMOTE_TARGET" "$remote_command"
     }
 
     # fn: _deploy - Select files and stream them to the configured receiver
@@ -1048,6 +1081,14 @@ set -uo pipefail
         DEST_ROOT="${DEST_ROOT%/}"
         [[ -n "$DEST_ROOT" ]] || DEST_ROOT="/"
         DEPLOYED_PATHS=()
+
+        if [[ "$DEPLOY_TRANSPORT" == "remote" ]]; then
+            _start_remote_session || return $?
+            _ensure_remote_receiver_sudo || {
+                _stop_remote_session
+                return 1
+            }
+        fi
 
         for i in "${!SELECTED_PRODUCT_ROOTS[@]}"; do
             product_root="${SELECTED_PRODUCT_ROOTS[$i]%/}"
@@ -1074,6 +1115,7 @@ set -uo pipefail
                     sayinfo "Receiver: $REMOTE_TARGET:$RECEIVER_PATH"
                     _stream_remote || {
                         sayfail "Remote receiver failed for $product_name."
+                        _stop_remote_session
                         return 1
                     }
                     ;;
@@ -1085,6 +1127,7 @@ set -uo pipefail
         done
 
         (( ${#DEPLOYED_PATHS[@]} > 0 )) || {
+            _stop_remote_session
             saywarning "No deployable files matched the selected products and filters."
             return 1
         }
@@ -1093,6 +1136,7 @@ set -uo pipefail
             LAST_DEPLOY_SUCCESS="$DEPLOY_STARTED_AT"
         fi
 
+        _stop_remote_session
         DEPLOY_FINISHED_AT="$(date --iso-8601=seconds)"
         _print_deployment_summary
         sayend "Deployment completed successfully."
