@@ -4,6 +4,8 @@ All notable changes to SolidGroundUX SDK are documented in this file.
 
 ## Unreleased
 
+## Release 2.1.2626712
+
 ### Changed
 - `prepare-release` now synchronizes existing literal `SGND_*_MODULE_VERSION` and `SGND_*_MODULE_BUILD` assignments when the corresponding canonical header Version or Build is updated, without creating metadata variables that are not already present.
 - Remote multi-product deployment now establishes one shared SSH connection for the deployment session and prepares remote receiver sudo access once before streaming products, limiting interactive authentication to at most one SSH password and one remote sudo password regardless of the number of selected products.
