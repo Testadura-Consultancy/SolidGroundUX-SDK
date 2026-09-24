@@ -4,7 +4,7 @@
 # ----------------------------------------------------------------------------------
 # Metadata:
 #   Version     : 2.1
-#   Build       : 2626501
+#   Build       : 2626710
 #   Checksum    : 13321af55660b9fc8dc471e6ccfe563324b61ab7a561a4ee22bef1003f0d806e
 #   Source      : lib-template.sh
 #   Type        : library

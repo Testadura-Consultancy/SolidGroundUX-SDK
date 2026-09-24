@@ -4,8 +4,8 @@
 # -------------------------------------------------------------------------------------
 # Metadata:
 #   Version     : 2.1
-#   Build       : 2626612
-#   Checksum    : 628eb6895088b795d5daccba021446c090ac847857a5ec8568474fd60755e2f6
+#   Build       : 2626710
+#   Checksum    : 81ee5c900372c55d53b5b06ae01fb1e6fe11fe91cbd8a06e1e5fe2ac44d0d853
 #   Source      : prepare-release.sh
 #   Type        : script
 #   Group       : SDK
@@ -1837,6 +1837,47 @@ set -uo pipefail
         return 0
     }
 
+    # fn: _release_sync_module_metadata_field - Synchronize module runtime release metadata
+        # . Purpose
+        #   Keep conventional SGND_*_MODULE_VERSION / SGND_*_MODULE_BUILD assignments
+        #   synchronized with the canonical header value when prepare-release updates it.
+        #
+        # . Arguments
+        #   $1  File to update.
+        #   $2  Field name: Version or Build.
+        #   $3  Value to write.
+        #
+        # . Behavior
+        #   - Updates every matching conventional module assignment in the file.
+        #   - Leaves files without such assignments untouched.
+        #   - Preserves leading indentation and the variable name.
+        #
+        # . Returns
+        #   0 on success (including no matching assignment); non-zero on update failure.
+    _release_sync_module_metadata_field() {
+        local file="${1:-}"
+        local field="${2:-}"
+        local value="${3:-}"
+        local suffix=""
+        local escaped=""
+
+        [[ -f "$file" ]] || return 1
+        case "$field" in
+            Version) suffix="VERSION" ;;
+            Build)   suffix="BUILD" ;;
+            *)       return 2 ;;
+        esac
+
+        grep -Eq "^[[:space:]]*SGND_[A-Za-z0-9_]+_MODULE_${suffix}[[:space:]]*=" "$file" || return 0
+
+        escaped="${value//\\/\\\\}"
+        escaped="${escaped//&/\\&}"
+        escaped="${escaped//|/\\|}"
+        sed -i -E \
+            "s|^([[:space:]]*)(SGND_[A-Za-z0-9_]+_MODULE_${suffix})[[:space:]]*=.*$|\1\2=\"${escaped}\"|" \
+            "$file"
+    }
+
     # fn: _apply_version_bump - Apply release metadata policy to managed source files
         # . Purpose
         #   Apply Version and Build according to A/C/N policy and always refresh Checksum
@@ -1905,24 +1946,29 @@ set -uo pipefail
 
             if (( ${FLAG_BUMP_MAJOR:-0} || ${FLAG_BUMP_MINOR:-0} )); then
                 local bump_mode="major"
+                local bumped_version=""
                 (( ${FLAG_BUMP_MINOR:-0} )) && bump_mode="minor"
                 sgnd_header_bump_version "$file" "$bump_mode" || { saywarning "Could not bump version in $file"; failed=1; failed_files+=("$file"); continue; }
+                sgnd_header_get_field "$file" "Metadata" "Version" bumped_version || { saywarning "Could not read bumped version from $file"; failed=1; failed_files+=("$file"); continue; }
+                _release_sync_module_metadata_field "$file" "Version" "$bumped_version" || { saywarning "Could not synchronize module version in $file"; failed=1; failed_files+=("$file"); continue; }
                 metadata_changed=1
             else
                 if [[ "$version_mode" == "A" || ( "$version_mode" == "C" && "$source_changed" -eq 1 ) ]]; then
                     sgnd_header_upsert_field "$file" "Metadata" "Version" "$VERSION" || { saywarning "Could not set version in $file"; failed=1; failed_files+=("$file"); continue; }
+                    _release_sync_module_metadata_field "$file" "Version" "$VERSION" || { saywarning "Could not synchronize module version in $file"; failed=1; failed_files+=("$file"); continue; }
                     metadata_changed=1
                 fi
 
                 if [[ "$build_mode" == "A" || ( "$build_mode" == "C" && "$source_changed" -eq 1 ) ]]; then
                     sgnd_header_upsert_field "$file" "Metadata" "Build" "$BUILD" || { saywarning "Could not set build in $file"; failed=1; failed_files+=("$file"); continue; }
+                    _release_sync_module_metadata_field "$file" "Build" "$BUILD" || { saywarning "Could not synchronize module build in $file"; failed=1; failed_files+=("$file"); continue; }
                     metadata_changed=1
                 fi
+            fi
 
-                if (( source_changed || metadata_changed )); then
-                    current_checksum="$(sgnd_header_calc_checksum "$file")" || { saywarning "Could not calculate checksum for $file"; failed=1; failed_files+=("$file"); continue; }
-                    sgnd_header_upsert_field "$file" "Metadata" "Checksum" "$current_checksum" || { saywarning "Could not set checksum in $file"; failed=1; failed_files+=("$file"); continue; }
-                fi
+            if (( source_changed || metadata_changed )); then
+                current_checksum="$(sgnd_header_calc_checksum "$file")" || { saywarning "Could not calculate checksum for $file"; failed=1; failed_files+=("$file"); continue; }
+                sgnd_header_upsert_field "$file" "Metadata" "Checksum" "$current_checksum" || { saywarning "Could not set checksum in $file"; failed=1; failed_files+=("$file"); continue; }
             fi
 
             if (( source_changed || metadata_changed )); then

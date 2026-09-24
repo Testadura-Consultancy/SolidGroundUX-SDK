@@ -4,7 +4,7 @@
 # ------------------------------------------------------------------------------------
 # Metadata:
 #   Version     : 2.1
-#   Build       : 2626612
+#   Build       : 2626710
 #   Checksum    : adb4100a09cfb29747f7577f996ec558a2c5e53a1b568b5e57acaadeb7731298
 #   Source      : doc-generator.sh
 #   Type        : script
