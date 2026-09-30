@@ -1,6 +1,12 @@
 {
   "folders": [
-    { "name": "SolidGroundUX SDK", "path": "." }
+    {
+      "name": "SolidGroundUX SDK",
+      "path": "."
+    },
+    {
+      "path": "../SolidGroundUX/releases"
+    }
   ],
   "settings": {
     "files.exclude": {

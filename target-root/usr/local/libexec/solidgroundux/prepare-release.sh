@@ -4,8 +4,8 @@
 # -------------------------------------------------------------------------------------
 # Metadata:
 #   Version     : 2.1
-#   Build       : 2626711
-#   Checksum    : 81ee5c900372c55d53b5b06ae01fb1e6fe11fe91cbd8a06e1e5fe2ac44d0d853
+#   Build       : 2627322
+#   Checksum    : de11c3f63675a11fc83005a41dea38f1a33d264b127cea8544f4ef2cca40d0f3
 #   Source      : prepare-release.sh
 #   Type        : script
 #   Group       : SDK
@@ -22,6 +22,8 @@
 #     - Ensures release metadata is consistent across processed scripts
 #     - Verifies public command wrappers for executable top-level libexec scripts
 #     - Creates release tar/manifests/checksums and a complete distributable release ZIP
+#     - Copies completed release artifacts directly into a separately selected output directory
+#     - Reports the full output paths of all individual and bundled ZIP/TAR archives
 #     - Writes release-package.info at ZIP root so the package identifies its project/release
 #     - Uses an explicit removal-baseline manifest from persistent manifest history
 #     - Ships release-manager.sh only with the SolidGroundUX framework bootstrap package
@@ -256,6 +258,7 @@ set -uo pipefail
    SGND_STATE_VARIABLES=(
         SOURCE_DIR
         STAGING_ROOT
+        OUTPUT_DIR
         FLAG_CLEANUP
         FLAG_USEEXISTING
         FLAG_SAVEPARMS
@@ -311,6 +314,9 @@ set -uo pipefail
     RELEASE_PRODUCT_BUILD_MODES=()
     RELEASE_PRODUCT_BASELINES=()
     BUNDLE_PREVIOUS_MANIFEST=""
+
+    # ZIP/TAR output paths for this run only; never restored from persistent state.
+    RELEASE_OUTPUT_ARCHIVES=()
 
 # - Local script functions ----------------------------------------------------------
     # fn$ _release_resolve_project_identity - Resolve the authoritative project definitions
@@ -682,63 +688,65 @@ set -uo pipefail
         [[ "$base" == sgnd-* ]] && printf '%s\n' "$base" || printf 'sgnd-%s\n' "$base"
     }
 
-    # _get_parameters
+    # fn: _release_resolve_locations - Resolve staging and final output paths
         # . Purpose
-        #   Resolve and collect all parameters required to prepare a release archive.
+        #   Keep staging, output, and derived manifest-history paths consistent.
         #
         # . Behavior
-        #   - Computes default values from framework metadata and workspace paths.
-        #   - In auto mode, reuses existing or default values without prompting.
-        #   - In interactive mode, prompts for release settings and confirms them.
-        #   - Saves confirmed parameters through _save_parameters().
+        #   - Resolves absolute paths without creating directories.
+        #   - Defaults OUTPUT_DIR to STAGING_ROOT when no output setting was saved.
+        #   - Recomputes manifest history after a staging-directory change.
         #
-        # Parameters handled:
-        #   RELEASE
-        #       Release identifier used for staging and filenames
-        #   RELEASE_SOURCE_DIRS
-        #       Product-specific source directories selected during product discovery
-        #   STAGING_ROOT
-        #       Root directory containing staging files and release outputs
-        #   TAR_FILE
-        #       Final tar.gz filename
-        #   FLAG_CLEANUP
-        #       Whether to remove staging files after completion
-        #   FLAG_USEEXISTING
-        #       Whether to reuse a non-empty staging tree
-        #
-        # Outputs (globals):
-        #   RELEASE
-        #   RELEASE_SOURCE_DIRS
-        #   STAGING_ROOT
-        #   TAR_FILE
-        #   FLAG_AUTO
-        #   FLAG_CLEANUP
-        #   FLAG_USEEXISTING
+        # . Outputs (globals)
+        #   STAGING_ROOT, OUTPUT_DIR, MANIFEST_HISTORY_DIR
         #
         # . Returns
-        #   0 on successful resolution and confirmation
-        #   Exits the script with status 1 if the user cancels
+        #   0 on success; 1 when either directory cannot be resolved.
         #
         # . Usage
-        #   _get_parameters
-        #
-        # Examples:
-        #   _get_parameters || return 1
-        #
-        # Notes:
-        #   - Uses ask() and ask_ok_redo_quit() for interactive input.
-        #   - Auto mode assumes state was loaded during bootstrap (--state).
+        #   _release_resolve_locations
+    _release_resolve_locations() {
+        [[ -n "${STAGING_ROOT:-}" ]] || {
+            sayfail "Staging directory must not be empty."
+            return 1
+        }
+        STAGING_ROOT="$(readlink -m -- "$STAGING_ROOT")" || {
+            sayfail "Could not resolve staging directory."
+            return 1
+        }
+        OUTPUT_DIR="$(readlink -m -- "${OUTPUT_DIR:-$STAGING_ROOT}")" || {
+            sayfail "Could not resolve output directory."
+            return 1
+        }
+        MANIFEST_HISTORY_DIR="${STAGING_ROOT%/}/manifest-history"
+        return 0
+    }
+
     # fn: _get_parameters - Collect prepare-release parameters
         # . Purpose
-        #   Collect prepare-release parameters.
+        #   Resolve and confirm release locations, identities, metadata policy, and switches.
         #
         # . Behavior
+        #   - Keeps STAGING_ROOT as the working/archive location.
+        #   - Prompts for a separate OUTPUT_DIR; defaults to the saved choice or STAGING_ROOT.
+        #   - In auto mode, reuses saved/default locations without location prompts.
+        #   - Saves OUTPUT_DIR with the other settings only when FLAG_SAVEPARMS is enabled.
+        #   - Does not write state in dry-run mode.
+        #
+        # . Outputs (globals)
+        #   STAGING_ROOT, OUTPUT_DIR, MANIFEST_HISTORY_DIR, RELEASE, TAR_FILE,
+        #   RELEASE_PRODUCT_VERSIONS, RELEASE_PRODUCT_BUILDS, metadata policies,
+        #   removal baselines, and workflow switches.
         #
         # . Returns
-        #   Returns the underlying command or workflow status.
+        #   0 on successful confirmation; non-zero on cancellation or state-save failure.
         #
         # . Usage
-        #   _get_parameters
+        #   _get_parameters || return 1
+        #
+        # . Notes
+        #   Uses ask(), ask_decision(), and ask_dlg_autocontinue().
+        #   Persistent settings are loaded in main before parameter collection.
     _get_parameters(){
         FLAG_AUTO="${FLAG_AUTO:-0}"
         FLAG_CLEANUP="${FLAG_CLEANUP:-1}"
@@ -766,10 +774,8 @@ set -uo pipefail
             fi
         fi
 
-        # Derived state: always follow the resolved staging root.
-        MANIFEST_HISTORY_DIR="${STAGING_ROOT%/}/manifest-history"
-        
         if [[ "${FLAG_AUTO:-0}" -eq 1 ]]; then
+             _release_resolve_locations || return 1
              local auto_index=0
              RELEASE_PRODUCT_VERSION_MODES=()
              RELEASE_PRODUCT_BUILD_MODES=()
@@ -781,6 +787,8 @@ set -uo pipefail
                  RELEASE_PRODUCT_BUILDS[$auto_index]="$BUILD"
              done
              VERSION="${RELEASE_PRODUCT_VERSIONS[0]}"
+             RELEASE="$(_release_product_artifact_name "$PRODUCT")-$VERSION.$BUILD"
+             TAR_FILE="$RELEASE.tar.gz"
              for auto_index in "${!RELEASE_PRODUCT_NAMES[@]}"; do
                  if (( ${#RELEASE_SOURCE_DIRS[@]} == 1 || ${FLAG_CREATE_INDIVIDUAL_RELEASES:-0} )); then
                      _sgnd_release_select_product_baseline "$auto_index" || return 1
@@ -793,7 +801,7 @@ set -uo pipefail
              else
                  BUNDLE_PREVIOUS_MANIFEST=""
              fi
-             sayinfo "Auto mode: using last deployment or default settings."
+             sayinfo "Auto mode: using saved or default release settings."
              return 0
         fi
         local lw=20
@@ -802,6 +810,8 @@ set -uo pipefail
             sgnd_print
             sgnd_print_sectionheader "Release locations" --padend 0
             ask --label "Staging directory" --var STAGING_ROOT --default "$STAGING_ROOT" --colorize both --labelclr "${CYAN}" --pad "$lp" --labelwidth "$lw"
+            ask --label "Output directory" --var OUTPUT_DIR --default "${OUTPUT_DIR:-$STAGING_ROOT}" --colorize both --labelclr "${CYAN}" --pad "$lp" --labelwidth "$lw"
+            _release_resolve_locations || return 1
 
             sgnd_print
             sgnd_print_sectionheader "Release identification" --padend 0
@@ -1311,6 +1321,8 @@ set -uo pipefail
         #   - Populates the staging directory from SOURCE_DIR via rsync.
         #   - Reuses existing staging files when requested and non-empty.
         #   - Creates an uncompressed tar archive from the staged files.
+        #   - Overlays companion products in selection order; when a later product provides
+        #     different content for an existing path, reports the overlap and keeps the later copy.
         #   - Generates an uninstall manifest from the tar contents.
         #   - Compares the new manifest with the selected removal-baseline manifest and writes a removal delta.
         #   - Embeds the uninstall manifest into the tar archive.
@@ -1413,24 +1425,20 @@ set -uo pipefail
                 fi
 
                 # Use rsync itself to enumerate the files that survive the release policy.
-                # Collision detection and the actual overlay therefore obey identical rules.
+                # Different content at an existing path is observational, not fatal: release
+                # assembly is an ordered overlay, so the later product replaces the staged copy.
+                local companion_record="" companion_product="" companion_version="" companion_build="" companion_defs=""
+                companion_record="$(_release_product_record "$companion" 2>/dev/null || true)"
+                IFS='|' read -r companion_product companion_version companion_build companion_defs <<< "$companion_record"
                 while IFS= read -r rel; do
                     [[ -n "$rel" && "$rel" != */ ]] || continue
                     incoming="${companion%/}/$rel"
                     [[ -f "$incoming" ]] || continue
                     existing="$stage_path/$rel"
                     if [[ -f "$existing" ]] && ! cmp -s "$existing" "$incoming"; then
-                        local primary_record="" primary_product="" primary_version="" primary_build="" primary_defs=""
-                        local companion_record="" companion_product="" companion_version="" companion_build="" companion_defs=""
-                        primary_record="$(_release_product_record "$SOURCE_DIR" 2>/dev/null || true)"
-                        companion_record="$(_release_product_record "$companion" 2>/dev/null || true)"
-                        IFS='|' read -r primary_product primary_version primary_build primary_defs <<< "$primary_record"
-                        IFS='|' read -r companion_product companion_version companion_build companion_defs <<< "$companion_record"
-                        sayfail "Product ownership conflict"
-                        sgnd_print_labeledvalue --label "Primary product" --value "${primary_product:-$PRODUCT}"
-                        sgnd_print_labeledvalue --label "Companion product" --value "${companion_product:-Unknown}"
+                        saywarning "Product file overlap; later product will replace the staged copy."
+                        sgnd_print_labeledvalue --label "Incoming product" --value "${companion_product:-Unknown}"
                         sgnd_print_labeledvalue --label "File" --value "$rel"
-                        return 1
                     fi
                 done < <(rsync "${companion_rsync_args[@]}" --dry-run --out-format='%n' "${companion%/}/" "$stage_path/" 2>/dev/null)
                 rsync "${companion_rsync_args[@]}" "${companion%/}/" "$stage_path/" || return 1
@@ -1594,8 +1602,9 @@ set -uo pipefail
         # . Behavior
         #   - Requires the six canonical release artifacts created by _create_tar.
         #   - Adds release-manager.sh at the ZIP root only for the SolidGroundUX framework bundle.
-#   - Generic project bundles contain only their release artifacts and require an installed release manager.
+        #   - Generic project bundles contain only their release artifacts and require an installed release manager.
         #   - Does not include SHA256SUMS; the manager verifies individual sidecars.
+        #   - Dry-run reports the planned ZIP without requiring generated artifacts.
         #
         # . Returns
         #   0 on success; 1 on missing artifacts or packaging failure.
@@ -1627,13 +1636,6 @@ set -uo pipefail
             }
         fi
 
-        for artifact in "${artifacts[@]}"; do
-            [[ -f "${STAGING_ROOT%/}/${artifact}" ]] || {
-                sayfail "Missing release artifact for package: ${STAGING_ROOT%/}/${artifact}"
-                return 1
-            }
-        done
-
         if (( ${FLAG_DRYRUN:-0} )); then
             sayinfo "Would have created release package: $zip_path"
             if (( ${PROJECT_IS_FRAMEWORK:-0} )); then
@@ -1643,6 +1645,13 @@ set -uo pipefail
             fi
             return 0
         fi
+
+        for artifact in "${artifacts[@]}"; do
+            [[ -f "${STAGING_ROOT%/}/${artifact}" ]] || {
+                sayfail "Missing release artifact for package: ${STAGING_ROOT%/}/${artifact}"
+                return 1
+            }
+        done
 
         command -v zip >/dev/null 2>&1 || {
             sayfail "Required command not found: zip"
@@ -1704,9 +1713,170 @@ set -uo pipefail
         return 0
     }
 
+    # fn: _prepare_release_output - Validate and prepare the final output directory
+        # . Purpose
+        #   Reject unsafe destinations before source preparation or staging can modify files.
+        #
+        # . Behavior
+        #   - Allows OUTPUT_DIR to equal STAGING_ROOT.
+        #   - Rejects destinations inside product sources or release-specific staging trees.
+        #   - Creates a missing output directory only in commit mode.
+        #
+        # . Inputs (globals)
+        #   OUTPUT_DIR, STAGING_ROOT, RELEASE_SOURCE_DIRS, RELEASE_PRODUCT_NAMES,
+        #   RELEASE_PRODUCT_VERSIONS, PRODUCT, VERSION, BUILD, FLAG_DRYRUN
+        #
+        # . Returns
+        #   0 when output is usable/planned; 1 on unsafe location or directory failure.
+        #
+        # . Usage
+        #   _prepare_release_output || return 1
+    _prepare_release_output() {
+        local root="" stage="" artifact_product="" error="" index=0
+        local -a stages=()
+
+        for root in "${RELEASE_SOURCE_DIRS[@]}"; do
+            root="$(readlink -m -- "$root")" || return 1
+            if [[ "$OUTPUT_DIR" == "$root" || "$OUTPUT_DIR" == "${root%/}/"* ]]; then
+                sayfail "Output directory must be outside product sources: $OUTPUT_DIR"
+                return 1
+            fi
+        done
+
+        # Check all selected product identities, including the final bundle, before
+        # rsync or cleanup can touch a destination beneath a release staging tree.
+        for index in "${!RELEASE_PRODUCT_NAMES[@]}"; do
+            artifact_product="$(_release_product_artifact_name "${RELEASE_PRODUCT_NAMES[$index]}")"
+            stages+=("${STAGING_ROOT%/}/${artifact_product}-${RELEASE_PRODUCT_VERSIONS[$index]}.$BUILD")
+        done
+        if (( ${#RELEASE_SOURCE_DIRS[@]} > 1 )); then
+            stages+=("${STAGING_ROOT%/}/$(_release_product_artifact_name "$PRODUCT")-bundled-$VERSION.$BUILD")
+        fi
+        for stage in "${stages[@]}"; do
+            stage="$(readlink -m -- "$stage")" || return 1
+            if [[ "$OUTPUT_DIR" == "$stage" || "$OUTPUT_DIR" == "${stage%/}/"* ]]; then
+                sayfail "Output directory must be outside release staging trees: $OUTPUT_DIR"
+                return 1
+            fi
+        done
+
+        # Find the closest existing ancestor without creating anything in dry-run.
+        root="$OUTPUT_DIR"
+        while [[ ! -e "$root" && ! -L "$root" ]]; do
+            root="$(dirname -- "$root")"
+        done
+        [[ -d "$root" && -w "$root" && -x "$root" ]] || {
+            sayfail "Output directory is not writable or has a non-directory parent: $OUTPUT_DIR"
+            return 1
+        }
+
+        if (( ${FLAG_DRYRUN:-0} )); then
+            sayinfo "Would have ensured output directory: $OUTPUT_DIR"
+        elif ! error="$(mkdir -p -- "$OUTPUT_DIR" 2>&1)"; then
+            sayfail "Could not create output directory: $OUTPUT_DIR ($error)"
+            return 1
+        fi
+        return 0
+    }
+
+    # fn: _copy_release_output - Copy one completed release directly into the output directory
+        # . Purpose
+        #   Export the release ZIP, TAR, manifests, and matching checksum sidecars.
+        #
+        # . Behavior
+        #   - Copies only this release's seven named artifacts, not old staging contents.
+        #   - Keeps source artifacts in staging and creates no per-release output subdirectory.
+        #   - Skips files already at the destination; replaces matching output filenames.
+        #   - Appends ZIP/TAR paths for the final summary only after successful export.
+        #   - Dry-run records planned archive paths without creating or copying files.
+        #
+        # . Inputs (globals)
+        #   STAGING_ROOT, OUTPUT_DIR, RELEASE, TAR_FILE, FLAG_DRYRUN
+        #
+        # . Outputs (globals)
+        #   RELEASE_OUTPUT_ARCHIVES
+        #
+        # . Returns
+        #   0 on success; 1 on missing artifacts or copy failure. Staged originals are retained.
+        #
+        # . Usage
+        #   _copy_release_output || return 1
+    _copy_release_output() {
+        local artifact="" source="" destination="" error=""
+        local -a artifacts=(
+            "${RELEASE}-release.zip"
+            "$TAR_FILE"
+            "${TAR_FILE}.sha256"
+            "${RELEASE}.manifest"
+            "${RELEASE}.manifest.sha256"
+            "${RELEASE}.removed"
+            "${RELEASE}.removed.sha256"
+        )
+
+        if (( ${FLAG_DRYRUN:-0} )); then
+            sayinfo "Would have copied release artifacts for $RELEASE to: $OUTPUT_DIR"
+        else
+            # Check every source/destination before starting this release's copy.
+            for artifact in "${artifacts[@]}"; do
+                source="${STAGING_ROOT%/}/$artifact"
+                destination="${OUTPUT_DIR%/}/$artifact"
+                [[ -f "$source" ]] || {
+                    sayfail "Missing release artifact for output: $source"
+                    return 1
+                }
+                if [[ -e "$destination" && ! -f "$destination" ]]; then
+                    sayfail "Release output path is not a regular file: $destination"
+                    return 1
+                fi
+            done
+            for artifact in "${artifacts[@]}"; do
+                source="${STAGING_ROOT%/}/$artifact"
+                destination="${OUTPUT_DIR%/}/$artifact"
+                [[ "$source" -ef "$destination" ]] && continue
+                if ! error="$(cp --remove-destination -- "$source" "$destination" 2>&1)"; then
+                    sayfail "Could not copy release artifact to $destination ($error)"
+                    sayinfo "Packaged originals remain in: $STAGING_ROOT"
+                    return 1
+                fi
+            done
+            sayok "Release artifacts available in: $OUTPUT_DIR"
+        fi
+
+        RELEASE_OUTPUT_ARCHIVES+=(
+            "${OUTPUT_DIR%/}/${RELEASE}-release.zip"
+            "${OUTPUT_DIR%/}/$TAR_FILE"
+        )
+        return 0
+    }
+
+    # fn: _report_release_output - Show final archive paths for this run
+        # . Returns
+        #   0 after reporting completed or explicitly planned ZIP/TAR paths.
+        #
+        # . Usage
+        #   _report_release_output
+    _report_release_output() {
+        local archive="" label=""
+        sgnd_print
+        if (( ${FLAG_DRYRUN:-0} )); then
+            sgnd_print_sectionheader "Planned release output (dry-run)" --padend 0
+        else
+            sgnd_print_sectionheader "Release output" --padend 0
+        fi
+        for archive in "${RELEASE_OUTPUT_ARCHIVES[@]}"; do
+            case "$archive" in
+                *.zip) label="ZIP archive" ;;
+                *)     label="TAR archive" ;;
+            esac
+            sgnd_print_labeledvalue --label "$label" --value "$archive"
+        done
+        return 0
+    }
+
     # fn: _archive_release_manifest - Persist the current manifest for future removal baselines
         # . Purpose
         #   Store the successfully packaged release manifest in persistent manifest history.
+        #   Dry-run reports the destination without requiring a generated manifest.
         #
         # . Returns
         #   0 on success; 1 on copy failure.
@@ -1717,15 +1887,15 @@ set -uo pipefail
         local manifest_path="${STAGING_ROOT%/}/${RELEASE}.manifest"
         local destination="${MANIFEST_HISTORY_DIR%/}/${RELEASE}.manifest"
 
-        [[ -f "$manifest_path" ]] || {
-            sayfail "Cannot archive missing release manifest: $manifest_path"
-            return 1
-        }
-
         if (( ${FLAG_DRYRUN:-0} )); then
             sayinfo "Would have archived release manifest to: $destination"
             return 0
         fi
+
+        [[ -f "$manifest_path" ]] || {
+            sayfail "Cannot archive missing release manifest: $manifest_path"
+            return 1
+        }
 
         mkdir -p -- "$MANIFEST_HISTORY_DIR" || return 1
         cp -f -- "$manifest_path" "$destination" || return 1
@@ -1741,6 +1911,7 @@ set -uo pipefail
         #   - Checks FLAG_CLEANUP to determine whether to remove the staging directory.
         #   - If FLAG_CLEANUP is 1, deletes the directory at STAGING_ROOT/RELEASE.
         #   - If FLAG_CLEANUP is 0, logs that cleanup is skipped.
+        #   - In dry-run mode, reports planned cleanup without deleting anything.
         #
         # Inputs (globals):
         #   STAGING_ROOT
@@ -1752,12 +1923,16 @@ set -uo pipefail
         #
         # . Returns
         #   0 on success (or if cleanup is skipped)
-        #   1 if deletion fails
+        #   Logs a warning when deletion fails; returns the logging command status.
         #
         # . Usage
         #   _cleanup_staging
     _cleanup_staging() {
         if [[ "$FLAG_CLEANUP" -eq 1 ]]; then
+            if (( ${FLAG_DRYRUN:-0} )); then
+                sayinfo "Would have cleaned staging directory: ${STAGING_ROOT%/}/$RELEASE"
+                return 0
+            fi
             sayinfo "Cleaning up staging files in $STAGING_ROOT"
             rm -rf "${STAGING_ROOT%/}/$RELEASE" || {
                 saywarning "Failed to remove staging directory: ${STAGING_ROOT%/}/$RELEASE"
@@ -1791,7 +1966,10 @@ set -uo pipefail
         #
         # . Behavior
         #   - Honors FLAG_NORMALIZE_CANON; disabled runs are skipped.
-        #   - Uses normalize-canon.sh from the active framework libexec directory.
+        #   - Prefers normalize-canon.sh from the active development framework root.
+        #   - Falls back to the installed production normalizer when the development copy
+        #     is missing or not executable.
+        #   - Uses the installed production normalizer directly when running from root (/).
         #   - Passes the same recursive shell-file mask represented by SOURCE_DIR.
         #   - Runs the normalizer in --auto mode so prepare-release remains non-interactive.
         #   - Propagates dry-run mode when prepare-release is running dry.
@@ -1803,6 +1981,8 @@ set -uo pipefail
         #   _normalize_canonical_sources
     _normalize_canonical_sources() {
         local normalizer=""
+        local development_normalizer=""
+        local production_normalizer="/usr/local/libexec/solidgroundux/normalize-canon.sh"
         local source_mask="${SOURCE_DIR%/}/**/*.sh"
         local -a command=()
 
@@ -1812,13 +1992,23 @@ set -uo pipefail
         }
 
         if [[ "$SGND_FRAMEWORK_ROOT" == "/" ]]; then
-            normalizer="/usr/local/libexec/solidgroundux/normalize-canon.sh"
+            normalizer="$production_normalizer"
         else
-            normalizer="${SGND_FRAMEWORK_ROOT%/}/usr/local/libexec/solidgroundux/normalize-canon.sh"
+            development_normalizer="${SGND_FRAMEWORK_ROOT%/}/usr/local/libexec/solidgroundux/normalize-canon.sh"
+            if [[ -x "$development_normalizer" ]]; then
+                normalizer="$development_normalizer"
+            elif [[ -x "$production_normalizer" ]]; then
+                normalizer="$production_normalizer"
+                sayinfo "Development canonical normalizer unavailable; using installed production normalizer."
+            fi
         fi
 
         [[ -x "$normalizer" ]] || {
-            sayfail "Canonical normalizer not found or not executable: $normalizer"
+            if [[ -n "$development_normalizer" ]]; then
+                sayfail "Canonical normalizer not found or not executable in development or production: $development_normalizer ; $production_normalizer"
+            else
+                sayfail "Canonical normalizer not found or not executable: $production_normalizer"
+            fi
             return 1
         }
 
@@ -2182,6 +2372,7 @@ set -uo pipefail
         PREVIOUS_MANIFEST="${RELEASE_PRODUCT_BASELINES[0]-}"
         _create_tar || return 1
         _create_release_package || return 1
+        _copy_release_output || return 1
         _archive_release_manifest || return 1
         _cleanup_staging
 
@@ -2251,6 +2442,7 @@ set -uo pipefail
             if (( ${FLAG_CREATE_INDIVIDUAL_RELEASES:-0} )); then
                 _create_tar || return 1
                 _create_release_package || return 1
+                _copy_release_output || return 1
                 _archive_release_manifest || return 1
                 _cleanup_staging
             fi
@@ -2270,12 +2462,15 @@ set -uo pipefail
         #   Execute the release preparation workflow.
         #
         # . Behavior
-        #   - Loads and initializes the framework bootstrap.
+        #   - Loads and initializes the framework bootstrap and requires root privileges,
+        #     re-executing through sudo when necessary.
         #   - Executes builtin framework argument handling.
         #   - Prepares the standard UI state and title bar.
         #   - Resolves the development root and selects release products first.
         #   - Resolves release parameters for the selected product set.
-        #   - Creates the release archive and related metadata.
+        #   - Validates/prepares the output directory before source or staging changes.
+        #   - Creates archives and copies each completed release to the output directory.
+        #   - Preserves manifest history and ends with full ZIP/TAR output paths.
         #
         # . Arguments
         #   $@  Framework and script-specific command-line arguments
@@ -2291,7 +2486,7 @@ set -uo pipefail
     main() {
         # -- Startup
             _framework_locator || exit $?
-            sgnd_exe_start --state -- "$@"
+            sgnd_exe_start --needroot --state -- "$@"
 
         # -- Main script logic
 
@@ -2305,6 +2500,7 @@ set -uo pipefail
         }
 
         _get_parameters || exit $?
+        _prepare_release_output || exit $?
 
         # Product selection resolves the definitions; interactive Version remains authoritative
         # for the selected primary product. Build is the common YYDDDHH release build.
@@ -2360,12 +2556,18 @@ set -uo pipefail
             exit 1
         }
 
+        _copy_release_output || {
+            sayfail "Release output copy failed; packaged originals remain in $STAGING_ROOT"
+            exit 1
+        }
+
         _archive_release_manifest || {
             sayfail "Release manifest history update failed."
             exit 1
         }
 
         _cleanup_staging
+        _report_release_output
     }
 
     # Run main with positional args only (not the options)

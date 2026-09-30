@@ -4,8 +4,8 @@
 # -------------------------------------------------------------------------------------
 # Metadata:
 #   Version     : 2.1
-#   Build       : 2626711
-#   Checksum    : 5624fd8a9d0d77729d6f3d8d972c5ef60d99e961c93a0a91b0e49c33e2fc8f48
+#   Build       : 2627322
+#   Checksum    : 325cbf4dfe2aff5495f5ff5a486c8c7a1ef0ae4d64695679d9f1485ab242a6fa
 #   Source      : receive-files.sh
 #   Type        : script
 #   Group       : SDK
@@ -362,18 +362,22 @@ set -uo pipefail
         #
         # . Usage
         #   main "$@"
-    main() {
-        _framework_locator || exit $?
-        sgnd_exe_start --no-clear -- "$@"
+   main() {
 
-        _validate_target || return $?
+    _framework_locator || exit $?
 
-        saystart "Receiving files for target root $DEST_ROOT"
-        _receive_stream || return $?
-        _validate_archive || return $?
-        _extract_archive || return $?
-        sayend "Received files were placed beneath $DEST_ROOT"
-        return 0
-    }
+    sgnd_exe_start --no-clear -- "$@"
 
-    main "$@" 
+    _validate_target || return $?
+
+    saystart "Receiving files for target root $DEST_ROOT"
+   
+    _receive_stream || return $?
+    _validate_archive || return $?
+    _extract_archive || return $?
+
+    sayend "Received files were placed beneath $DEST_ROOT"
+    return 0
+}
+
+main "$@" 

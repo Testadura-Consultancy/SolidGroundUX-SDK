@@ -4,8 +4,8 @@
 # -------------------------------------------------------------------------------------
 # Metadata:
 #   Version     : 2.1
-#   Build       : 2626711
-#   Checksum    : a0290e0b28c1d96ba1cd0f5dbb9ff6569e60e8ecc13e636488e3a7cd63648ee8
+#   Build       : 2627322
+#   Checksum    : e5717cb96fee6aa0ba713448455833b322076631d436b65ab64348f312d6f299
 #   Source      : deploy-workspace.sh
 #   Type        : script
 #   Group       : SDK
@@ -968,8 +968,10 @@ set -uo pipefail
             return 1
         }
 
+
         tar -C "$SRC_ROOT" -cf - -- "${SELECTED_PATHS[@]}" |
             sudo "${receiver_args[@]}"
+
     }
 
     # fn: _start_remote_session - Open one shared SSH connection for the deployment
@@ -1102,7 +1104,7 @@ set -uo pipefail
             fi
 
             saystart "Deploying ${#SELECTED_PATHS[@]} file(s) from $product_name"
-
+            sayinfo "DEBUG DEPLOY_TRANSPORT=[$DEPLOY_TRANSPORT]"
             case "$DEPLOY_TRANSPORT" in
                 local)
                     sayinfo "Receiver: local $RECEIVER_PATH"
