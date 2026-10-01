@@ -4,7 +4,7 @@
 # -------------------------------------------------------------------------------------
 # Metadata:
 #   Version     : 2.1
-#   Build       : 2627322
+#   Build       : 2627412
 #   Checksum    : de11c3f63675a11fc83005a41dea38f1a33d264b127cea8544f4ef2cca40d0f3
 #   Source      : prepare-release.sh
 #   Type        : script

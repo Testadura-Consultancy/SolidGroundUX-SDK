@@ -4,6 +4,15 @@ All notable changes to SolidGroundUX SDK are documented in this file.
 
 ## Unreleased
 
+### Changed
+- Added a configurable release output-directory prompt to `prepare-release`, persisted as state for reuse on subsequent runs.
+- Release preparation now reports the final destination path of the generated release artifacts explicitly.
+
+### Fixed
+- Fixed non-interactive `receive-files.sh` execution hanging during workspace deployment by suppressing title rendering for the receiver path, avoiding terminal/titlebar probing when no controlling TTY is available.
+- Restored normal `deploy-workspace` completion after the receiver/confirmation handling regression; development-to-production streaming again returns cleanly after transfer.
+
+
 ## Release 2.1.2626712
 
 ### Changed
