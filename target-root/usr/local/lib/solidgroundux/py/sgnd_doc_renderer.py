@@ -545,7 +545,9 @@ class DocRenderer:
 
     # fn: build_doc_hierarchy - Build doc hierarchy
     # . Purpose
-    #   Build doc hierarchy for the documentation rendering workflow.
+    #   Build the documentation navigation hierarchy, promoting each product, group, or
+    #   subgroup preface into the content of its parent node while keeping epilogues as
+    #   explicit trailing child pages.
     # . Usage
     #   self.build_doc_hierarchy()
     def build_doc_hierarchy(self) -> None:
@@ -560,37 +562,43 @@ class DocRenderer:
             product_docindex = str(product_index)
             product_modules = modules_by_product[product_name]
 
-            self.nav.append(
-                NavNode(
-                    nodeid=product_node_id,
-                    parentnodeid="root",
-                    nodetype="product",
-                    node_name=product_name,
-                    node_title=product_name,
-                    hierarchy_level=0,
-                    docindex=product_docindex,
-                    contentref="",
-                )
-            )
-
             product_specials, group_specials, normal_modules = self.split_special_comment_modules(
                 product_name,
                 product_modules,
             )
 
+            product_prefaces = product_specials.get("preface", [])
+            product_node = NavNode(
+                nodeid=product_node_id,
+                parentnodeid="root",
+                nodetype="product",
+                node_name=product_name,
+                node_title=product_name,
+                hierarchy_level=0,
+                docindex=product_docindex,
+                contentref=(
+                    content_ref(product_prefaces[0].get("name", ""))
+                    if product_prefaces
+                    else ""
+                ),
+            )
+            self.nav.append(product_node)
+
             sequence_index = 0
 
-            for role in ("preface",):
-                for module in product_specials.get(role, []):
-                    sequence_index += 1
-                    self.add_standalone_doc_node(
-                        module=module,
-                        parent_node_id=product_node_id,
-                        hierarchy_level=1,
-                        docindex=f"{product_docindex}.{sequence_index}",
-                        fallback_name="Product Preface",
-                        nodetype="preface",
-                    )
+            # A preface is the authored body of its parent navigation node, not a child
+            # section. Preserve any unexpected additional prefaces as child pages so
+            # authored content is never silently dropped.
+            for module in product_prefaces[1:]:
+                sequence_index += 1
+                self.add_standalone_doc_node(
+                    module=module,
+                    parent_node_id=product_node_id,
+                    hierarchy_level=1,
+                    docindex=f"{product_docindex}.{sequence_index}",
+                    fallback_name="Product Preface",
+                    nodetype="preface",
+                )
 
             groups = sorted({module.get("group", "") or "Ungrouped" for module in normal_modules}, key=str.casefold)
 
@@ -599,22 +607,26 @@ class DocRenderer:
                 group_docindex = f"{product_docindex}.{sequence_index}"
                 group_node_id = f"group:{product_name}:{group_name}"
 
-                self.nav.append(
-                    NavNode(
-                        nodeid=group_node_id,
-                        parentnodeid=product_node_id,
-                        nodetype="group",
-                        node_name=group_name,
-                        node_title=group_name,
-                        hierarchy_level=1,
-                        docindex=group_docindex,
-                        contentref="",
-                    )
+                group_prefaces = group_specials.get(group_name, {}).get("preface", [])
+                group_node = NavNode(
+                    nodeid=group_node_id,
+                    parentnodeid=product_node_id,
+                    nodetype="group",
+                    node_name=group_name,
+                    node_title=group_name,
+                    hierarchy_level=1,
+                    docindex=group_docindex,
+                    contentref=(
+                        content_ref(group_prefaces[0].get("name", ""))
+                        if group_prefaces
+                        else ""
+                    ),
                 )
+                self.nav.append(group_node)
 
                 group_sequence_index = 0
 
-                for module in group_specials.get(group_name, {}).get("preface", []):
+                for module in group_prefaces[1:]:
                     group_sequence_index += 1
                     self.add_standalone_doc_node(
                         module=module,
@@ -642,41 +654,47 @@ class DocRenderer:
                     subgroup_docindex = f"{group_docindex}.{group_sequence_index}"
                     subgroup_node_id = f"subgroup:{product_name}:{group_name}:{subgroup_name}"
 
-                    self.nav.append(
-                        NavNode(
-                            nodeid=subgroup_node_id,
-                            parentnodeid=group_node_id,
-                            nodetype="subgroup",
-                            node_name=subgroup_name,
-                            node_title=subgroup_name,
-                            hierarchy_level=2,
-                            docindex=subgroup_docindex,
-                            contentref="",
-                        )
-                    )
-
-                    subgroup_sequence_index = 0
                     subgroup_modules = [
                         module for module in group_modules
                         if module.get("subgroup", "") == subgroup_name
                     ]
-
-                    for module in subgroup_modules:
-                        role = self.subgroup_comment_role(
+                    subgroup_prefaces = [
+                        module
+                        for module in subgroup_modules
+                        if self.subgroup_comment_role(
                             normalize_key(Path(module.get("name", "")).stem),
                             normalize_key(subgroup_name),
                             module.get("purpose", ""),
+                        ) == "preface"
+                    ]
+
+                    subgroup_node = NavNode(
+                        nodeid=subgroup_node_id,
+                        parentnodeid=group_node_id,
+                        nodetype="subgroup",
+                        node_name=subgroup_name,
+                        node_title=subgroup_name,
+                        hierarchy_level=2,
+                        docindex=subgroup_docindex,
+                        contentref=(
+                            content_ref(subgroup_prefaces[0].get("name", ""))
+                            if subgroup_prefaces
+                            else ""
+                        ),
+                    )
+                    self.nav.append(subgroup_node)
+
+                    subgroup_sequence_index = 0
+                    for module in subgroup_prefaces[1:]:
+                        subgroup_sequence_index += 1
+                        self.add_standalone_doc_node(
+                            module=module,
+                            parent_node_id=subgroup_node_id,
+                            hierarchy_level=3,
+                            docindex=f"{subgroup_docindex}.{subgroup_sequence_index}",
+                            fallback_name="Subgroup Preface",
+                            nodetype="preface",
                         )
-                        if role == "preface":
-                            subgroup_sequence_index += 1
-                            self.add_standalone_doc_node(
-                                module=module,
-                                parent_node_id=subgroup_node_id,
-                                hierarchy_level=3,
-                                docindex=f"{subgroup_docindex}.{subgroup_sequence_index}",
-                                fallback_name="Subgroup Preface",
-                                nodetype="preface",
-                            )
 
                     for module in sorted(
                         subgroup_modules,
@@ -2928,7 +2946,8 @@ body {
     
     # fn: render_navigation - Render navigation
     # . Purpose
-    #   Render navigation for the documentation rendering workflow.
+    #   Render the documentation navigation tree, linking container headings to their
+    #   promoted preface content when available.
     # . Usage
     #   self.render_navigation()
     def render_navigation(self) -> str:
@@ -2943,7 +2962,9 @@ body {
             special_nav_types = {"product", "group", "subgroup", "appendices", "appendix", "preface", "epilogue"}
             style = f"padding-left:{indent}px"
             href = page_href_from_contentref(node.contentref) if node.contentref else ""
-            if node.nodetype == "product":
+            # Product headings use their promoted preface when present. Products without
+            # a preface retain the collection title page as their navigation fallback.
+            if node.nodetype == "product" and not href:
                 href = "pages/title.html"
             special_class = " doc-nav-special" if node.nodetype in special_nav_types else ""
             type_class = slugify(node.nodetype)

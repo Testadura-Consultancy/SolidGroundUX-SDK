@@ -4,8 +4,8 @@
 # -------------------------------------------------------------------------------------
 # Metadata:
 #   Version     : 2.1
-#   Build       : 2627412
-#   Checksum    : de11c3f63675a11fc83005a41dea38f1a33d264b127cea8544f4ef2cca40d0f3
+#   Build       : 2627501
+#   Checksum    : 9f08b6927b3aafb6394edd6dca6d1f58156146249eea547eb8de188fa078c6db
 #   Source      : prepare-release.sh
 #   Type        : script
 #   Group       : SDK
@@ -23,10 +23,10 @@
 #     - Verifies public command wrappers for executable top-level libexec scripts
 #     - Creates release tar/manifests/checksums and a complete distributable release ZIP
 #     - Copies completed release artifacts directly into a separately selected output directory
-#     - Reports the full output paths of all individual and bundled ZIP/TAR archives
+#     - Reports the full output paths of product release ZIPs and the optional first-install ZIP
 #     - Writes release-package.info at ZIP root so the package identifies its project/release
 #     - Uses an explicit removal-baseline manifest from persistent manifest history
-#     - Ships release-manager.sh only with the SolidGroundUX framework bootstrap package
+#     - Builds a first-install ZIP containing sgnd-setup.sh plus selected product release ZIPs
 #
 # Design principles:
 #   - Release preparation is deterministic and repeatable
@@ -306,16 +306,15 @@ set -uo pipefail
     # Put script-local constants and defaults here (NOT framework config).
     # Prefer local variables inside functions unless a value must be shared.
 
-    # Selected release products, ordered with the primary product first.
+    # Selected release products, kept in the operator-selected order.
     RELEASE_PRODUCT_NAMES=()
     RELEASE_PRODUCT_VERSIONS=()
     RELEASE_PRODUCT_BUILDS=()
     RELEASE_PRODUCT_VERSION_MODES=()
     RELEASE_PRODUCT_BUILD_MODES=()
     RELEASE_PRODUCT_BASELINES=()
-    BUNDLE_PREVIOUS_MANIFEST=""
 
-    # ZIP/TAR output paths for this run only; never restored from persistent state.
+    # ZIP output paths for this run only; never restored from persistent state.
     RELEASE_OUTPUT_ARCHIVES=()
 
 # - Local script functions ----------------------------------------------------------
@@ -473,7 +472,7 @@ set -uo pipefail
     # fn$ _release_select_products - Select the product(s) that participate in this release
     _release_select_products() {
         local repo="" root="" record="" product="" version="" build="" defs=""
-        local selection="" primary_choice="1" answer="N" primary_pos=1 i=0 index=0
+        local selection="" answer="N" i=0 index=0
         local current_repo="" current_root="${SOURCE_DIR:-$SGND_FRAMEWORK_ROOT}"
         local -a roots=() products=() versions=() builds=() definitions=() selected_indexes=()
         local -a selected_roots=() selected_products=() selected_versions=() selected_builds=()
@@ -546,40 +545,12 @@ set -uo pipefail
             selected_builds[$i]="$build"
         done
 
-        # Prefer SolidGroundUX as the primary identity when it is among the selected products.
-        primary_pos=1
-        for i in "${!selected_products[@]}"; do
-            [[ "${selected_products[$i]}" == "SolidGroundUX" ]] && { primary_pos=$((i+1)); break; }
-        done
-
-        if (( ${#selected_roots[@]} > 1 )); then
-            sgnd_print
-            sgnd_print_sectionheader "Primary release product" --padend 0
-            for i in "${!selected_roots[@]}"; do
-                sgnd_print "$((i+1)) : ${selected_products[$i]}  v${selected_versions[$i]}.${selected_builds[$i]}"
-            done
-            primary_choice="$primary_pos"
-            ask --label "Primary product" --var primary_choice --default "$primary_choice" --colorize both --labelclr "${CYAN}" --labelwidth 30
-            [[ "$primary_choice" =~ ^[0-9]+$ ]] && (( primary_choice >= 1 && primary_choice <= ${#selected_roots[@]} )) || {
-                sayfail "Invalid primary product selection: $primary_choice"
-                return 1
-            }
-        else
-            primary_choice=1
-        fi
-
-        # Put the primary product first; the remaining products are bundle overlays.
-        RELEASE_SOURCE_DIRS=("${selected_roots[$((primary_choice-1))]}")
-        RELEASE_PRODUCT_NAMES=("${selected_products[$((primary_choice-1))]}")
-        RELEASE_PRODUCT_VERSIONS=("${selected_versions[$((primary_choice-1))]}")
-        RELEASE_PRODUCT_BUILDS=("${selected_builds[$((primary_choice-1))]}")
-        for i in "${!selected_roots[@]}"; do
-            (( i == primary_choice-1 )) && continue
-            RELEASE_SOURCE_DIRS+=("${selected_roots[$i]}")
-            RELEASE_PRODUCT_NAMES+=("${selected_products[$i]}")
-            RELEASE_PRODUCT_VERSIONS+=("${selected_versions[$i]}")
-            RELEASE_PRODUCT_BUILDS+=("${selected_builds[$i]}")
-        done
+        # Preserve the operator-selected product order. The first selected product is used
+        # only as the lead processing context; it has no special release identity.
+        RELEASE_SOURCE_DIRS=("${selected_roots[@]}")
+        RELEASE_PRODUCT_NAMES=("${selected_products[@]}")
+        RELEASE_PRODUCT_VERSIONS=("${selected_versions[@]}")
+        RELEASE_PRODUCT_BUILDS=("${selected_builds[@]}")
         SOURCE_DIR="${RELEASE_SOURCE_DIRS[0]}"
         COMPANION_PRODUCT_PATHS=""
         for root in "${RELEASE_SOURCE_DIRS[@]:1}"; do
@@ -587,35 +558,12 @@ set -uo pipefail
             COMPANION_PRODUCT_PATHS+="$root"
         done
 
-        FLAG_CREATE_INDIVIDUAL_RELEASES="${FLAG_CREATE_INDIVIDUAL_RELEASES:-0}"
-        if (( ${#RELEASE_SOURCE_DIRS[@]} > 1 )); then
-            answer="N"
-            (( FLAG_CREATE_INDIVIDUAL_RELEASES )) && answer="Y"
-            ask --label "Also create individual product releases (Y/N)" --var answer --default "$answer" --choices "Y,Yes,N,No" --colorize both --labelclr "${CYAN}" --labelwidth 46
-            case "${answer^^}" in Y|YES) FLAG_CREATE_INDIVIDUAL_RELEASES=1 ;; *) FLAG_CREATE_INDIVIDUAL_RELEASES=0 ;; esac
-        else
-            FLAG_CREATE_INDIVIDUAL_RELEASES=0
-        fi
+        # Product ZIPs are the only release unit. Multi-product runs create one
+        # independent release per selected product. When SolidGroundUX is among the
+        # selected products, a separate first-install transport ZIP is also produced.
+        FLAG_CREATE_INDIVIDUAL_RELEASES=1
 
         _release_resolve_project_identity || return 1
-    }
-
-    # fn$ _release_write_bundle_manifest - Record products included in an assembled release
-    _release_write_bundle_manifest() {
-        local stage="${1:?missing stage}" product_index=0 root="" record="" product="" version="" build="" defs=""
-        (( ${FLAG_DRYRUN:-0} )) && return 0
-        {
-            printf '# SolidGroundUX assembled release products\n'
-            for product_index in "${!RELEASE_SOURCE_DIRS[@]}"; do
-                root="${RELEASE_SOURCE_DIRS[$product_index]}"
-                record="$(_release_product_record "$root" 2>/dev/null || true)"
-                [[ -n "$record" ]] || continue
-                IFS='|' read -r product version build defs <<< "$record"
-                version="${RELEASE_PRODUCT_VERSIONS[$product_index]:-$version}"
-                build="${RELEASE_PRODUCT_BUILDS[$product_index]:-$build}"
-                printf '%s|%s|%s|%s\n' "$product" "$version" "$build" "$defs"
-            done
-        } > "$stage/RELEASE-PRODUCTS"
     }
 
     # fn$ _release_update_project_identity - Update version/build in the correct definitions file
@@ -780,8 +728,7 @@ set -uo pipefail
              RELEASE_PRODUCT_VERSION_MODES=()
              RELEASE_PRODUCT_BUILD_MODES=()
              RELEASE_PRODUCT_BASELINES=()
-             BUNDLE_PREVIOUS_MANIFEST=""
-             for auto_index in "${!RELEASE_PRODUCT_NAMES[@]}"; do
+                      for auto_index in "${!RELEASE_PRODUCT_NAMES[@]}"; do
                  RELEASE_PRODUCT_VERSION_MODES+=("${MODE_UPDATEVERSION^^}")
                  RELEASE_PRODUCT_BUILD_MODES+=("${MODE_UPDATEBUILD^^}")
                  RELEASE_PRODUCT_BUILDS[$auto_index]="$BUILD"
@@ -790,18 +737,9 @@ set -uo pipefail
              RELEASE="$(_release_product_artifact_name "$PRODUCT")-$VERSION.$BUILD"
              TAR_FILE="$RELEASE.tar.gz"
              for auto_index in "${!RELEASE_PRODUCT_NAMES[@]}"; do
-                 if (( ${#RELEASE_SOURCE_DIRS[@]} == 1 || ${FLAG_CREATE_INDIVIDUAL_RELEASES:-0} )); then
-                     _sgnd_release_select_product_baseline "$auto_index" || return 1
-                 else
-                     RELEASE_PRODUCT_BASELINES[$auto_index]=""
-                 fi
+                 _sgnd_release_select_product_baseline "$auto_index" || return 1
              done
-             if (( ${#RELEASE_SOURCE_DIRS[@]} > 1 )); then
-                 _sgnd_release_select_bundle_baseline || return 1
-             else
-                 BUNDLE_PREVIOUS_MANIFEST=""
-             fi
-             sayinfo "Auto mode: using saved or default release settings."
+                      sayinfo "Auto mode: using saved or default release settings."
              return 0
         fi
         local lw=20
@@ -828,16 +766,18 @@ set -uo pipefail
 
             if (( ${#RELEASE_SOURCE_DIRS[@]} > 1 )); then
                 sgnd_print
-                sgnd_print_sectionheader "Bundled products" --padend 0
-                local bundle_root="" bundle_record="" bundle_product="" bundle_version="" bundle_build="" bundle_defs=""
-                for bundle_root in "${RELEASE_SOURCE_DIRS[@]}"; do
-                    bundle_record="$(_release_product_record "$bundle_root" 2>/dev/null || true)"
-                    [[ -n "$bundle_record" ]] || continue
-                    IFS='|' read -r bundle_product bundle_version bundle_build bundle_defs <<< "$bundle_record"
-                    sgnd_print_labeledvalue --label "$bundle_product" --value "v${bundle_version}.${bundle_build}" --colorize both --labelclr "${CYAN}" --pad "$lp" --labelwidth 46
+                sgnd_print_sectionheader "Selected products" --padend 0
+                local selected_root="" selected_record="" selected_product="" selected_version="" selected_build="" selected_defs=""
+                for selected_root in "${RELEASE_SOURCE_DIRS[@]}"; do
+                    selected_record="$(_release_product_record "$selected_root" 2>/dev/null || true)"
+                    [[ -n "$selected_record" ]] || continue
+                    IFS='|' read -r selected_product selected_version selected_build selected_defs <<< "$selected_record"
+                    sgnd_print_labeledvalue --label "$selected_product" --value "v${selected_version}.${selected_build}" --colorize both --labelclr "${CYAN}" --pad "$lp" --labelwidth 46
                 done
-                sgnd_print_labeledvalue --label "Individual product releases" --value "$([[ ${FLAG_CREATE_INDIVIDUAL_RELEASES:-0} -eq 1 ]] && printf Yes || printf No)" --colorize both --labelclr "${CYAN}" --pad "$lp" --labelwidth 46
-                sgnd_print_labeledvalue --label "Bundled release" --value "$(_release_product_artifact_name "$PRODUCT")-bundled-$VERSION.$BUILD" --colorize both --labelclr "${CYAN}" --pad "$lp" --labelwidth 46
+                sgnd_print_labeledvalue --label "Release unit" --value "One product ZIP per selected product" --colorize both --labelclr "${CYAN}" --pad "$lp" --labelwidth 46
+                if _release_has_framework_product; then
+                    sgnd_print_labeledvalue --label "Bootstrap" --value "First-install ZIP with sgnd-setup + product ZIPs" --colorize both --labelclr "${CYAN}" --pad "$lp" --labelwidth 46
+                fi
             fi
 
             sgnd_print
@@ -866,7 +806,7 @@ set -uo pipefail
             for product_index in "${!RELEASE_PRODUCT_BUILDS[@]}"; do
                 RELEASE_PRODUCT_BUILDS[$product_index]="$BUILD"
             done
-            # Release filenames follow the selected primary product's entered Version.
+            # The lead processing context follows the first selected product.
             RELEASE="$(_release_product_artifact_name "$PRODUCT")-$VERSION.$BUILD"
             TAR_FILE="$RELEASE.tar.gz"
             MODE_UPDATEVERSION="${RELEASE_PRODUCT_VERSION_MODES[0]:-${MODE_UPDATEVERSION:-C}}"
@@ -876,25 +816,12 @@ set -uo pipefail
             # Select them immediately after the per-product release metadata.
             RELEASE_PRODUCT_BASELINES=()
             for product_index in "${!RELEASE_PRODUCT_NAMES[@]}"; do
-                if (( ${#RELEASE_SOURCE_DIRS[@]} == 1 || ${FLAG_CREATE_INDIVIDUAL_RELEASES:-0} )); then
-                    _sgnd_release_select_product_baseline "$product_index" || {
-                        saycancel "Release preparation cancelled."
-                        return 1
-                    }
-                else
-                    RELEASE_PRODUCT_BASELINES[$product_index]=""
-                fi
-            done
-
-            if (( ${#RELEASE_SOURCE_DIRS[@]} > 1 )); then
-                _sgnd_release_select_bundle_baseline || {
+                _sgnd_release_select_product_baseline "$product_index" || {
                     saycancel "Release preparation cancelled."
                     return 1
                 }
-            else
-                BUNDLE_PREVIOUS_MANIFEST=""
-            fi
-
+            done
+        
             sgnd_print
             sgnd_print_sectionheader "Switches" --padend 0
             lw=41
@@ -1019,11 +946,11 @@ set -uo pipefail
         #   newest build first.
         #
         # . Arguments
-        #   $1  Artifact product name, for example SolidGroundUX or SolidGroundUX-bundled.
+        #   $1  Artifact product name. Legacy bundled identities are still recognized as historical baselines.
         #
         # . Behavior
         #   - Matches only the requested artifact identity.
-        #   - Keeps bundled and individual release histories separate.
+        #   - Ignores legacy bundled histories when selecting a normal product baseline.
         #   - Sorts by the numeric build suffix first, then by version as a tie-breaker.
         #
         # . Returns
@@ -1157,19 +1084,6 @@ set -uo pipefail
         artifact_product="$(_release_product_artifact_name "$product")"
         _sgnd_release_select_baseline_for_artifact "$product" "$artifact_product" selected || return $?
         RELEASE_PRODUCT_BASELINES[$product_index]="$selected"
-    }
-
-    # fn: _sgnd_release_select_bundle_baseline - Select baseline for the assembled bundle
-        # . Returns
-        #   0 on success; non-zero on cancelled/invalid selection.
-        # . Usage
-        #   _sgnd_release_select_bundle_baseline
-    _sgnd_release_select_bundle_baseline() {
-        local artifact_product="$(_release_product_artifact_name "$PRODUCT")-bundled"
-        local selected="${BUNDLE_PREVIOUS_MANIFEST:-}"
-
-        _sgnd_release_select_baseline_for_artifact "${PRODUCT} bundle" "$artifact_product" selected || return $?
-        BUNDLE_PREVIOUS_MANIFEST="$selected"
     }
 
     # _sgnd_release_write_checksum
@@ -1410,41 +1324,12 @@ set -uo pipefail
             fi
         fi
 
-        # --- Overlay selected companion products --------------------------------------
-        if (( ${#RELEASE_SOURCE_DIRS[@]} > 1 )); then
-            local companion="" rel="" existing="" incoming=""
-            for companion in "${RELEASE_SOURCE_DIRS[@]:1}"; do
-                local -a companion_excludes=() companion_rsync_args=()
-                local exclude=""
-                while IFS= read -r exclude; do [[ -n "$exclude" ]] && companion_excludes+=("$exclude"); done < <(_release_product_excludes "$companion")
-                companion_rsync_args=( -a )
-                for exclude in "${companion_excludes[@]}"; do companion_rsync_args+=( --exclude "$exclude" ); done
-                if [[ "$FLAG_DRYRUN" -eq 1 ]]; then
-                    sayinfo "Would have overlaid companion product from $companion"
-                    continue
-                fi
-
-                # Use rsync itself to enumerate the files that survive the release policy.
-                # Different content at an existing path is observational, not fatal: release
-                # assembly is an ordered overlay, so the later product replaces the staged copy.
-                local companion_record="" companion_product="" companion_version="" companion_build="" companion_defs=""
-                companion_record="$(_release_product_record "$companion" 2>/dev/null || true)"
-                IFS='|' read -r companion_product companion_version companion_build companion_defs <<< "$companion_record"
-                while IFS= read -r rel; do
-                    [[ -n "$rel" && "$rel" != */ ]] || continue
-                    incoming="${companion%/}/$rel"
-                    [[ -f "$incoming" ]] || continue
-                    existing="$stage_path/$rel"
-                    if [[ -f "$existing" ]] && ! cmp -s "$existing" "$incoming"; then
-                        saywarning "Product file overlap; later product will replace the staged copy."
-                        sgnd_print_labeledvalue --label "Incoming product" --value "${companion_product:-Unknown}"
-                        sgnd_print_labeledvalue --label "File" --value "$rel"
-                    fi
-                done < <(rsync "${companion_rsync_args[@]}" --dry-run --out-format='%n' "${companion%/}/" "$stage_path/" 2>/dev/null)
-                rsync "${companion_rsync_args[@]}" "${companion%/}/" "$stage_path/" || return 1
-            done
-        fi
-        _release_write_bundle_manifest "$stage_path" || return 1
+        # Product ZIPs are independent release units. _create_tar must never assemble
+        # multiple product roots into one archive.
+        (( ${#RELEASE_SOURCE_DIRS[@]} == 1 )) || {
+            sayfail "Product release staging received multiple source roots; bundled releases are no longer supported."
+            return 1
+        }
 
         # --- Build paths ------------------------------------------------------------
         tar_path_tar="${STAGING_ROOT%/}/${TAR_FILE%.gz}"
@@ -1536,30 +1421,64 @@ set -uo pipefail
     }
 
 
-    # fn: _find_release_manager_source - Resolve the release-manager source file
-        # . Purpose
-        #   Locate release-manager.sh in the managed source tree.
-        #
-        # . Returns
-        #   0 with the path on stdout when found; 1 otherwise.
-        #
-        # . Usage
-        #   manager="$(_find_release_manager_source)"
-    _find_release_manager_source() {
-        local direct="${SOURCE_DIR%/}/var/lib/solidgroundux/release-manager.sh"
-        local candidate=""
-        local -a candidates=()
+    # fn: _release_has_framework_product - Report whether SolidGroundUX is selected
+        # Returns:
+        #   0 when the SolidGroundUX framework product is selected; 1 otherwise.
+        # Usage:
+        #   _release_has_framework_product
+    _release_has_framework_product() {
+        local product=""
+        for product in "${RELEASE_PRODUCT_NAMES[@]}"; do
+            [[ "$product" == "SolidGroundUX" ]] && return 0
+        done
+        return 1
+    }
 
-        if [[ -f "$direct" ]]; then
-            printf '%s\n' "$direct"
+    # fn: _release_framework_source_root - Resolve the selected SolidGroundUX source root
+        # Returns:
+        #   0 with the selected framework target-root on stdout; 1 when not selected.
+        # Usage:
+        #   root="$(_release_framework_source_root)"
+    _release_framework_source_root() {
+        local index=0
+        for index in "${!RELEASE_PRODUCT_NAMES[@]}"; do
+            [[ "${RELEASE_PRODUCT_NAMES[$index]}" == "SolidGroundUX" ]] || continue
+            printf '%s\n' "${RELEASE_SOURCE_DIRS[$index]}"
             return 0
-        fi
+        done
+        return 1
+    }
 
-        mapfile -t candidates < <(find "$SOURCE_DIR" -type f -name 'release-manager.sh' -not -path '*/releases/*' -print 2>/dev/null)
-        (( ${#candidates[@]} == 1 )) || return 1
+    # fn: _setup_metadata_value - Read one canonical metadata value from sgnd-setup.sh
+        # Arguments:
+        #   $1  Setup script path.
+        #   $2  Metadata field name, for example Version or Build.
+        # Returns:
+        #   0 with the value on stdout; 1 when absent.
+        # Usage:
+        #   version="$(_setup_metadata_value "$setup" Version)"
+    _setup_metadata_value() {
+        local setup="${1:?missing setup path}"
+        local field="${2:?missing metadata field}"
+        local value=""
+        value="$(sed -n -E "s/^[[:space:]]*#[[:space:]]*${field}[[:space:]]*:[[:space:]]*(.*)[[:space:]]*$/\1/p" "$setup" | head -n 1)"
+        [[ -n "$value" ]] || return 1
+        printf '%s\n' "$value"
+    }
 
-        candidate="${candidates[0]}"
-        printf '%s\n' "$candidate"
+    # fn: _find_setup_source - Resolve the standalone sgnd-setup source file
+        # Purpose:
+        #   Locate the canonical sgnd-setup.sh source in the selected framework product.
+        # Returns:
+        #   0 with the path on stdout when found; 1 otherwise.
+        # Usage:
+        #   setup="$(_find_setup_source)"
+    _find_setup_source() {
+        local framework_root="" direct=""
+        framework_root="$(_release_framework_source_root)" || return 1
+        direct="${framework_root%/}/var/lib/solidgroundux/sgnd-setup.sh"
+        [[ -f "$direct" ]] || return 1
+        printf '%s\n' "$direct"
     }
 
     # fn$ _write_release_package_info - Write ZIP-root package identity metadata
@@ -1568,7 +1487,7 @@ set -uo pipefail
         #
         # . Behavior
         #   - Uses the resolved project identity from the authoritative definitions file.
-        #   - Writes only simple shell-style key/value assignments; the release manager
+        #   - Writes only simple shell-style key/value assignments; sgnd-setup
         #     parses these values and does not source the file.
         #
         # . Arguments
@@ -1581,12 +1500,9 @@ set -uo pipefail
     _write_release_package_info() {
         local destination="${1:?missing destination}"
 
-        local package_type="individual"
-        (( ${#RELEASE_SOURCE_DIRS[@]} > 1 )) && package_type="bundle"
-
         {
-            printf 'SGND_PACKAGE_FORMAT=%s\n' "2"
-            printf 'SGND_PACKAGE_TYPE=%s\n' "$package_type"
+            printf 'SGND_PACKAGE_FORMAT=%s\n' "3"
+            printf 'SGND_PACKAGE_TYPE=%s\n' "product"
             printf 'SGND_PACKAGE_PROJECT=%s\n' "${PROJECT_SLUG:?project slug not resolved}"
             printf 'SGND_PACKAGE_PRODUCT=%s\n' "${PRODUCT:?product not resolved}"
             printf 'SGND_PACKAGE_VERSION=%s\n' "${VERSION:?version not resolved}"
@@ -1595,29 +1511,24 @@ set -uo pipefail
         } > "$destination"
     }
 
-    # fn: _create_release_package - Create the complete distributable release ZIP
-        # . Purpose
-        #   Package the standalone release manager and release payload into one ZIP.
-        #
-        # . Behavior
-        #   - Requires the six canonical release artifacts created by _create_tar.
-        #   - Adds release-manager.sh at the ZIP root only for the SolidGroundUX framework bundle.
-        #   - Generic project bundles contain only their release artifacts and require an installed release manager.
-        #   - Does not include SHA256SUMS; the manager verifies individual sidecars.
-        #   - Dry-run reports the planned ZIP without requiring generated artifacts.
-        #
-        # . Returns
+    # fn: _create_release_package - Create one distributable product release ZIP
+        # Purpose:
+        #   Package one product's canonical tar/release artifacts into the release unit
+        #   consumed by sgnd-setup.
+        # Behavior:
+        #   - Every product ZIP has the same structure and package metadata.
+        #   - sgnd-setup.sh is never embedded in a product ZIP.
+        #   - First-install transport is created separately by _create_first_install_package.
+        # Returns:
         #   0 on success; 1 on missing artifacts or packaging failure.
-        #
-        # . Usage
+        # Usage:
         #   _create_release_package
     _create_release_package() {
-        local manager=""
         local package_dir=""
         local package_info=""
         local zip_path="${STAGING_ROOT%/}/${RELEASE}-release.zip"
         local artifact=""
-        local -a zip_items=()
+        local -a zip_items=("release-package.info")
         local -a artifacts=(
             "${TAR_FILE}"
             "${TAR_FILE}.sha256"
@@ -1627,22 +1538,9 @@ set -uo pipefail
             "${RELEASE}.removed.sha256"
         )
 
-        # Only the SolidGroundUX framework bundle must be self-bootstrapping.
-        # Generic project releases are consumed by an already installed release manager.
-        if (( ${PROJECT_IS_FRAMEWORK:-0} )); then
-            manager="$(_find_release_manager_source)" || {
-                sayfail "Could not uniquely locate release-manager.sh beneath $SOURCE_DIR"
-                return 1
-            }
-        fi
-
         if (( ${FLAG_DRYRUN:-0} )); then
-            sayinfo "Would have created release package: $zip_path"
-            if (( ${PROJECT_IS_FRAMEWORK:-0} )); then
-                sayinfo "Would have included release-package.info, release-manager.sh, and ${#artifacts[@]} release artifacts at ZIP root"
-            else
-                sayinfo "Would have included release-package.info and ${#artifacts[@]} project release artifacts at ZIP root"
-            fi
+            sayinfo "Would have created product package: $zip_path"
+            sayinfo "Would have included release-package.info and ${#artifacts[@]} release artifacts at ZIP root"
             return 0
         fi
 
@@ -1652,43 +1550,15 @@ set -uo pipefail
                 return 1
             }
         done
-
-        command -v zip >/dev/null 2>&1 || {
-            sayfail "Required command not found: zip"
-            return 1
-        }
+        command -v zip >/dev/null 2>&1 || { sayfail "Required command not found: zip"; return 1; }
 
         package_dir="$(mktemp -d)" || return 1
         package_info="$package_dir/release-package.info"
-
         _write_release_package_info "$package_info" || {
             rm -rf -- "$package_dir"
             sayfail "Failed to create release-package.info."
             return 1
         }
-        zip_items+=("release-package.info")
-
-        if (( ${#RELEASE_SOURCE_DIRS[@]} > 1 )); then
-            local bundle_products="${STAGING_ROOT%/}/${RELEASE}/RELEASE-PRODUCTS"
-            [[ -f "$bundle_products" ]] || {
-                rm -rf -- "$package_dir"
-                sayfail "Bundled release is missing RELEASE-PRODUCTS."
-                return 1
-            }
-            cp -f -- "$bundle_products" "$package_dir/RELEASE-PRODUCTS" || {
-                rm -rf -- "$package_dir"
-                return 1
-            }
-            zip_items+=("RELEASE-PRODUCTS")
-        fi
-
-        if (( ${PROJECT_IS_FRAMEWORK:-0} )); then
-            cp -f -- "$manager" "$package_dir/release-manager.sh" || {
-                rm -rf -- "$package_dir"
-                return 1
-            }
-            zip_items+=("release-manager.sh")
-        fi
 
         for artifact in "${artifacts[@]}"; do
             cp -f -- "${STAGING_ROOT%/}/${artifact}" "$package_dir/$artifact" || {
@@ -1704,12 +1574,80 @@ set -uo pipefail
             zip -q "$zip_path" "${zip_items[@]}"
         ) || {
             rm -rf -- "$package_dir"
-            sayfail "Failed to create release ZIP."
+            sayfail "Failed to create product release ZIP."
             return 1
         }
-
         rm -rf -- "$package_dir"
-        sayok "Created release package: $zip_path"
+        sayok "Created product release package: $zip_path"
+        return 0
+    }
+
+    # fn: _create_first_install_package - Create the bootstrap transport ZIP
+        # Purpose:
+        #   Create a first-install ZIP containing sgnd-setup.sh and the already-created
+        #   product release ZIPs for the selected products.
+        # Behavior:
+        #   - The first-install ZIP replaces the former bundled release concept.
+        #   - It is transport/installer media, not an installable product release.
+        #   - Its Version/Build identity is derived from sgnd-setup.sh, independently of
+        #     the selected product release identities.
+        #   - Product ZIPs remain unchanged and are installed by sgnd-setup after extraction.
+        # Returns:
+        #   0 on success or when SolidGroundUX is not among the selected products;
+        #   non-zero on missing package/setup files, metadata, or ZIP creation failure.
+        # Usage:
+        #   _create_first_install_package
+    _create_first_install_package() {
+        local setup="" setup_version="" setup_build="" package_dir="" output_zip=""
+        local index=0 product="" version="" build="" product_zip=""
+        local -a zip_items=("sgnd-setup.sh")
+
+        _release_has_framework_product || return 0
+        setup="$(_find_setup_source)" || { sayfail "Could not locate sgnd-setup.sh in the selected SolidGroundUX product."; return 1; }
+        setup_version="$(_setup_metadata_value "$setup" Version 2>/dev/null || true)"
+        setup_build="$(_setup_metadata_value "$setup" Build 2>/dev/null || true)"
+        [[ -n "$setup_version" && -n "$setup_build" ]] || {
+            sayfail "Could not resolve first-install identity from sgnd-setup.sh metadata."
+            return 1
+        }
+        output_zip="${OUTPUT_DIR%/}/SolidGroundUX-first-install-${setup_version}.${setup_build}.zip"
+
+        if (( ${FLAG_DRYRUN:-0} )); then
+            sayinfo "Would have created first-install package: $output_zip"
+            RELEASE_OUTPUT_ARCHIVES+=("$output_zip")
+            return 0
+        fi
+
+        package_dir="$(mktemp -d)" || return 1
+        cp -f -- "$setup" "$package_dir/sgnd-setup.sh" || { rm -rf -- "$package_dir"; return 1; }
+        chmod 0755 "$package_dir/sgnd-setup.sh" 2>/dev/null || true
+
+        for index in "${!RELEASE_PRODUCT_NAMES[@]}"; do
+            product="${RELEASE_PRODUCT_NAMES[$index]}"
+            version="${RELEASE_PRODUCT_VERSIONS[$index]}"
+            build="${RELEASE_PRODUCT_BUILDS[$index]:-$BUILD}"
+            product_zip="${OUTPUT_DIR%/}/$(_release_product_artifact_name "$product")-${version}.${build}-release.zip"
+            [[ -f "$product_zip" ]] || {
+                rm -rf -- "$package_dir"
+                sayfail "First-install package is missing product ZIP: $product_zip"
+                return 1
+            }
+            cp -f -- "$product_zip" "$package_dir/$(basename -- "$product_zip")" || { rm -rf -- "$package_dir"; return 1; }
+            zip_items+=("$(basename -- "$product_zip")")
+        done
+
+        rm -f -- "$output_zip"
+        (
+            cd "$package_dir" || exit 1
+            zip -q "$output_zip" "${zip_items[@]}"
+        ) || {
+            rm -rf -- "$package_dir"
+            sayfail "Failed to create first-install ZIP."
+            return 1
+        }
+        rm -rf -- "$package_dir"
+        RELEASE_OUTPUT_ARCHIVES+=("$output_zip")
+        sayok "Created first-install package: $output_zip"
         return 0
     }
 
@@ -1743,15 +1681,12 @@ set -uo pipefail
             fi
         done
 
-        # Check all selected product identities, including the final bundle, before
+        # Check all selected product identities before
         # rsync or cleanup can touch a destination beneath a release staging tree.
         for index in "${!RELEASE_PRODUCT_NAMES[@]}"; do
             artifact_product="$(_release_product_artifact_name "${RELEASE_PRODUCT_NAMES[$index]}")"
             stages+=("${STAGING_ROOT%/}/${artifact_product}-${RELEASE_PRODUCT_VERSIONS[$index]}.$BUILD")
         done
-        if (( ${#RELEASE_SOURCE_DIRS[@]} > 1 )); then
-            stages+=("${STAGING_ROOT%/}/$(_release_product_artifact_name "$PRODUCT")-bundled-$VERSION.$BUILD")
-        fi
         for stage in "${stages[@]}"; do
             stage="$(readlink -m -- "$stage")" || return 1
             if [[ "$OUTPUT_DIR" == "$stage" || "$OUTPUT_DIR" == "${stage%/}/"* ]]; then
@@ -1779,19 +1714,67 @@ set -uo pipefail
         return 0
     }
 
-    # fn: _copy_release_output - Copy one completed release directly into the output directory
+    # fn: _cleanup_packaged_release_artifacts - Remove loose packaged release internals
+        # Purpose:
+        #   Remove loose product-release internals after the distributable ZIP has been
+        #   exported and the manifest has been preserved in manifest history. The ZIP is
+        #   the release unit; tar, manifest, removal, and checksum files are staging data.
+        # Behavior:
+        #   - Removes loose tar, manifest, removal, and checksum artifacts from STAGING_ROOT.
+        #   - Removes matching loose artifacts from OUTPUT_DIR when it differs from staging.
+        #   - Never removes the distributable product ZIP.
+        # Returns:
+        #   0 on success; non-zero when cleanup fails.
+        # Usage:
+        #   _cleanup_packaged_release_artifacts
+    _cleanup_packaged_release_artifacts() {
+        local artifact="" dir=""
+        local -a artifacts=(
+            "${TAR_FILE}"
+            "${TAR_FILE}.sha256"
+            "${RELEASE}.manifest"
+            "${RELEASE}.manifest.sha256"
+            "${RELEASE}.removed"
+            "${RELEASE}.removed.sha256"
+        )
+        local -a cleanup_dirs=("${STAGING_ROOT%/}")
+
+        if [[ "${OUTPUT_DIR%/}" != "${STAGING_ROOT%/}" ]]; then
+            cleanup_dirs+=("${OUTPUT_DIR%/}")
+        fi
+
+        if (( ${FLAG_DRYRUN:-0} )); then
+            for dir in "${cleanup_dirs[@]}"; do
+                sayinfo "Would have removed loose packaged release artifacts for $RELEASE from: $dir"
+            done
+            return 0
+        fi
+
+        for dir in "${cleanup_dirs[@]}"; do
+            for artifact in "${artifacts[@]}"; do
+                rm -f -- "$dir/$artifact" || {
+                    saywarning "Could not remove loose release artifact: $dir/$artifact"
+                    return 1
+                }
+            done
+        done
+        return 0
+    }
+
+    # fn: _copy_release_output - Copy one completed product ZIP into the output directory
         # . Purpose
-        #   Export the release ZIP, TAR, manifests, and matching checksum sidecars.
+        #   Export only the distributable product ZIP. Loose tar, manifest, removal, and
+        #   checksum files remain in staging until manifest-history processing completes,
+        #   then are removed by _cleanup_packaged_release_artifacts.
         #
         # . Behavior
-        #   - Copies only this release's seven named artifacts, not old staging contents.
-        #   - Keeps source artifacts in staging and creates no per-release output subdirectory.
-        #   - Skips files already at the destination; replaces matching output filenames.
-        #   - Appends ZIP/TAR paths for the final summary only after successful export.
-        #   - Dry-run records planned archive paths without creating or copying files.
+        #   - Copies only the distributable product ZIP into the selected output directory.
+        #   - Replaces an existing product ZIP with the same filename.
+        #   - Appends the product ZIP path for the final summary only after successful export.
+        #   - Dry-run records the planned ZIP path without modifying files.
         #
         # . Inputs (globals)
-        #   STAGING_ROOT, OUTPUT_DIR, RELEASE, TAR_FILE, FLAG_DRYRUN
+        #   STAGING_ROOT, OUTPUT_DIR, RELEASE, FLAG_DRYRUN
         #
         # . Outputs (globals)
         #   RELEASE_OUTPUT_ARCHIVES
@@ -1802,56 +1785,39 @@ set -uo pipefail
         # . Usage
         #   _copy_release_output || return 1
     _copy_release_output() {
-        local artifact="" source="" destination="" error=""
-        local -a artifacts=(
-            "${RELEASE}-release.zip"
-            "$TAR_FILE"
-            "${TAR_FILE}.sha256"
-            "${RELEASE}.manifest"
-            "${RELEASE}.manifest.sha256"
-            "${RELEASE}.removed"
-            "${RELEASE}.removed.sha256"
-        )
+        local source="${STAGING_ROOT%/}/${RELEASE}-release.zip"
+        local destination="${OUTPUT_DIR%/}/${RELEASE}-release.zip"
+        local error=""
 
         if (( ${FLAG_DRYRUN:-0} )); then
-            sayinfo "Would have copied release artifacts for $RELEASE to: $OUTPUT_DIR"
+            sayinfo "Would have copied product package to: $destination"
         else
-            # Check every source/destination before starting this release's copy.
-            for artifact in "${artifacts[@]}"; do
-                source="${STAGING_ROOT%/}/$artifact"
-                destination="${OUTPUT_DIR%/}/$artifact"
-                [[ -f "$source" ]] || {
-                    sayfail "Missing release artifact for output: $source"
-                    return 1
-                }
-                if [[ -e "$destination" && ! -f "$destination" ]]; then
-                    sayfail "Release output path is not a regular file: $destination"
-                    return 1
-                fi
-            done
-            for artifact in "${artifacts[@]}"; do
-                source="${STAGING_ROOT%/}/$artifact"
-                destination="${OUTPUT_DIR%/}/$artifact"
-                [[ "$source" -ef "$destination" ]] && continue
+            [[ -f "$source" ]] || {
+                sayfail "Missing product package for output: $source"
+                return 1
+            }
+            if [[ -e "$destination" && ! -f "$destination" ]]; then
+                sayfail "Release output path is not a regular file: $destination"
+                return 1
+            fi
+
+            if [[ ! "$source" -ef "$destination" ]]; then
                 if ! error="$(cp --remove-destination -- "$source" "$destination" 2>&1)"; then
-                    sayfail "Could not copy release artifact to $destination ($error)"
+                    sayfail "Could not copy product package to $destination ($error)"
                     sayinfo "Packaged originals remain in: $STAGING_ROOT"
                     return 1
                 fi
-            done
-            sayok "Release artifacts available in: $OUTPUT_DIR"
+            fi
+            sayok "Product release package available in: $OUTPUT_DIR"
         fi
 
-        RELEASE_OUTPUT_ARCHIVES+=(
-            "${OUTPUT_DIR%/}/${RELEASE}-release.zip"
-            "${OUTPUT_DIR%/}/$TAR_FILE"
-        )
+        RELEASE_OUTPUT_ARCHIVES+=("$destination")
         return 0
     }
 
-    # fn: _report_release_output - Show final archive paths for this run
+    # fn: _report_release_output - Show final package paths for this run
         # . Returns
-        #   0 after reporting completed or explicitly planned ZIP/TAR paths.
+        #   0 after reporting completed or explicitly planned ZIP paths.
         #
         # . Usage
         #   _report_release_output
@@ -1864,10 +1830,7 @@ set -uo pipefail
             sgnd_print_sectionheader "Release output" --padend 0
         fi
         for archive in "${RELEASE_OUTPUT_ARCHIVES[@]}"; do
-            case "$archive" in
-                *.zip) label="ZIP archive" ;;
-                *)     label="TAR archive" ;;
-            esac
+            label="ZIP archive"
             sgnd_print_labeledvalue --label "$label" --value "$archive"
         done
         return 0
@@ -2349,18 +2312,17 @@ set -uo pipefail
         printf '%s\n' "$product_name" | sed -E 's/[[:space:]]+/-/g'
     }
 
-# - Individual / bundled release helpers --------------------------------------------
-    # fn$ _release_create_primary_individual_release - Create the primary product as a standalone release
-    _release_create_primary_individual_release() {
-        (( ${FLAG_CREATE_INDIVIDUAL_RELEASES:-0} )) || return 0
+# - Individual product release helpers ---------------------------------------------
+    # fn$ _release_create_lead_product_release - Create the lead selected product as a standalone release
+    _release_create_lead_product_release() {
         (( ${#RELEASE_SOURCE_DIRS[@]} > 1 )) || return 0
 
         local saved_release="$RELEASE" saved_tar="$TAR_FILE"
         local -a saved_sources=("${RELEASE_SOURCE_DIRS[@]}")
 
-        # The primary product has already had its release identity resolved and metadata
+        # The first selected product has already had its release identity resolved and metadata
         # prepared by the normal main workflow. Package that product by itself before
-        # assembling the multi-product bundle.
+        # preparing the other selected product releases.
         RELEASE_SOURCE_DIRS=("$SOURCE_DIR")
 
         sgnd_print
@@ -2374,6 +2336,7 @@ set -uo pipefail
         _create_release_package || return 1
         _copy_release_output || return 1
         _archive_release_manifest || return 1
+        _cleanup_packaged_release_artifacts || return 1
         _cleanup_staging
 
         RELEASE_SOURCE_DIRS=("${saved_sources[@]}")
@@ -2382,24 +2345,9 @@ set -uo pipefail
         return 0
     }
 
-    # fn$ _release_use_bundled_identity - Name the assembled release after the primary product
-    _release_use_bundled_identity() {
-        (( ${#RELEASE_SOURCE_DIRS[@]} > 1 )) || return 0
-
-        # The bundle always inherits the primary product version/build; it is never
-        # prompted for a separate identity. RELEASE-PRODUCTS records every included product.
-        RELEASE="$(_release_product_artifact_name "$PRODUCT")-bundled-$VERSION.$BUILD"
-        TAR_FILE="$RELEASE.tar.gz"
-
-        sgnd_print
-        sgnd_print_sectionheader "Bundled release" --padend 0
-        sgnd_print_labeledvalue --label "Release" --value "$RELEASE"
-        sgnd_print_labeledvalue --label "Products" --value "${#RELEASE_SOURCE_DIRS[@]}"
-    }
-
 # - Main Sequence -------------------------------------------------------------------
-    # fn$ _release_create_standalone_bundled_products - Optionally create standalone releases for non-primary selected products
-    _release_create_standalone_bundled_products() {
+    # fn$ _release_create_remaining_product_releases - Create releases for the remaining selected products
+    _release_create_remaining_product_releases() {
         (( ${#RELEASE_SOURCE_DIRS[@]} > 1 )) || return 0
 
         local saved_source="$SOURCE_DIR" saved_product="$PRODUCT" saved_version="$VERSION" saved_build="$BUILD"
@@ -2426,11 +2374,7 @@ set -uo pipefail
             PREVIOUS_MANIFEST="${RELEASE_PRODUCT_BASELINES[$product_index]-}"
 
             sgnd_print
-            if (( ${FLAG_CREATE_INDIVIDUAL_RELEASES:-0} )); then
-                sgnd_print_sectionheader "Standalone product release" --padend 0
-            else
-                sgnd_print_sectionheader "Bundled product metadata" --padend 0
-            fi
+            sgnd_print_sectionheader "Standalone product release" --padend 0
             sgnd_print_labeledvalue --label "Product" --value "$PRODUCT"
             sgnd_print_labeledvalue --label "Version" --value "$VERSION"
             sgnd_print_labeledvalue --label "Build" --value "$BUILD"
@@ -2439,13 +2383,12 @@ set -uo pipefail
             _apply_version_bump || return 1
             _ensure_libexec_executables || return 1
             _ensure_public_command_wrappers || return 1
-            if (( ${FLAG_CREATE_INDIVIDUAL_RELEASES:-0} )); then
-                _create_tar || return 1
-                _create_release_package || return 1
-                _copy_release_output || return 1
-                _archive_release_manifest || return 1
-                _cleanup_staging
-            fi
+            _create_tar || return 1
+            _create_release_package || return 1
+            _copy_release_output || return 1
+            _archive_release_manifest || return 1
+            _cleanup_packaged_release_artifacts || return 1
+            _cleanup_staging
         done
 
         SOURCE_DIR="$saved_source" PRODUCT="$saved_product" VERSION="$saved_version" BUILD="$saved_build"
@@ -2470,7 +2413,7 @@ set -uo pipefail
         #   - Resolves release parameters for the selected product set.
         #   - Validates/prepares the output directory before source or staging changes.
         #   - Creates archives and copies each completed release to the output directory.
-        #   - Preserves manifest history and ends with full ZIP/TAR output paths.
+        #   - Preserves manifest history and ends with the completed product/first-install ZIP paths.
         #
         # . Arguments
         #   $@  Framework and script-specific command-line arguments
@@ -2502,8 +2445,8 @@ set -uo pipefail
         _get_parameters || exit $?
         _prepare_release_output || exit $?
 
-        # Product selection resolves the definitions; interactive Version remains authoritative
-        # for the selected primary product. Build is the common YYDDDHH release build.
+        # Product selection resolves the definitions. The first selected product is the
+        # lead processing context only; each product retains its own release identity.
         _release_resolve_project_identity || exit $?
         VERSION="${RELEASE_PRODUCT_VERSIONS[0]:-$VERSION}"
         RELEASE_PRODUCT_BUILDS[0]="$BUILD"
@@ -2528,45 +2471,30 @@ set -uo pipefail
             exit 1
         }
 
-        _release_create_primary_individual_release || {
-            sayfail "Primary individual product release failed."
+        _release_create_lead_product_release || {
+            sayfail "Lead product release failed."
             exit 1
         }
 
-        _release_create_standalone_bundled_products || {
-            sayfail "One or more individual product releases failed."
+        _release_create_remaining_product_releases || {
+            sayfail "One or more remaining product releases failed."
             exit 1
         }
-
-        _release_use_bundled_identity || exit $?
 
         if (( ${#RELEASE_SOURCE_DIRS[@]} > 1 )); then
-            PREVIOUS_MANIFEST="${BUNDLE_PREVIOUS_MANIFEST:-}"
-        else
-            PREVIOUS_MANIFEST="${RELEASE_PRODUCT_BASELINES[0]-}"
+            _create_first_install_package || exit $?
+            _report_release_output
+            return 0
         fi
 
-        _create_tar || {
-            sayfail "Release archive creation failed."
-            exit 1
-        }
-
-        _create_release_package || {
-            sayfail "Release package creation failed."
-            exit 1
-        }
-
-        _copy_release_output || {
-            sayfail "Release output copy failed; packaged originals remain in $STAGING_ROOT"
-            exit 1
-        }
-
-        _archive_release_manifest || {
-            sayfail "Release manifest history update failed."
-            exit 1
-        }
-
+        PREVIOUS_MANIFEST="${RELEASE_PRODUCT_BASELINES[0]-}"
+        _create_tar || { sayfail "Release archive creation failed."; exit 1; }
+        _create_release_package || { sayfail "Release package creation failed."; exit 1; }
+        _copy_release_output || { sayfail "Release output copy failed; packaged originals remain in $STAGING_ROOT"; exit 1; }
+        _archive_release_manifest || { sayfail "Release manifest history update failed."; exit 1; }
+        _cleanup_packaged_release_artifacts || { sayfail "Packaged release cleanup failed."; exit 1; }
         _cleanup_staging
+        _create_first_install_package || exit $?
         _report_release_output
     }
 
