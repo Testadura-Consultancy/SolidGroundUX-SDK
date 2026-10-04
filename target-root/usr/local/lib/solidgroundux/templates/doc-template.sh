@@ -4,10 +4,10 @@
 # ----------------------------------------------------------------------------------
 # Metadata:
 #   Version     : 2.1
-#   Build       : 2627501
-#   Checksum    : b85f77116929eda7319d6cd671b33570aedf4e6cf1ef6c0ad1b58e212a849bfd
+#   Build       : 2627700
+#   Checksum    : 6c5c5a3049e69492e9f3749f4a4458b4f4fa506648112d3a9a94f0e3f3dde23b
 #   Source      : doc-template.sh
-#   Type        : documentation
+#   Type        : template
 #   Group       : SDK
 #   Subgroup    : Templates
 #   Purpose     : Documentation preface/epilogue template for SolidGroundUX framework.

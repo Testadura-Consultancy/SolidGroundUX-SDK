@@ -5,10 +5,10 @@
 # ------------------------------------------------------------------------------------
 # Metadata:
 #   Version     : 2.1
-#   Build       : 2627501
-#   Checksum    : bf1eeebe00c531d9f95c14adff3b3bdd9aed30978e620c8b6be9b95e3940c931
+#   Build       : 2627700
+#   Checksum    : a37127a10182b3e4194449d9b3bb1dbe6a8454b8a04ec3eb3b87544af63bd60a
 #   Source      : exe-template.sh
-#   Type        : script
+#   Type        : template
 #   Group       : SDK
 #   Subgroup    : Templates
 #   Purpose     : Canonical executable template for SolidGroundUX scripts.

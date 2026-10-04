@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # =====================================================================================
-# SolidGroundUX - Executable Script Template
+# SolidGroundUX SDK - Executable Script Template
 # ------------------------------------------------------------------------------------
 # Metadata:
 #   Version     : 2.1
-#   Build       : 2627501
-#   Checksum    : 711f949ec5af2c2cb9a646819a95c496d21fbf85c6bf21ce1677520c0172dd92
+#   Build       : 2627700
+#   Checksum    : e6ec44e233b87db103a6e9ee31ca66ebd1125c135a809c25ca24a532c9f4d620
 #   Source      : exe-template.sh
 #   Type        : script
 #   Group       : SDK

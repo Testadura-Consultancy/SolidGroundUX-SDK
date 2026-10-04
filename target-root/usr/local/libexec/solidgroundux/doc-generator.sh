@@ -4,8 +4,8 @@
 # ------------------------------------------------------------------------------------
 # Metadata:
 #   Version     : 2.1
-#   Build       : 2627501
-#   Checksum    : adb4100a09cfb29747f7577f996ec558a2c5e53a1b568b5e57acaadeb7731298
+#   Build       : 2627700
+#   Checksum    : 20f2365dde7e084027c96ac6bf80fe1f8fe083db16a8a5445704c53eacef9e25
 #   Source      : doc-generator.sh
 #   Type        : script
 #   Group       : SDK
@@ -181,14 +181,16 @@ set -uo pipefail
         "auto|a|flag|FLAG_AUTO_RUN|Automatically run with last used or default parameters|0|"
         "clean|c|flag|FLAG_CLEAN_OUTPUT|Clear output directory before writing|0|"
         "clear-render-cache||flag|FLAG_CLEAR_RENDER_CACHE|Clear cached renderer input before rebuilding it|0|"
-        "copy-to-git||flag|FLAG_COPY_TO_GIT|Copy generated documentation to the Git repository docs directory|0|"
+        "copy-to-git||flag|FLAG_COPY_TO_GIT|Publish generated documentation to the configured Git output path|0|"
         "collection|C|enum|VAL_COLLECTION_MODE|Collection action: create or update|update|create,update"
-        "collection-name||value|VAL_COLLECTION_NAME|Documentation collection name||"
+        "site-name||value|VAL_SITE_NAME|Generated documentation site name||"
+        "doc-root||value|VAL_DOCUMENT_ROOT|Root directory containing generated documentation sites||"
+        "git-output||value|VAL_GIT_OUTPUT_PATH|Destination directory used when publishing the generated site||"
         "products|p|value|VAL_DOCUMENT_PRODUCTS|Comma-separated product names or ALL||"
         "file|f|value|VAL_FILESPEC|Comma-separated file masks for source scanning||"
         "mode|m|enum|VAL_UPDATE_MODE|Generation mode: full, selected, changed, or render|full|full,selected,changed,render"
         "update-files|u|value|VAL_UPDATE_FILES|Comma-separated files for selected update mode||"
-        "outdir|o|value|VAL_OUTDIR|Output directory for generated docs||"
+        "outdir|o|value|VAL_OUTDIR|One-run final output directory override||"
         "recursive|r|flag|FLAG_RECURSIVE_SCAN|Recursively scan source directory|1|"
         "srcdir|s|value|VAL_DISCOVERY_ROOT|Product discovery root||"
         "review|v|flag|FLAG_REVIEW|Review assembled data|0|"
@@ -254,7 +256,7 @@ set -uo pipefail
         #   - Declares which variables should be saved/restored when state is enabled.
         #
         # . Behavior
-        #   - Only used when sgnd_bootstrap is invoked with --state.
+        #   - Used when sgnd_bootstrap is invoked with --state or --autostate.
         #   - Variables listed here are serialized on exit (if SGND_STATE_SAVE=1).
         #   - On startup, previously saved values are restored before main logic runs.
         #
@@ -267,17 +269,18 @@ set -uo pipefail
     SGND_STATE_VARIABLES=(
         "VAL_DISCOVERY_ROOT|Product discovery root||"
         "VAL_COLLECTION_MODE|Collection action (create or update)||"
-        "VAL_COLLECTION_NAME|Documentation collection name||"
+        "VAL_SITE_NAME|Generated documentation site name||"
+        "VAL_DOCUMENT_ROOT|Documentation root directory||"
+        "VAL_GIT_OUTPUT_PATH|Git publication output path||"
         "VAL_DOCUMENT_PRODUCTS|Selected documentation products||"
         "VAL_PRIMARY_PRODUCT|Primary documentation product||"
         "VAL_FILESPEC|Filename masks||"
         "VAL_UPDATE_MODE|Generation mode (full, selected, changed, render)||"
         "VAL_UPDATE_FILES|Selected update files||"
-        "VAL_OUTPUT_ROOT|Output Root||"
         "FLAG_RECURSIVE_SCAN|Recursive Scan||"
         "FLAG_CLEAN_OUTPUT|Clean Output Directory||"
         "FLAG_CLEAR_RENDER_CACHE|Clear cached renderer input before rebuilding||"
-        "FLAG_COPY_TO_GIT|Copy generated documentation to the Git repository docs directory||"
+        "FLAG_COPY_TO_GIT|Publish generated documentation to the configured Git output path||"
         "FLAG_REVIEW|Automatically open generated docs in browser after generation (desktop mode only)||"
         "VAL_DOCUMENT_TITLE|Document title||"
         "VAL_DOCUMENT_SUBTITLE|Document subtitle||"
@@ -365,13 +368,17 @@ set -uo pipefail
         # VAL_SRCDIR is now derived from the first selected product and retained
         # internally for legacy Git/cache operations; it is no longer user input.
         VAL_SRCDIR="${VAL_SRCDIR:-$SGND_FRAMEWORK_ROOT}"
-        # Output root is a persistent/user-selectable preference.  An explicit
-        # --outdir is a one-run final destination override and is never persisted.
+        # Site name and documentation root are persistent preferences.  Preserve
+        # compatibility with state written by older generator versions, where these
+        # values were named VAL_COLLECTION_NAME and VAL_OUTPUT_ROOT.
+        VAL_SITE_NAME="${VAL_SITE_NAME:-${VAL_COLLECTION_NAME:-SolidGroundUX Codex}}"
+        VAL_DOCUMENT_ROOT="${VAL_DOCUMENT_ROOT:-${VAL_OUTPUT_ROOT:-$SGND_DOCS_DIR}}"
+        VAL_GIT_OUTPUT_PATH="${VAL_GIT_OUTPUT_PATH:-}"
+
+        # --outdir remains a one-run final destination override and is never persisted.
         SGND_DOC_OUTDIR_OVERRIDE="${VAL_OUTDIR:-}"
-        VAL_OUTPUT_ROOT="${VAL_OUTPUT_ROOT:-$SGND_DOCS_DIR}"
         VAL_OUTDIR=""
         VAL_COLLECTION_MODE="${VAL_COLLECTION_MODE:-update}"
-        VAL_COLLECTION_NAME="${VAL_COLLECTION_NAME:-SolidGroundUX Codex}"
         VAL_DOCUMENT_PRODUCTS="${VAL_DOCUMENT_PRODUCTS:-ALL}"
         VAL_PRIMARY_PRODUCT="${VAL_PRIMARY_PRODUCT:-}"
 
@@ -384,28 +391,63 @@ set -uo pipefail
     }
 
 
-    # fn: _doc_collection_slug - Convert a collection name into a filesystem-safe directory name
-    _doc_collection_slug() {
+    # fn: _doc_site_slug - Convert a site name into a filesystem-safe directory name
+        # . Returns
+        #   Writes the normalized site directory name to stdout.
+        #
+        # . Usage
+        #   _doc_site_slug "SolidGroundUX Codex"
+    _doc_site_slug() {
         local value="${1:-Documentation}"
         value="${value// /-}"
         value="$(printf '%s' "$value" | tr '[:upper:]' '[:lower:]' | tr -cd '[:alnum:]_.-')"
         printf '%s\n' "${value:-documentation}"
     }
 
-    # fn: _doc_finalize_outdir - Resolve the final collection output directory
+    # fn: _doc_finalize_outdir - Assemble the generated site path
+        # . Behavior
+        #   - Uses an explicit --outdir value as a one-run override when supplied.
+        #   - Otherwise combines VAL_DOCUMENT_ROOT with the normalized VAL_SITE_NAME.
+        #
+        # Outputs (globals):
+        #   VAL_OUTDIR
+        #
+        # . Returns
+        #   0 after resolving the generated site path.
+        #
+        # . Usage
+        #   _doc_finalize_outdir
     _doc_finalize_outdir() {
         local slug=""
 
-        # --outdir is an explicit final-destination override.  When supplied,
-        # use it exactly as given and do not append the collection name.
         if [[ -n "${SGND_DOC_OUTDIR_OVERRIDE:-}" ]]; then
             VAL_OUTDIR="${SGND_DOC_OUTDIR_OVERRIDE%/}"
             return 0
         fi
 
-        slug="$(_doc_collection_slug "${VAL_COLLECTION_NAME:-Documentation}")"
-        VAL_OUTPUT_ROOT="${VAL_OUTPUT_ROOT%/}"
-        VAL_OUTDIR="${VAL_OUTPUT_ROOT}/${slug}"
+        slug="$(_doc_site_slug "${VAL_SITE_NAME:-Documentation}")"
+        VAL_DOCUMENT_ROOT="${VAL_DOCUMENT_ROOT%/}"
+        VAL_OUTDIR="${VAL_DOCUMENT_ROOT}/${slug}"
+    }
+
+    # fn: _doc_default_git_output_path - Resolve the default Git publication directory
+        # . Behavior
+        #   - Resolves the repository containing the primary product source root.
+        #   - Returns the repository's top-level docs directory.
+        #
+        # Output
+        #   Writes <repo-root>/docs to stdout.
+        #
+        # Returns
+        #   0 when the repository can be resolved; non-zero otherwise.
+        #
+        # Usage
+        #   _doc_default_git_output_path
+    _doc_default_git_output_path() {
+        local repo_root=""
+
+        repo_root="$(git -C "$VAL_SRCDIR" rev-parse --show-toplevel 2>/dev/null)" || return 1
+        printf '%s/docs\n' "${repo_root%/}"
     }
 
     # fn: _doc_product_config_id - Convert a product name into a stable config filename stem
@@ -976,33 +1018,36 @@ set -uo pipefail
         #   Interactively collect and confirm documentation generator parameters.
         #
         # . Behavior
-        #   - Displays grouped prompts for source, destination, and behavioral flags.
-        #   - Applies validation to supported fields.
-        #   - Normalizes Y/N replies into numeric flag values.
+        #   - Prompts for product discovery, source scope, generation mode, and collection action.
+        #   - Prompts for a persistent site name and documentation root, then derives VAL_OUTDIR.
+        #   - When publication is enabled, prompts for a persistent Git output path.
+        #   - Saves confirmed state immediately when state persistence is enabled.
         #   - Repeats until the user confirms, cancels, or requests redo.
         #
         # Outputs (globals):
-        #   VAL_SRCDIR
-        #   VAL_FILESPEC
+        #   VAL_DISCOVERY_ROOT
+        #   VAL_SITE_NAME
+        #   VAL_DOCUMENT_ROOT
+        #   VAL_GIT_OUTPUT_PATH
         #   VAL_OUTDIR
+        #   VAL_FILESPEC
+        #   FLAG_COPY_TO_GIT
         #   FLAG_CLEAN_OUTPUT
         #   FLAG_RECURSIVE_SCAN
-        #   FLAG_VIEW_RESULTS
+        #   FLAG_REVIEW
         #   SGND_STATE_SAVE
         #
         # . Returns
         #   0 on confirmed input.
-        #   1 if the user cancels or an unexpected dialog result occurs.
+        #   1 if the user cancels, state saving fails, or an unexpected dialog result occurs.
         #
         # . Usage
         #   _get_userinput || return $?
-        #
-        # Examples:
-        #   _get_userinput
     _get_userinput() {
-        local lw=25 lp=4 default="N" reply="" mode_reply="" collection_action="1"
+        local lw=25 lp=4 default="N" reply="" mode_reply="" collection_action="1" git_default=""
 
         while true; do
+            lw=25
             sgnd_print
             sgnd_print_sectionheader "Product discovery" --padend 0
             ask --label "Product discovery root" --var VAL_DISCOVERY_ROOT --default "$VAL_DISCOVERY_ROOT" \
@@ -1047,23 +1092,18 @@ set -uo pipefail
                     ask --label "Collection action" --var collection_action --default "$collection_action" --colorize both --labelclr "${CYAN}" --pad "$lp" --labelwidth "$lw"
                     case "$collection_action" in 1) VAL_COLLECTION_MODE="update"; break ;; 2) VAL_COLLECTION_MODE="create"; break ;; *) saywarning "Choose collection action 1 or 2." ;; esac
                 done
-                ask --label "Collection name" --var VAL_COLLECTION_NAME --default "$VAL_COLLECTION_NAME" --colorize both --labelclr "${CYAN}" --pad "$lp" --labelwidth "$lw"
                 ask --label "Document title" --var VAL_DOCUMENT_TITLE --default "$VAL_DOCUMENT_TITLE" --colorize both --labelclr "${CYAN}" --pad "$lp" --labelwidth "$lw"
                 ask --label "Document subtitle" --var VAL_DOCUMENT_SUBTITLE --default "$VAL_DOCUMENT_SUBTITLE" --colorize both --labelclr "${CYAN}" --pad "$lp" --labelwidth "$lw"
                 ask --label "Document version" --var VAL_DOCUMENT_VERSION --default "$VAL_DOCUMENT_VERSION" --colorize both --labelclr "${CYAN}" --pad "$lp" --labelwidth "$lw"
-                VAL_DOCUMENT_PRODUCT="$VAL_COLLECTION_NAME"
-            else
-                sgnd_print
-                sgnd_print_sectionheader "Documentation collection" --padend 0
             fi
 
-            ask --label "Output root" --var VAL_OUTPUT_ROOT --default "$VAL_OUTPUT_ROOT" --colorize both --labelclr "${CYAN}" --pad "$lp" --labelwidth "$lw"
-            if [[ -n "${SGND_DOC_OUTDIR_OVERRIDE:-}" ]]; then
-                VAL_OUTDIR="${SGND_DOC_OUTDIR_OVERRIDE%/}"
-            else
-                VAL_OUTDIR="${VAL_OUTPUT_ROOT%/}/$(_doc_collection_slug "${VAL_COLLECTION_NAME:-Documentation}")"
-            fi
-            ask --label "Output directory" --var VAL_OUTDIR --default "$VAL_OUTDIR" --colorize both --labelclr "${CYAN}" --pad "$lp" --labelwidth "$lw"
+            sgnd_print
+            sgnd_print_sectionheader "Documentation destination" --padend 0
+            ask --label "Site name" --var VAL_SITE_NAME --default "$VAL_SITE_NAME" --colorize both --labelclr "${CYAN}" --pad "$lp" --labelwidth "$lw"
+            ask --label "Documentation root" --var VAL_DOCUMENT_ROOT --default "$VAL_DOCUMENT_ROOT" --colorize both --labelclr "${CYAN}" --pad "$lp" --labelwidth "$lw"
+            _doc_finalize_outdir
+            sgnd_print_labeledvalue --label "Generated site" --value "$VAL_OUTDIR" --labelwidth "$lw" --pad "$lp" --labelclr "${CYAN}" --valueclr "${YELLOW}"
+            VAL_DOCUMENT_PRODUCT="$VAL_SITE_NAME"
 
             sgnd_print
             sgnd_print_sectionheader "Behavioral flags" --padend 0
@@ -1089,20 +1129,33 @@ set -uo pipefail
                 ask --label "View parsed data" --var reply --type flag --default "$default" --validate sgnd_validate_yesno --colorize both --labelclr "${CYAN}" --pad "$lp" --labelwidth "$lw"
                 [[ "${reply,,}" =~ ^(y|yes)$ ]] && FLAG_REVIEW=1 || FLAG_REVIEW=0
             fi
+
             (( ${FLAG_COPY_TO_GIT:-0} )) && default="Y" || default="N"
-            ask --label "Copy generated site to Git docs" --var reply --type flag --default "$default" --validate sgnd_validate_yesno --colorize both --labelclr "${CYAN}" --pad "$lp" --labelwidth "$lw"
+            ask --label "Publish generated site to Git docs" --var reply --type flag --default "$default" --validate sgnd_validate_yesno --colorize both --labelclr "${CYAN}" --pad "$lp" --labelwidth "$lw"
             [[ "${reply,,}" =~ ^(y|yes)$ ]] && FLAG_COPY_TO_GIT=1 || FLAG_COPY_TO_GIT=0
+            if (( FLAG_COPY_TO_GIT )); then
+                if [[ -z "${VAL_GIT_OUTPUT_PATH:-}" ]]; then
+                    git_default="$(_doc_default_git_output_path 2>/dev/null || true)"
+                    VAL_GIT_OUTPUT_PATH="$git_default"
+                fi
+                ask --label "Git output path" --var VAL_GIT_OUTPUT_PATH --default "$VAL_GIT_OUTPUT_PATH" --colorize both --labelclr "${CYAN}" --pad "$lp" --labelwidth "$lw"
+            fi
+
             (( ${SGND_STATE_SAVE:-0} )) && default="Y" || default="N"
             ask --label "Save these answers" --var reply --type flag --default "$default" --validate sgnd_validate_yesno --colorize both --labelclr "${CYAN}" --pad "$lp" --labelwidth "$lw"
             [[ "${reply,,}" =~ ^(y|yes)$ ]] && SGND_STATE_SAVE=1 || SGND_STATE_SAVE=0
 
-            # Confirmation
             sgnd_print_sectionheader
             sgnd_print
             ask_dlg_autocontinue --seconds 15 --message "Continue with these settings?" --redo --cancel --pause
 
             case $? in
-                0|1) break ;;
+                0|1)
+                    if (( SGND_STATE_SAVE )); then
+                        sgnd_save_state || return $?
+                    fi
+                    break
+                    ;;
                 2) saycancel "Aborting as per user request."; return 1 ;;
                 3) continue ;;
                 *) sayfail "Aborting (unexpected response)."; return 1 ;;
@@ -1635,36 +1688,35 @@ set -uo pipefail
         return 0
     }
 
-    # fn: _copy_docs_to_git - Copy generated documentation into the repository docs directory
+    # fn: _copy_docs_to_git - Publish generated documentation to the configured Git output path
         # . Purpose
-        #   Publish the generated documentation tree into the Git repository's
-        #   top-level docs directory without relying on symbolic links.
+        #   Publish the generated documentation tree to a user-selectable Git-facing directory.
         #
         # . Behavior
-        #   - Resolves the Git repository root from VAL_SRCDIR.
-        #   - Uses <repo-root>/docs as the destination.
+        #   - Uses VAL_GIT_OUTPUT_PATH when configured.
+        #   - Falls back to <primary-repo-root>/docs for compatibility when no path is stored.
         #   - Replaces the previous published copy so removed pages do not remain stale.
-        #   - Excludes internal documentation cache directories from the Git copy.
+        #   - Excludes internal documentation cache directories from the published copy.
         #   - Does nothing when FLAG_COPY_TO_GIT is disabled.
         #
         # . Returns
-        #   0 when copying is disabled or completes successfully.
-        #   1 when the repository or source documentation directory cannot be resolved.
+        #   0 when publishing is disabled or completes successfully.
+        #   1 when the destination or generated site cannot be resolved safely.
         #
         # . Usage
         #   _copy_docs_to_git
     _copy_docs_to_git() {
         (( ${FLAG_COPY_TO_GIT:-0} )) || return 0
 
-        local repo_root=""
-        local git_docs_dir=""
+        local git_docs_dir="${VAL_GIT_OUTPUT_PATH:-}"
 
-        repo_root="$(git -C "$VAL_SRCDIR" rev-parse --show-toplevel 2>/dev/null)" || {
-            sayfail "Cannot resolve Git repository from source directory: $VAL_SRCDIR"
-            return 1
-        }
-
-        git_docs_dir="${repo_root%/}/docs"
+        if [[ -z "$git_docs_dir" ]]; then
+            git_docs_dir="$(_doc_default_git_output_path)" || {
+                sayfail "Cannot resolve default Git output path from source directory: $VAL_SRCDIR"
+                return 1
+            }
+        fi
+        git_docs_dir="${git_docs_dir%/}"
 
         [[ -d "$VAL_OUTDIR" ]] || {
             sayfail "Generated documentation directory does not exist: $VAL_OUTDIR"
@@ -1676,20 +1728,20 @@ set -uo pipefail
             return 1
         }
 
-        saystart "Copying generated documentation to Git docs directory"
+        saystart "Publishing generated documentation to: $git_docs_dir"
 
         mkdir -p "$git_docs_dir" || {
-            sayfail "Cannot create Git docs directory: $git_docs_dir"
+            sayfail "Cannot create Git output directory: $git_docs_dir"
             return 1
         }
 
         find "$git_docs_dir" -mindepth 1 -maxdepth 1 -exec rm -rf -- {} + || {
-            sayfail "Cannot clear Git docs directory: $git_docs_dir"
+            sayfail "Cannot clear Git output directory: $git_docs_dir"
             return 1
         }
 
         cp -a "$VAL_OUTDIR/." "$git_docs_dir/" || {
-            sayfail "Cannot copy generated documentation to: $git_docs_dir"
+            sayfail "Cannot publish generated documentation to: $git_docs_dir"
             return 1
         }
 
@@ -1697,7 +1749,7 @@ set -uo pipefail
             "$git_docs_dir/.sgnd-doc-cache" \
             "$git_docs_dir/.sgnd-render-cache"
 
-        sayok "Copied generated documentation to: $git_docs_dir"
+        sayok "Published generated documentation to: $git_docs_dir"
         return 0
     }
 
@@ -1730,11 +1782,13 @@ set -uo pipefail
         fi
         sgnd_print
         sgnd_print "  Generation mode: $VAL_UPDATE_MODE"
-        sgnd_print "  Collection: ${VAL_COLLECTION_NAME:-Documentation} (${VAL_COLLECTION_MODE:-update})"
+        sgnd_print "  Site name: ${VAL_SITE_NAME:-Documentation}"
+        sgnd_print "  Collection action: ${VAL_COLLECTION_MODE:-update}"
         [[ "$VAL_UPDATE_MODE" == "render" ]] || sgnd_print "  Products: ${VAL_DOCUMENT_PRODUCTS:-ALL}"
         [[ "$VAL_UPDATE_MODE" == "render" ]] || sgnd_print "  Source directory: $VAL_SRCDIR"
-        sgnd_print "  Output root: $VAL_OUTPUT_ROOT"
-        sgnd_print "  Output directory: $VAL_OUTDIR"
+        sgnd_print "  Documentation root: $VAL_DOCUMENT_ROOT"
+        sgnd_print "  Generated site: $VAL_OUTDIR"
+        (( ${FLAG_COPY_TO_GIT:-0} )) && sgnd_print "  Git output path: ${VAL_GIT_OUTPUT_PATH:-$(_doc_default_git_output_path 2>/dev/null || true)}"
         sgnd_print
         sgnd_print "  Starttime: $(date -d "@$main_start" '+%H:%M:%S')"
         sgnd_print "  Endtime:   $(date -d "@$end_time" '+%H:%M:%S')"
@@ -1799,16 +1853,14 @@ set -uo pipefail
             _doc_set_primary_source_root
         fi
 
-        # Interactive mode already asked for the final, non-persistent output
-        # directory. Auto mode derives it here (or honors explicit --outdir).
-        if (( FLAG_AUTO_RUN )); then
-            _doc_finalize_outdir
-        fi
+        # Derive the generated site path from the persisted site name and documentation
+        # root.  An explicit --outdir remains a one-run final destination override.
+        _doc_finalize_outdir
 
         _doc_discover_products
         _doc_select_products || return 1
         _doc_set_primary_source_root
-        [[ "$VAL_UPDATE_MODE" != "render" ]] && VAL_DOCUMENT_PRODUCT="${VAL_COLLECTION_NAME:-Documentation}"
+        [[ "$VAL_UPDATE_MODE" != "render" ]] && VAL_DOCUMENT_PRODUCT="${VAL_SITE_NAME:-Documentation}"
 
         if [[ "$VAL_COLLECTION_MODE" == "create" && "$VAL_UPDATE_MODE" != "full" && "$VAL_UPDATE_MODE" != "render" ]]; then
             sayfail "Creating a new documentation collection requires Full mode."
@@ -1915,13 +1967,13 @@ set -uo pipefail
                 sayinfo "Would have rendered site to $VAL_OUTDIR"
             fi
             if (( FLAG_COPY_TO_GIT )); then
-                sayinfo "Would have copied the generated site to the Git repository docs directory"
+                sayinfo "Would have published the generated site to ${VAL_GIT_OUTPUT_PATH:-$(_doc_default_git_output_path 2>/dev/null || true)}"
             fi
         else
             saystart "Rendering html documentation"
             start_time="$(date +%s)"
 
-            # Each selected product contributes its canonical usr/local/assets directory.
+            # Each selected product contributes its documentation-only asset directory.
             # The renderer merges these flat collections without renaming files; asset
             # filenames therefore remain globally unique by project convention.
             SGND_DOC_ASSETS_DIRS=""
@@ -1930,7 +1982,7 @@ set -uo pipefail
                     [[ "${SGND_DOC_DISCOVERED_PRODUCTS[$_asset_index],,}" == "${_asset_product,,}" ]] || continue
                     _asset_project_root="${SGND_DOC_DISCOVERED_ROOTS[$_asset_index]:-}"
                     [[ -d "$_asset_project_root/target-root" ]] && _asset_source_root="$_asset_project_root/target-root" || _asset_source_root="$_asset_project_root"
-                    _asset_dir="${_asset_source_root%/}/usr/local/assets"
+                    _asset_dir="${_asset_source_root%/}/usr/local/share/doc-sources/assets"
                     [[ -d "$_asset_dir" ]] || break
                     [[ -n "$SGND_DOC_ASSETS_DIRS" ]] && SGND_DOC_ASSETS_DIRS+=":"
                     SGND_DOC_ASSETS_DIRS+="$_asset_dir"

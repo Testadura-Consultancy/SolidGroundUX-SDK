@@ -4,10 +4,10 @@
 # ----------------------------------------------------------------------------------
 # Metadata:
 #   Version     : 2.1
-#   Build       : 2627501
-#   Checksum    : 13321af55660b9fc8dc471e6ccfe563324b61ab7a561a4ee22bef1003f0d806e
+#   Build       : 2627700
+#   Checksum    : b9c6c6b927e9e4683e08c87f6f026a14c4f8c155598ee8be0179c20f7d151a0d
 #   Source      : lib-template.sh
-#   Type        : library
+#   Type        : template
 #   Group       : SDK
 #   Subgroup    : Templates
 #   Purpose     : Canonical template for source-only framework libraries

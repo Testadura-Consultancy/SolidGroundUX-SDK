@@ -4,8 +4,8 @@
 # -------------------------------------------------------------------------------------
 # Metadata:
 #   Version     : 2.1
-#   Build       : 2627501
-#   Checksum    : 9f08b6927b3aafb6394edd6dca6d1f58156146249eea547eb8de188fa078c6db
+#   Build       : 2627700
+#   Checksum    : 08f53654c7520815bc5f34fbd669aba54e2867202b08613e7f7c953179152f04
 #   Source      : prepare-release.sh
 #   Type        : script
 #   Group       : SDK
@@ -26,7 +26,8 @@
 #     - Reports the full output paths of product release ZIPs and the optional first-install ZIP
 #     - Writes release-package.info at ZIP root so the package identifies its project/release
 #     - Uses an explicit removal-baseline manifest from persistent manifest history
-#     - Builds a first-install ZIP containing sgnd-setup.sh plus selected product release ZIPs
+#     - Builds a first-install ZIP containing sgnd-setup.sh plus selected product release ZIPs,
+#       using the SolidGroundUX/Setup version and the highest build number contained in the package
 #
 # Design principles:
 #   - Release preparation is deterministic and repeatable
@@ -1589,16 +1590,18 @@ set -uo pipefail
         # Behavior:
         #   - The first-install ZIP replaces the former bundled release concept.
         #   - It is transport/installer media, not an installable product release.
-        #   - Its Version/Build identity is derived from sgnd-setup.sh, independently of
-        #     the selected product release identities.
-        #   - Product ZIPs remain unchanged and are installed by sgnd-setup after extraction.
+        #   - Its Version identity follows sgnd-setup.sh / SolidGroundUX.
+        #   - Its Build identity is the highest numeric build of sgnd-setup.sh or any
+        #     product release ZIP contained in the first-install package.
+        #   - Product ZIP identities remain unchanged and are installed by sgnd-setup
+        #     after extraction.
         # Returns:
         #   0 on success or when SolidGroundUX is not among the selected products;
-        #   non-zero on missing package/setup files, metadata, or ZIP creation failure.
+        #   non-zero on missing package/setup files, invalid build metadata, or ZIP creation failure.
         # Usage:
         #   _create_first_install_package
     _create_first_install_package() {
-        local setup="" setup_version="" setup_build="" package_dir="" output_zip=""
+        local setup="" setup_version="" setup_build="" first_install_build="" package_dir="" output_zip=""
         local index=0 product="" version="" build="" product_zip=""
         local -a zip_items=("sgnd-setup.sh")
 
@@ -1610,7 +1613,25 @@ set -uo pipefail
             sayfail "Could not resolve first-install identity from sgnd-setup.sh metadata."
             return 1
         }
-        output_zip="${OUTPUT_DIR%/}/SolidGroundUX-first-install-${setup_version}.${setup_build}.zip"
+        [[ "$setup_build" =~ ^[0-9]+$ ]] || {
+            sayfail "Invalid sgnd-setup build number for first-install package: $setup_build"
+            return 1
+        }
+
+        # The first-install package represents the newest build contained in the transport.
+        # Start with the embedded Setup build, then raise it for any newer selected product.
+        first_install_build="$setup_build"
+        for index in "${!RELEASE_PRODUCT_NAMES[@]}"; do
+            build="${RELEASE_PRODUCT_BUILDS[$index]:-$BUILD}"
+            [[ "$build" =~ ^[0-9]+$ ]] || {
+                sayfail "Invalid product build number for first-install package: ${RELEASE_PRODUCT_NAMES[$index]} ($build)"
+                return 1
+            }
+            if (( 10#$build > 10#$first_install_build )); then
+                first_install_build="$build"
+            fi
+        done
+        output_zip="${OUTPUT_DIR%/}/SolidGroundUX-first-install-${setup_version}.${first_install_build}.zip"
 
         if (( ${FLAG_DRYRUN:-0} )); then
             sayinfo "Would have created first-install package: $output_zip"

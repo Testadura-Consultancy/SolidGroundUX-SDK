@@ -3,9 +3,9 @@
 # ----------------------------------------------------------------------------------
 # Metadata:
 #   Version     : 2.1
-#   Build       : 2627501
-#   Checksum    : f9d95941b59a8885957d11d3c04c7b80e81ee6d61ccb4581505fdefeb5c6f0a2
-#   Source      : sdk tools_preface.sh
+#   Build       : 2627700
+#   Checksum    : 140395038874a52b8059c25a7904388800fae7751e9d39341a6814165acd5fa2
+#   Source      : sdk-tools_preface.sh
 #   Type        : documentation
 #   Group       : SDK
 #   Purpose     : Group preface
@@ -117,20 +117,24 @@
 # > Workspace deployment is deliberately separate from formal release installation.
 # > It does not define the installed-release lifecycle and should not be treated as an
 # > installer. Formal release creation belongs to prepare-release.sh; installation,
-# > update, rollback/reinstallation, and removal belong to release-manager.sh.
+# > update, rollback/reinstallation, and removal belong to sgnd-setup.
 #
 # -- Preparing a Release ------------------------------------------------------------
 #
-# > prepare-release.sh creates the complete project release set consumed by the Release
-# > Manager. It resolves project identity from the project definitions file, maintains
+# > prepare-release.sh creates the complete project release set consumed by Setup. It
+# > resolves project identity from the project definitions file, maintains
 # > Version and Build metadata, refreshes changed-file checksums, verifies executable
 # > wrappers, and generates the archive, manifest, removal manifest, checksum sidecars,
 # > and the distributable release ZIP.
 #
 # > Every ZIP contains release-package.info so the package identifies its project,
 # > product, version, build, and release without inspecting the payload tar. SolidGroundUX
-# > framework ZIPs additionally include release-manager.sh as a clean-machine bootstrap
-# > entry point; generic project ZIPs use the already installed Release Manager.
+# > Product ZIPs remain independently installable. A generated first-install bundle adds
+# > sgnd-setup.sh beside the Framework, MCM, and SDK release ZIPs so a clean machine can
+# > establish the suite without requiring a pre-existing SolidGroundUX installation.
+#
+# . Images
+#   sdk-product-release-lifecycle.png :: Lifecycle of a SolidGroundUX product release from workspace to deployment.
 #
 # -- Why These Tools Exist ----------------------------------------------------------
 #

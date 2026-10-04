@@ -8,7 +8,7 @@
 #   Build       : -
 #   Checksum    : d0227d9918b8f9791c05f4b66cba11e99383b902db80294ab63a5093258c23c0
 #   Source      : wrapper-template
-#   Type        : wrapper
+#   Type        : template
 #   Group       : SDK
 #   Subgroup    : Templates
 #   Purpose     : Launch a configured SolidGroundUX target beneath the active framework root.

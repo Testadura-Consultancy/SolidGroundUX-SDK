@@ -3,9 +3,6 @@
     {
       "name": "SolidGroundUX SDK",
       "path": "."
-    },
-    {
-      "path": "../SolidGroundUX/releases"
     }
   ],
   "settings": {

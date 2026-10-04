@@ -7,18 +7,20 @@ All notable changes to SolidGroundUX SDK are documented in this file.
 ### Changed
 - Reworked release preparation around a single product-package model: every selected product is now emitted as its own product release ZIP; multi-product bundled releases are no longer produced.
 - Removed the redundant primary-product selection from multi-product release preparation; selected products remain peers and are prepared in the operator-selected order.
-- First-install packages now replace the former bundled-release role and use the independent Version/Build identity of `sgnd-setup.sh` rather than borrowing a selected product's release identity.
+- First-install packages now replace the former bundled-release role. Their Version follows `sgnd-setup.sh`, while their Build is the highest numeric build among `sgnd-setup.sh` and every product release ZIP included in the package.
 - Product `tar.gz` payloads and their checksum sidecars are now treated as ZIP-internal staging artifacts and are removed after successful product packaging/export instead of being retained as standalone release outputs.
 - Added a separate first-install transport ZIP containing `sgnd-setup.sh` plus the selected product release ZIPs, keeping bootstrap transport distinct from installable product packages.
 - Updated release package metadata to format 3 with `SGND_PACKAGE_TYPE=product`.
 - Added a configurable release output-directory prompt to `prepare-release`, persisted as state for reuse on subsequent runs.
 - Release preparation now reports the final destination path of the generated release artifacts explicitly.
+- Updated the deployment/release-lifecycle documentation model to describe independent product release ZIPs, the first-install bootstrap package, and `sgnd-setup` as the canonical installed-product lifecycle tool.
 
 ### Fixed
 - Fixed non-interactive `receive-files.sh` execution hanging during workspace deployment by suppressing title rendering for the receiver path, avoiding terminal/titlebar probing when no controlling TTY is available.
 - Restored normal `deploy-workspace` completion after the receiver/confirmation handling regression; development-to-production streaming again returns cleanly after transfer.
 - Fixed release output cleanup so intermediate `tar.gz`, manifest, removal-manifest, and checksum artifacts remain staging-only and are removed after successful packaging; the release output directory now contains only the final product release ZIPs and first-install ZIP.
 - Fixed release preparation cleanup so packaging metadata and checksum sidecars are retained inside their owning product ZIPs without leaking duplicate loose artifacts into the final release directory.
+- Fixed first-install package naming so the outer package can never carry a lower build number than a product ZIP it contains; malformed/non-numeric contained build metadata now stops package creation instead of producing an ambiguous release identity.
 
 
 ## Release 2.1.2626712

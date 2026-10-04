@@ -80,7 +80,8 @@ DOC_HEADER_LOGO = "doc-header-logo.png"
 DOC_INDEX_HERO = "doc-index-hero.png"
 
 Row = Dict[str, str]
-CANONICAL_PREFIX = "appendix:canonical:"
+CONSTITUTION_PREFIX = "frontmatter:constitution:"
+README_PREFIX = "appendix:readme:"
 ATTRIBUTION_PREFIX = "appendix:attribution:"
 GLOSSARY_PREFIX = "appendix:glossary:"
 INTEGRITY_PREFIX = "appendix:integrity:"
@@ -88,7 +89,13 @@ GLOBALS_PREFIX = "appendix:globals:"
 LICENSE_PREFIX = "appendix:license:"
 ENUMS_PREFIX = "appendix:enums:"
 CHANGELOG_PREFIX = "appendix:changelog:"
-INSTALL_PREFIX = "appendix:install:"
+SUITE_INSTALL_REF = "frontmatter:installation"
+
+PRODUCT_DOC_PREFIXES = {
+    "solidgroundux": "sux",
+    "solidgroundux_sdk": "sdk",
+    "solidgroundux_management_console_modules": "mcm",
+}
 
 
 # fn: read_psv - Read psv
@@ -216,16 +223,29 @@ def content_ref(
     return f"{module_name}:{grandparent_section}:{parent_section}:{section_name}:{item_name}"
 
 
-# fn: canonical_ref - Build canonical ref
+# fn: readme_ref - Build README appendix ref
 # . Purpose
-#   Build canonical ref for the documentation rendering workflow.
+#   Build the content reference used for a product README appendix.
 #
 # . Arguments
-#   product_name  Value consumed by this function; see the typed Python signature for its contract.
+#   product_name  Product that owns the README document.
 # . Usage
-#   canonical_ref(<product_name>)
-def canonical_ref(product_name: str) -> str:
-    return f"{CANONICAL_PREFIX}{product_name}"
+#   readme_ref(<product_name>)
+def readme_ref(product_name: str) -> str:
+    return f"{README_PREFIX}{product_name}"
+
+
+# fn: constitution_ref - Build Constitution front-matter ref
+# . Purpose
+#   Build the content reference used for an optional product Constitution. A Constitution
+#   is product front matter, not an appendix, and is rendered before normal product content.
+#
+# . Arguments
+#   product_name  Product that owns the Constitution document.
+# . Usage
+#   constitution_ref(<product_name>)
+def constitution_ref(product_name: str) -> str:
+    return f"{CONSTITUTION_PREFIX}{product_name}"
 
 
 # fn: attribution_ref - Build attribution ref
@@ -312,16 +332,14 @@ def changelog_ref(product_name: str) -> str:
     return f"{CHANGELOG_PREFIX}{product_name}"
 
 
-# fn: install_ref - Build install ref
+# fn: suite_install_ref - Build suite installation front-matter ref
 # . Purpose
-#   Build install ref for the documentation rendering workflow.
-#
-# . Arguments
-#   product_name  Value consumed by this function; see the typed Python signature for its contract.
+#   Return the stable content reference for the suite-level installation/lifecycle page.
+#   Installation belongs to the SolidGroundUX suite rather than to any one product.
 # . Usage
-#   install_ref(<product_name>)
-def install_ref(product_name: str) -> str:
-    return f"{INSTALL_PREFIX}{product_name}"
+#   suite_install_ref()
+def suite_install_ref() -> str:
+    return SUITE_INSTALL_REF
 
 
 # fn: page_href_from_contentref - Build page href from contentref
@@ -373,22 +391,23 @@ def display_name_with_title(name: str, title: str) -> str:
 @dataclass(frozen=True)
 class AppendixSpec:
     key: str
-    letter: str
     title: str
     ref_factory: object
     renderer_name: str
 
 
 APPENDIX_SPECS: tuple[AppendixSpec, ...] = (
-    AppendixSpec("canonical", "0", "Unimatrix 01", canonical_ref, "render_canonical_page"),
-    AppendixSpec("attribution", "A", "Attribution", attribution_ref, "render_attribution_page"),
-    AppendixSpec("glossary", "B", "Glossary", glossary_ref, "render_glossary_page"),
-    AppendixSpec("integrity", "C", "Integrity Information", integrity_ref, "render_integrity_page"),
-    AppendixSpec("globals", "D", "Global Variables", globals_ref, "render_globals_page"),
-    # AppendixSpec("enums", "E", "Framework Value Sets", enums_ref, "render_enums_page"),
-    AppendixSpec("license", "X", "License", license_ref, "render_license_page"),
-    AppendixSpec("changelog", "Y", "Change Log", changelog_ref, "render_changelog_page"),
-    AppendixSpec("install", "Z", "First Installation", install_ref, "render_install_page"),
+    # Appendix numbering is assigned after product-specific availability is resolved.
+    # README is first when present; if it is absent, the first enabled appendix becomes
+    # Appendix 1. The Constitution is intentionally not listed here because it is front matter.
+    AppendixSpec("readme", "README", readme_ref, "render_readme_page"),
+    AppendixSpec("attribution", "Attribution", attribution_ref, "render_attribution_page"),
+    AppendixSpec("glossary", "Glossary", glossary_ref, "render_glossary_page"),
+    AppendixSpec("integrity", "Integrity Information", integrity_ref, "render_integrity_page"),
+    AppendixSpec("globals", "Global Variables", globals_ref, "render_globals_page"),
+    # AppendixSpec("enums", "Framework Value Sets", enums_ref, "render_enums_page"),
+    AppendixSpec("license", "License", license_ref, "render_license_page"),
+    AppendixSpec("changelog", "Change Log", changelog_ref, "render_changelog_page"),
 )
 
 
@@ -436,6 +455,7 @@ class DocRenderer:
             for source in asset_sources.split(os.pathsep)
             if source.strip()
         ]
+        self.doc_source_dirs: List[Path] = []
 
         self.mod_table: List[Row] = []
         self.mod_sections: List[Row] = []
@@ -451,6 +471,9 @@ class DocRenderer:
 
         self.nav: List[NavNode] = []
         self.content_by_ref: Dict[str, List[Row]] = defaultdict(list)
+        # Preface modules are rendered as the content of their product/group/subgroup
+        # parent node rather than as separate navigation entries.
+        self.parent_prefaces: Dict[str, List[Row]] = {}
 
         self.doc_title = ""
         self.doc_subtitle = ""
@@ -491,6 +514,7 @@ class DocRenderer:
         self.doc_enums = read_psv(self.input_dir / "doc_enums.psv", required=False)
         self.doc_content_lines = read_psv(self.input_dir / "doc_content_lines.psv")
         self.config = read_config(self.input_dir / "render_config.psv")
+        self.discover_document_source_dirs()
 
     # fn: prepare_output - Prepare output
     # . Purpose
@@ -524,38 +548,256 @@ class DocRenderer:
     # Hierarchy construction
     # ----------------------------------------------------------------------
 
-    # fn: product_has_appendices - Determine whether generated appendices belong to a product
+    # fn: discover_document_source_dirs - Discover shared documentation source directories
     # . Purpose
-    #   Generated framework appendices are SolidGroundUX product documentation and must not
-    #   be synthesized for companion products in the same collection.
+    #   Resolve the canonical usr/local/share/doc-sources directories contributed by the
+    #   selected products and add their assets directories to renderer asset discovery.
+    # . Behavior
+    #   - Honors SGND_DOC_SOURCE_DIRS when supplied by the shell hand-off.
+    #   - Derives target-root/usr/local/share/doc-sources from each product project root.
+    #   - Keeps the renderer input directory as a final fallback for cached Markdown copies.
     # . Usage
-    #   self.product_has_appendices(product_name)
-    def product_has_appendices(self, product_name: str) -> bool:
-        manifest = self.product_manifest_by_name.get(normalize_key(product_name), {})
-        if manifest:
-            return bool((manifest.get("appendices", "") or "").strip())
-        return normalize_key(product_name) == normalize_key("SolidGroundUX")
+    #   self.discover_document_source_dirs()
+    def discover_document_source_dirs(self) -> None:
+        candidates: List[Path] = []
 
+        configured = os.environ.get("SGND_DOC_SOURCE_DIRS", "").strip()
+        if configured:
+            candidates.extend(
+                Path(source).resolve()
+                for source in configured.split(os.pathsep)
+                if source.strip()
+            )
+
+        for manifest in self.product_manifests:
+            project_root_text = (manifest.get("project_root", "") or "").strip()
+            if not project_root_text:
+                continue
+            project_root = Path(project_root_text).resolve()
+            target_root = project_root / "target-root" if (project_root / "target-root").is_dir() else project_root
+            candidates.append(target_root / "usr/local/share/doc-sources")
+
+        candidates.append(self.input_dir)
+
+        seen: set[str] = set()
+        self.doc_source_dirs = []
+        for candidate in candidates:
+            key = str(candidate)
+            if key in seen:
+                continue
+            seen.add(key)
+            if candidate.is_dir():
+                self.doc_source_dirs.append(candidate)
+
+        asset_seen = {str(path) for path in self.asset_source_dirs}
+        for doc_source_dir in self.doc_source_dirs:
+            asset_dir = doc_source_dir / "assets"
+            key = str(asset_dir)
+            if asset_dir.is_dir() and key not in asset_seen:
+                self.asset_source_dirs.append(asset_dir)
+                asset_seen.add(key)
+
+    # fn: product_doc_prefix - Resolve documentation filename prefix for a product
+    # . Purpose
+    #   Map the three SolidGroundUX products to their collision-safe shared doc-source prefix.
+    # . Usage
+    #   self.product_doc_prefix(<product_name>)
+    def product_doc_prefix(self, product_name: str) -> str:
+        return PRODUCT_DOC_PREFIXES.get(normalize_key(product_name), "")
+
+    # fn: product_document_source_dirs - Resolve documentation source roots for one product
+    # . Purpose
+    #   Return the product's canonical doc-sources directory before shared/cache fallbacks.
+    # . Usage
+    #   self.product_document_source_dirs(<product_name>)
+    def product_document_source_dirs(self, product_name: str) -> List[Path]:
+        roots: List[Path] = []
+        manifest = self.product_manifest_by_name.get(normalize_key(product_name), {})
+        project_root_text = (manifest.get("project_root", "") or "").strip()
+        if project_root_text:
+            project_root = Path(project_root_text).resolve()
+            target_root = project_root / "target-root" if (project_root / "target-root").is_dir() else project_root
+            doc_root = target_root / "usr/local/share/doc-sources"
+            if doc_root.is_dir():
+                roots.append(doc_root)
+
+        for root in self.doc_source_dirs:
+            if root not in roots:
+                roots.append(root)
+        return roots
+
+    # fn: read_optional_document - Read the first matching Markdown document from supplied roots
+    # . Purpose
+    #   Centralize special-document discovery without hard-coding prose into the renderer.
+    # . Usage
+    #   self.read_optional_document(<candidates>, <roots>)
+    def read_optional_document(self, candidates: Sequence[str], roots: Sequence[Path]) -> tuple[str, str]:
+        for root in roots:
+            for name in candidates:
+                path = root / name
+                if path.is_file():
+                    return name, path.read_text(encoding="utf-8", errors="replace")
+        return candidates[0], ""
+
+    # fn: read_suite_document - Read suite-level Markdown from shared doc-sources
+    # . Purpose
+    #   Read sgnd_-prefixed suite documentation such as sgnd_landing.md and sgnd_install.md.
+    # . Usage
+    #   self.read_suite_document(<candidates>)
+    def read_suite_document(self, candidates: Sequence[str]) -> tuple[str, str]:
+        return self.read_optional_document(candidates, self.doc_source_dirs)
+
+    # fn: suite_has_document - Determine whether a suite-level document exists
+    # . Purpose
+    #   Test shared doc-sources for a suite-level document without assigning it to a product.
+    # . Usage
+    #   self.suite_has_document(<candidates>)
+    def suite_has_document(self, candidates: Sequence[str]) -> bool:
+        _, text = self.read_suite_document(candidates)
+        return bool(text)
+
+    # fn: product_has_document - Determine whether a project-level source document exists
+    # . Purpose
+    #   Check the owning product root and renderer input directory for a project document.
+    #   This lets reader-facing documents such as README.md be included automatically
+    #   without requiring every product manifest to repeat that appendix setting.
+    # . Arguments
+    #   product_name  Product whose project root should be searched.
+    #   candidates    Candidate filenames in preference order.
+    # . Usage
+    #   self.product_has_document(<product_name>, ("README.md", "readme.md"))
+    def product_has_document(self, product_name: str, candidates: Sequence[str]) -> bool:
+        manifest = self.product_manifest_by_name.get(normalize_key(product_name), {})
+        roots: List[Path] = []
+        if manifest.get("project_root"):
+            roots.append(Path(manifest["project_root"]))
+        roots.append(self.input_dir)
+
+        return any((root / name).is_file() for root in roots for name in candidates)
+
+    # fn: product_has_constitution - Determine whether a product Constitution exists
+    # . Purpose
+    #   Detect optional product Constitution front matter in shared doc-sources. Product-owned
+    #   filenames are collision-safe (sux_, sdk_, mcm_); historical root filenames remain
+    #   compatibility fallbacks during migration.
+    # . Usage
+    #   self.product_has_constitution(product_name)
+    def product_has_constitution(self, product_name: str) -> bool:
+        prefix = self.product_doc_prefix(product_name)
+        if prefix:
+            source_name = f"{prefix}_constitution.md"
+            for root in self.product_document_source_dirs(product_name):
+                if (root / source_name).is_file():
+                    return True
+
+        return self.product_has_document(
+            product_name,
+            (
+                "CONSTITUTION.md",
+                "Constitution.md",
+                "constitution.md",
+                "SolidGroundUX-Canonical.md",
+                "SolidGroundUX-Cannonical.md",
+                "solidgroundux-canonical.md",
+            ),
+        )
+
+    # fn: product_appendix_keys - Resolve enabled appendices for a product
+    # . Purpose
+    #   Return the manifest-controlled appendix keys. README is enabled automatically only
+    #   when the owning repository actually provides one. Historical canonical/constitution
+    #   appendix keys are ignored because Constitution is now product front matter.
+    # . Usage
+    #   self.product_appendix_keys(product_name)
     def product_appendix_keys(self, product_name: str) -> set[str]:
         manifest = self.product_manifest_by_name.get(normalize_key(product_name), {})
         spec = (manifest.get("appendices", "") or "").strip()
         if not spec and normalize_key(product_name) == normalize_key("SolidGroundUX"):
-            return {item.key for item in APPENDIX_SPECS}
-        return {normalize_key(item) for item in spec.split(",") if item.strip()}
+            keys = {item.key for item in APPENDIX_SPECS if item.key != "readme"}
+        else:
+            keys = {normalize_key(item) for item in spec.split(",") if item.strip()}
+
+        keys.discard("canonical")
+        keys.discard("constitution")
+        # Installation is suite-level front/supporting documentation (sgnd_install.md),
+        # not a product appendix. Ignore stale product manifest keys during migration.
+        keys.discard("install")
+
+        if self.product_has_document(product_name, ("README.md", "Readme.md", "readme.md")):
+            keys.add("readme")
+        else:
+            keys.discard("readme")
+
+        return keys
+
+    # fn: enabled_appendices - Resolve ordered appendices for a product
+    # . Purpose
+    #   Filter the global appendix specification order to the appendices enabled for one
+    #   product. The resulting position is the reader-facing numeric appendix number.
+    # . Usage
+    #   self.enabled_appendices(product_name)
+    def enabled_appendices(self, product_name: str) -> List[AppendixSpec]:
+        keys = self.product_appendix_keys(product_name)
+        return [item for item in APPENDIX_SPECS if normalize_key(item.key) in keys]
+
+    # fn: product_has_appendices - Determine whether a product has rendered appendices
+    # . Purpose
+    #   Show the Appendices container only when at least one appendix is enabled after
+    #   product-specific availability has been resolved.
+    # . Usage
+    #   self.product_has_appendices(product_name)
+    def product_has_appendices(self, product_name: str) -> bool:
+        return bool(self.enabled_appendices(product_name))
+
+    # fn: appendix_number - Resolve reader-facing appendix number
+    # . Purpose
+    #   Return the one-based numeric position of an enabled appendix for a product.
+    #   Numbering is dense: if README is absent, the next appendix becomes Appendix 1.
+    # . Usage
+    #   self.appendix_number(product_name, appendix_key)
+    def appendix_number(self, product_name: str, appendix_key: str) -> int:
+        wanted = normalize_key(appendix_key)
+        for index, appendix in enumerate(self.enabled_appendices(product_name), start=1):
+            if normalize_key(appendix.key) == wanted:
+                return index
+        raise ValueError(f"Appendix '{appendix_key}' is not enabled for product '{product_name}'.")
+
+    # fn: appendix_label - Build reader-facing appendix label
+    # . Purpose
+    #   Build the numeric appendix label used consistently in navigation, titles, and breadcrumbs.
+    # . Usage
+    #   self.appendix_label(product_name, appendix_key, title)
+    def appendix_label(self, product_name: str, appendix_key: str, title: str) -> str:
+        return f"Appendix {self.appendix_number(product_name, appendix_key)}: {title}"
 
     # fn: build_doc_hierarchy - Build doc hierarchy
     # . Purpose
-    #   Build the documentation navigation hierarchy, promoting each product, group, or
-    #   subgroup preface into the content of its parent node while keeping epilogues as
-    #   explicit trailing child pages.
+    #   Build doc hierarchy for the documentation rendering workflow.
     # . Usage
     #   self.build_doc_hierarchy()
     def build_doc_hierarchy(self) -> None:
         self.nav = []
+        self.parent_prefaces = {}
 
         section_rows = list(self.mod_sections)
         item_rows = list(self.mod_items)
         modules_by_product = self.modules_by_product()
+
+        # Suite installation/lifecycle guidance belongs above the product trees. It is
+        # sourced from sgnd_install.md and therefore appears only once for the collection.
+        if self.suite_has_document(("sgnd_install.md", "SGND_INSTALL.md")):
+            self.nav.append(
+                NavNode(
+                    nodeid="suite:installation",
+                    parentnodeid="root",
+                    nodetype="suite-document",
+                    node_name="Installation",
+                    node_title="Installing SolidGroundUX",
+                    hierarchy_level=0,
+                    docindex="0.1",
+                    contentref=suite_install_ref(),
+                )
+            )
 
         for product_index, product_name in enumerate(sorted(modules_by_product.keys(), key=str.casefold), start=1):
             product_node_id = f"product:{product_name}"
@@ -566,38 +808,42 @@ class DocRenderer:
                 product_name,
                 product_modules,
             )
-
-            product_prefaces = product_specials.get("preface", [])
-            product_node = NavNode(
-                nodeid=product_node_id,
-                parentnodeid="root",
-                nodetype="product",
-                node_name=product_name,
-                node_title=product_name,
-                hierarchy_level=0,
-                docindex=product_docindex,
-                contentref=(
-                    content_ref(product_prefaces[0].get("name", ""))
-                    if product_prefaces
-                    else ""
-                ),
+            product_preface_ref = self.register_parent_prefaces(
+                product_node_id,
+                product_specials.get("preface", []),
             )
-            self.nav.append(product_node)
+
+            self.nav.append(
+                NavNode(
+                    nodeid=product_node_id,
+                    parentnodeid="root",
+                    nodetype="product",
+                    node_name=product_name,
+                    node_title=product_name,
+                    hierarchy_level=0,
+                    docindex=product_docindex,
+                    contentref=product_preface_ref,
+                )
+            )
 
             sequence_index = 0
 
-            # A preface is the authored body of its parent navigation node, not a child
-            # section. Preserve any unexpected additional prefaces as child pages so
-            # authored content is never silently dropped.
-            for module in product_prefaces[1:]:
+            # Constitution is optional product front matter. It follows the product landing
+            # page/preface and precedes all normal groups and appendices.
+            if self.product_has_constitution(product_name):
                 sequence_index += 1
-                self.add_standalone_doc_node(
-                    module=module,
-                    parent_node_id=product_node_id,
-                    hierarchy_level=1,
-                    docindex=f"{product_docindex}.{sequence_index}",
-                    fallback_name="Product Preface",
-                    nodetype="preface",
+                constitution_title = f"{product_name} Constitution"
+                self.nav.append(
+                    NavNode(
+                        nodeid=f"constitution:{product_name}",
+                        parentnodeid=product_node_id,
+                        nodetype="constitution",
+                        node_name="Constitution",
+                        node_title=constitution_title,
+                        hierarchy_level=1,
+                        docindex=f"{product_docindex}.{sequence_index}",
+                        contentref=constitution_ref(product_name),
+                    )
                 )
 
             groups = sorted({module.get("group", "") or "Ungrouped" for module in normal_modules}, key=str.casefold)
@@ -607,35 +853,24 @@ class DocRenderer:
                 group_docindex = f"{product_docindex}.{sequence_index}"
                 group_node_id = f"group:{product_name}:{group_name}"
 
-                group_prefaces = group_specials.get(group_name, {}).get("preface", [])
-                group_node = NavNode(
-                    nodeid=group_node_id,
-                    parentnodeid=product_node_id,
-                    nodetype="group",
-                    node_name=group_name,
-                    node_title=group_name,
-                    hierarchy_level=1,
-                    docindex=group_docindex,
-                    contentref=(
-                        content_ref(group_prefaces[0].get("name", ""))
-                        if group_prefaces
-                        else ""
-                    ),
+                group_preface_ref = self.register_parent_prefaces(
+                    group_node_id,
+                    group_specials.get(group_name, {}).get("preface", []),
                 )
-                self.nav.append(group_node)
+                self.nav.append(
+                    NavNode(
+                        nodeid=group_node_id,
+                        parentnodeid=product_node_id,
+                        nodetype="group",
+                        node_name=group_name,
+                        node_title=group_name,
+                        hierarchy_level=1,
+                        docindex=group_docindex,
+                        contentref=group_preface_ref,
+                    )
+                )
 
                 group_sequence_index = 0
-
-                for module in group_prefaces[1:]:
-                    group_sequence_index += 1
-                    self.add_standalone_doc_node(
-                        module=module,
-                        parent_node_id=group_node_id,
-                        hierarchy_level=2,
-                        docindex=f"{group_docindex}.{group_sequence_index}",
-                        fallback_name="Group Preface",
-                        nodetype="preface",
-                    )
 
                 group_modules = [
                     module for module in normal_modules
@@ -653,48 +888,37 @@ class DocRenderer:
                     group_sequence_index += 1
                     subgroup_docindex = f"{group_docindex}.{group_sequence_index}"
                     subgroup_node_id = f"subgroup:{product_name}:{group_name}:{subgroup_name}"
-
                     subgroup_modules = [
                         module for module in group_modules
                         if module.get("subgroup", "") == subgroup_name
                     ]
                     subgroup_prefaces = [
-                        module
-                        for module in subgroup_modules
+                        module for module in subgroup_modules
                         if self.subgroup_comment_role(
                             normalize_key(Path(module.get("name", "")).stem),
                             normalize_key(subgroup_name),
                             module.get("purpose", ""),
                         ) == "preface"
                     ]
-
-                    subgroup_node = NavNode(
-                        nodeid=subgroup_node_id,
-                        parentnodeid=group_node_id,
-                        nodetype="subgroup",
-                        node_name=subgroup_name,
-                        node_title=subgroup_name,
-                        hierarchy_level=2,
-                        docindex=subgroup_docindex,
-                        contentref=(
-                            content_ref(subgroup_prefaces[0].get("name", ""))
-                            if subgroup_prefaces
-                            else ""
-                        ),
+                    subgroup_preface_ref = self.register_parent_prefaces(
+                        subgroup_node_id,
+                        subgroup_prefaces,
                     )
-                    self.nav.append(subgroup_node)
+
+                    self.nav.append(
+                        NavNode(
+                            nodeid=subgroup_node_id,
+                            parentnodeid=group_node_id,
+                            nodetype="subgroup",
+                            node_name=subgroup_name,
+                            node_title=subgroup_name,
+                            hierarchy_level=2,
+                            docindex=subgroup_docindex,
+                            contentref=subgroup_preface_ref,
+                        )
+                    )
 
                     subgroup_sequence_index = 0
-                    for module in subgroup_prefaces[1:]:
-                        subgroup_sequence_index += 1
-                        self.add_standalone_doc_node(
-                            module=module,
-                            parent_node_id=subgroup_node_id,
-                            hierarchy_level=3,
-                            docindex=f"{subgroup_docindex}.{subgroup_sequence_index}",
-                            fallback_name="Subgroup Preface",
-                            nodetype="preface",
-                        )
 
                     for module in sorted(
                         subgroup_modules,
@@ -797,10 +1021,9 @@ class DocRenderer:
                     )
                 )
 
-                product_appendix_keys = self.product_appendix_keys(product_name)
-                enabled_appendices = [a for a in APPENDIX_SPECS if normalize_key(a.key) in product_appendix_keys]
+                enabled_appendices = self.enabled_appendices(product_name)
                 for appendix_index, appendix in enumerate(enabled_appendices, start=1):
-                    appendix_label = f"Appendix {appendix.letter}: {appendix.title}"
+                    appendix_label = f"Appendix {appendix_index}: {appendix.title}"
                     self.nav.append(
                         NavNode(
                             nodeid=f"appendix:{product_name}:{appendix.key}",
@@ -990,6 +1213,33 @@ class DocRenderer:
         if module_key in epilogue_names:
             return "epilogue"
         return ""
+
+    # fn: register_parent_prefaces - Register prefaces as parent-node content
+    # . Purpose
+    #   Associate product, group, or subgroup preface modules with their parent node.
+    #   The first preface supplies the parent's page reference; all registered prefaces
+    #   are rendered into that parent page and are not emitted as navigation children.
+    #
+    # . Arguments
+    #   parent_node_id  Navigation node that owns the preface content.
+    #   modules         Preface modules associated with that hierarchy level.
+    # . Returns
+    #   Module-level content reference for the first preface, or an empty string.
+    # . Usage
+    #   self.register_parent_prefaces(<parent_node_id>, <modules>)
+    def register_parent_prefaces(self, parent_node_id: str, modules: Sequence[Row]) -> str:
+        ordered = sorted(
+            modules,
+            key=lambda row: (
+                (row.get("name", "") or "").casefold(),
+                (row.get("title", "") or "").casefold(),
+            ),
+        )
+        if not ordered:
+            return ""
+
+        self.parent_prefaces[parent_node_id] = list(ordered)
+        return content_ref(ordered[0].get("name", ""))
 
     # fn: add_standalone_doc_node - Add standalone doc node
     # . Purpose
@@ -1480,14 +1730,16 @@ class DocRenderer:
     # . Usage
     #   self.render_page_branding()
     def render_page_branding(self) -> str:
-        """Render the compact SolidGroundUX identity used on documentation pages."""
+        """Render the compact SolidGroundUX identity and link it to the documentation home page."""
         if not self.branding_asset_exists(DOC_HEADER_LOGO):
             return ""
 
         return (
             '<div class="doc-page-branding">'
+            '<a class="doc-page-branding-home" href="title.html" title="Documentation home">'
             '<span class="doc-page-branding-title">SolidGroundUX Documentation</span>'
             f'<img src="../assets/branding/{esc(DOC_HEADER_LOGO)}" alt="SolidGroundUX">'
+            '</a>'
             '</div>'
         )
 
@@ -1497,13 +1749,15 @@ class DocRenderer:
     # . Usage
     #   self.render_nav_branding()
     def render_nav_branding(self) -> str:
-        """Render the Testadura publisher identity above the navigation index."""
+        """Render the Testadura publisher identity and link it to the documentation home page."""
         if not self.branding_asset_exists(DOC_INDEX_LOGO):
             return ""
 
         return (
             '<div class="doc-nav-branding">'
+            '<a href="pages/title.html" target="docframe" title="Documentation home">'
             f'<img src="assets/branding/{esc(DOC_INDEX_LOGO)}" alt="Documentation publisher">'
+            '</a>'
             '</div>'
         )
 
@@ -2033,6 +2287,18 @@ body {
     color: var(--doc-muted);
     background: var(--doc-page-background, #ffffff);
     border-bottom: 1px solid var(--doc-border);
+}
+
+.doc-page-branding-home {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    color: inherit;
+    text-decoration: none;
+}
+
+.doc-page-branding-home:hover .doc-page-branding-title {
+    text-decoration: underline;
 }
 
 .doc-page-branding-title {
@@ -2615,6 +2881,45 @@ body {
     margin-top: 30px;
 }
 
+.doc-landing-prose {
+    margin-top: 28px;
+    max-width: 980px;
+}
+
+.doc-product-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+    margin-top: 28px;
+}
+
+.doc-product-card {
+    display: block;
+    padding: 18px 20px;
+    border: 1px solid var(--doc-border);
+    border-radius: 10px;
+    background: var(--doc-panel);
+    color: var(--doc-text);
+    text-decoration: none;
+    box-shadow: 0 3px 10px rgba(16, 24, 40, 0.06);
+}
+
+.doc-product-card:hover {
+    border-color: var(--doc-accent);
+    box-shadow: 0 6px 18px rgba(16, 24, 40, 0.10);
+}
+
+.doc-product-card-title {
+    font-size: 12pt;
+    font-weight: 700;
+}
+
+.doc-product-card-kind {
+    margin-top: 5px;
+    color: var(--doc-muted);
+    font-size: 9.5pt;
+}
+
 .doc-title-page-note {
     margin: 28px 0 0;
     padding: 16px 18px;
@@ -2778,6 +3083,71 @@ body {
 
         return "\n".join(lines)
 
+    # fn: render_landing_prose - Render suite landing prose
+    # . Purpose
+    #   Render sgnd_landing.md from shared doc-sources into the documentation home page.
+    #   The renderer owns layout; all descriptive prose remains source-controlled Markdown.
+    # . Usage
+    #   self.render_landing_prose()
+    def render_landing_prose(self) -> str:
+        _source_name, markdown_text = self.read_suite_document(("sgnd_landing.md", "SGND_LANDING.md"))
+        if not markdown_text:
+            return ""
+        body = self.render_markdown_document(markdown_text)
+        return f'<section class="doc-landing-prose">{body}</section>' if body else ""
+
+    # fn: render_product_cards - Render landing-page navigation cards
+    # . Purpose
+    #   Provide direct entry points from the suite landing page to installation and each
+    #   selected product without duplicating product-introduction prose in the renderer.
+    # . Usage
+    #   self.render_product_cards()
+    def render_product_cards(self) -> str:
+        cards: List[str] = []
+
+        if self.suite_has_document(("sgnd_install.md", "SGND_INSTALL.md")):
+            href = Path(page_href_from_contentref(suite_install_ref())).name
+            cards.append(
+                '<a class="doc-product-card" href="' + esc(href) + '">'
+                '<div class="doc-product-card-title">Installation</div>'
+                '<div class="doc-product-card-kind">Suite installation and lifecycle</div>'
+                '</a>'
+            )
+
+        for node in self.nav:
+            if node.nodetype != "product":
+                continue
+
+            href = ""
+            if node.contentref and self.has_renderable_page(node.contentref):
+                href = Path(page_href_from_contentref(node.contentref)).name
+            else:
+                first_child = next(
+                    (
+                        child for child in self.nav
+                        if child.parentnodeid == node.nodeid
+                        and child.contentref
+                        and self.has_renderable_page(child.contentref)
+                    ),
+                    None,
+                )
+                if first_child is not None:
+                    href = Path(page_href_from_contentref(first_child.contentref)).name
+
+            if not href:
+                continue
+
+            cards.append(
+                '<a class="doc-product-card" href="' + esc(href) + '">'
+                f'<div class="doc-product-card-title">{esc(node.node_name)}</div>'
+                '<div class="doc-product-card-kind">Product documentation</div>'
+                '</a>'
+            )
+
+        if not cards:
+            return ""
+        return '<section class="doc-product-cards">' + "".join(cards) + '</section>'
+
     # fn: render_title_page - Render title page
     # . Purpose
     #   Render title page for the documentation rendering workflow.
@@ -2805,6 +3175,8 @@ body {
                 '</figure>',
             ])
 
+        landing_html = self.render_landing_prose()
+        cards_html = self.render_product_cards()
         summary_html = self.render_landing_summary()
 
         html_lines = [
@@ -2822,8 +3194,9 @@ body {
             f'<h1 class="doc-title-page-title">{esc(brand)}</h1>',
             f'<div class="doc-title-page-subtitle">{esc(subtitle)}</div>',
             hero_html,
+            landing_html,
+            cards_html,
             summary_html,
-            '<p class="doc-title-page-note">This collection is generated directly from the selected product source.</p>',
             '<div class="doc-title-page-meta">',
             *meta_lines,
             '</div>',
@@ -2856,6 +3229,7 @@ body {
             '<nav class="doc-nav">',
             self.render_nav_branding(),
             '  <div class="doc-nav-title">Index</div>',
+            '  <a class="doc-nav-section type-suite-document doc-nav-special doc-nav-home" style="padding-left:0px" href="pages/title.html" target="docframe">Home</a>',
             self.render_navigation(),
             "</nav>",
             '<div class="doc-nav-resizer" role="separator" aria-orientation="vertical" aria-label="Resize index column" tabindex="0"></div>',
@@ -2922,7 +3296,7 @@ body {
     #   self.is_appendix_ref(<ref>)
     def is_appendix_ref(self, ref: str) -> bool:
         return any(ref.startswith(prefix) for prefix in (
-            CANONICAL_PREFIX,
+            README_PREFIX,
             ATTRIBUTION_PREFIX,
             GLOSSARY_PREFIX,
             INTEGRITY_PREFIX,
@@ -2930,8 +3304,31 @@ body {
             ENUMS_PREFIX,
             LICENSE_PREFIX,
             CHANGELOG_PREFIX,
-            INSTALL_PREFIX,
         ))
+
+    # fn: is_suite_document_ref - Determine whether suite-level generated document ref
+    # . Purpose
+    #   Identify renderer-generated suite front/supporting documents such as installation.
+    # . Usage
+    #   self.is_suite_document_ref(<ref>)
+    def is_suite_document_ref(self, ref: str) -> bool:
+        return ref == suite_install_ref()
+
+    # fn: is_constitution_ref - Determine whether Constitution front-matter ref
+    # . Purpose
+    #   Identify the generated product Constitution page independently from appendices.
+    # . Usage
+    #   self.is_constitution_ref(<ref>)
+    def is_constitution_ref(self, ref: str) -> bool:
+        return ref.startswith(CONSTITUTION_PREFIX)
+
+    # fn: is_generated_document_ref - Determine whether generated document ref
+    # . Purpose
+    #   Identify renderer-generated Markdown/front-matter pages that are not source-comment pages.
+    # . Usage
+    #   self.is_generated_document_ref(<ref>)
+    def is_generated_document_ref(self, ref: str) -> bool:
+        return self.is_suite_document_ref(ref) or self.is_constitution_ref(ref) or self.is_appendix_ref(ref)
 
     # fn: has_renderable_page - Determine whether renderable page
     # . Purpose
@@ -2942,12 +3339,11 @@ body {
     # . Usage
     #   self.has_renderable_page(<ref>)
     def has_renderable_page(self, ref: str) -> bool:
-        return self.is_appendix_ref(ref) or ref in self.content_by_ref
+        return self.is_generated_document_ref(ref) or ref in self.content_by_ref
     
     # fn: render_navigation - Render navigation
     # . Purpose
-    #   Render the documentation navigation tree, linking container headings to their
-    #   promoted preface content when available.
+    #   Render navigation for the documentation rendering workflow.
     # . Usage
     #   self.render_navigation()
     def render_navigation(self) -> str:
@@ -2959,12 +3355,10 @@ body {
             label = node.node_name
             current_level = node.hierarchy_level
             indent = current_level * 10
-            special_nav_types = {"product", "group", "subgroup", "appendices", "appendix", "preface", "epilogue"}
+            special_nav_types = {"suite-document", "product", "constitution", "group", "subgroup", "appendices", "appendix", "preface", "epilogue"}
             style = f"padding-left:{indent}px"
             href = page_href_from_contentref(node.contentref) if node.contentref else ""
-            # Product headings use their promoted preface when present. Products without
-            # a preface retain the collection title page as their navigation fallback.
-            if node.nodetype == "product" and not href:
+            if node.nodetype == "product" and not node.contentref:
                 href = "pages/title.html"
             special_class = " doc-nav-special" if node.nodetype in special_nav_types else ""
             type_class = slugify(node.nodetype)
@@ -3025,7 +3419,7 @@ body {
                 return page_href_from_contentref(node.contentref)
 
         for node in self.nav:
-            if node.contentref and self.is_appendix_ref(node.contentref):
+            if node.contentref and self.is_generated_document_ref(node.contentref):
                 return page_href_from_contentref(node.contentref)
 
         return "about:blank"
@@ -3040,23 +3434,39 @@ body {
 
         self.render_title_page()
 
+        if self.suite_has_document(("sgnd_install.md", "SGND_INSTALL.md")):
+            self.render_suite_install_page()
+
         for product_name in sorted(self.modules_by_product().keys(), key=str.casefold):
-            if not self.product_has_appendices(product_name):
-                continue
-            for appendix in APPENDIX_SPECS:
+            if self.product_has_constitution(product_name):
+                self.render_constitution_page(product_name)
+
+            for appendix in self.enabled_appendices(product_name):
                 renderer = getattr(self, appendix.renderer_name)
                 renderer(product_name)
 
         for node in self.nav:
             if not node.contentref:
                 continue
-            if self.is_appendix_ref(node.contentref):
+            if self.is_generated_document_ref(node.contentref):
                 continue
             if node.contentref not in self.content_by_ref and not self.is_module_level_special_page(node):
                 continue
 
             self.render_content_page(node)
             rendered_refs.add(node.contentref)
+
+            if self.is_parent_preface_page(node):
+                preface_names = {
+                    module.get("name", "")
+                    for module in self.parent_prefaces.get(node.nodeid, [])
+                    if module.get("name", "")
+                }
+                for row in self.doc_content_lines:
+                    if row.get("file", "") in preface_names:
+                        ref = row.get("contentref", "")
+                        if ref:
+                            rendered_refs.add(ref)
 
         for ref, rows in self.content_by_ref.items():
             if ref in rendered_refs:
@@ -3078,13 +3488,14 @@ body {
         output_file.parent.mkdir(parents=True, exist_ok=True)
 
         body = self.render_attribution_body(product_name)
+        label = self.appendix_label(product_name, "attribution", "Attribution")
 
         html_lines = [
             "<!doctype html>",
             "<html>",
             "<head>",
             '  <meta charset="utf-8">',
-            "  <title>Appendix A: Attribution</title>",
+            f"  <title>{esc(label)}</title>",
             '  <link rel="stylesheet" href="../assets/doc.css">',
             '  <link rel="stylesheet" href="../assets/theme.css">',
             "</head>",
@@ -3092,8 +3503,8 @@ body {
             '<main class="doc-page">',
             self.render_page_branding(),
             '<header class="doc-page-header">',
-            '  <div class="doc-title">Appendix A: Attribution</div>',
-            f'  <div class="doc-breadcrumb">{esc(product_name)} / Appendices / Appendix A: Attribution</div>',
+            f'  <div class="doc-title">{esc(label)}</div>',
+            f'  <div class="doc-breadcrumb">{esc(product_name)} / Appendices / {esc(label)}</div>',
             "</header>",
             body,
             "</main>",
@@ -3201,13 +3612,14 @@ body {
         output_file.parent.mkdir(parents=True, exist_ok=True)
 
         body = self.render_glossary_body(product_name)
+        label = self.appendix_label(product_name, "glossary", "Glossary")
 
         html_lines = [
             "<!doctype html>",
             "<html>",
             "<head>",
             '  <meta charset="utf-8">',
-            "  <title>Appendix B: Glossary</title>",
+            f"  <title>{esc(label)}</title>",
             '  <link rel="stylesheet" href="../assets/doc.css">',
             '  <link rel="stylesheet" href="../assets/theme.css">',
             "</head>",
@@ -3215,8 +3627,8 @@ body {
             '<main class="doc-page">',
             self.render_page_branding(),
             '<header class="doc-page-header">',
-            '  <div class="doc-title">Appendix B: Glossary</div>',
-            f'  <div class="doc-breadcrumb">{esc(product_name)} / Appendices / Appendix B: Glossary</div>',
+            f'  <div class="doc-title">{esc(label)}</div>',
+            f'  <div class="doc-breadcrumb">{esc(product_name)} / Appendices / {esc(label)}</div>',
             "</header>",
             body,
             "</main>",
@@ -3410,13 +3822,14 @@ body {
         output_file.parent.mkdir(parents=True, exist_ok=True)
 
         body = self.render_integrity_body(product_name)
+        label = self.appendix_label(product_name, "integrity", "Integrity Information")
 
         html_lines = [
             "<!doctype html>",
             "<html>",
             "<head>",
             '  <meta charset="utf-8">',
-            "  <title>Appendix C: Integrity Information</title>",
+            f"  <title>{esc(label)}</title>",
             '  <link rel="stylesheet" href="../assets/doc.css">',
             '  <link rel="stylesheet" href="../assets/theme.css">',
             "</head>",
@@ -3424,8 +3837,8 @@ body {
             '<main class="doc-page">',
             self.render_page_branding(),
             '<header class="doc-page-header">',
-            '  <div class="doc-title">Appendix C: Integrity Information</div>',
-            f'  <div class="doc-breadcrumb">{esc(product_name)} / Appendices / Appendix C: Integrity Information</div>',
+            f'  <div class="doc-title">{esc(label)}</div>',
+            f'  <div class="doc-breadcrumb">{esc(product_name)} / Appendices / {esc(label)}</div>',
             "</header>",
             body,
             "</main>",
@@ -3511,13 +3924,14 @@ body {
         output_file.parent.mkdir(parents=True, exist_ok=True)
 
         body = self.render_license_body()
+        label = self.appendix_label(product_name, "license", "License")
 
         html_lines = [
             "<!doctype html>",
             "<html>",
             "<head>",
             '  <meta charset="utf-8">',
-            "  <title>Appendix X: License</title>",
+            f"  <title>{esc(label)}</title>",
             '  <link rel="stylesheet" href="../assets/doc.css">',
             '  <link rel="stylesheet" href="../assets/theme.css">',
             "</head>",
@@ -3525,8 +3939,8 @@ body {
             '<main class="doc-page">',
             self.render_page_branding(),
             '<header class="doc-page-header">',
-            '  <div class="doc-title">Appendix X: License</div>',
-            f'  <div class="doc-breadcrumb">{esc(product_name)} / Appendices / Appendix X: License</div>',
+            f'  <div class="doc-title">{esc(label)}</div>',
+            f'  <div class="doc-breadcrumb">{esc(product_name)} / Appendices / {esc(label)}</div>',
             "</header>",
             body,
             "</main>",
@@ -3571,13 +3985,14 @@ body {
         output_file.parent.mkdir(parents=True, exist_ok=True)
 
         body = self.render_enums_body()
+        label = self.appendix_label(product_name, "enums", "Framework Value Sets")
 
         html_lines = [
             "<!doctype html>",
             "<html>",
             "<head>",
             '  <meta charset="utf-8">',
-            "  <title>Appendix E: Framework Value Sets</title>",
+            f"  <title>{esc(label)}</title>",
             '  <link rel="stylesheet" href="../assets/doc.css">',
             '  <link rel="stylesheet" href="../assets/theme.css">',
             "</head>",
@@ -3585,8 +4000,8 @@ body {
             '<main class="doc-page">',
             self.render_page_branding(),
             '<header class="doc-page-header">',
-            '  <div class="doc-title">Appendix E: Framework Value Sets</div>',
-            f'  <div class="doc-breadcrumb">{esc(product_name)} / Appendices / Appendix E: Framework Value Sets</div>',
+            f'  <div class="doc-title">{esc(label)}</div>',
+            f'  <div class="doc-breadcrumb">{esc(product_name)} / Appendices / {esc(label)}</div>',
             "</header>",
             body,
             "</main>",
@@ -3659,13 +4074,14 @@ body {
         output_file.parent.mkdir(parents=True, exist_ok=True)
 
         body = self.render_globals_body(product_name)
+        label = self.appendix_label(product_name, "globals", "Global Variables")
 
         html_lines = [
             "<!doctype html>",
             "<html>",
             "<head>",
             '  <meta charset="utf-8">',
-            "  <title>Appendix D: Global Variables</title>",
+            f"  <title>{esc(label)}</title>",
             '  <link rel="stylesheet" href="../assets/doc.css">',
             '  <link rel="stylesheet" href="../assets/theme.css">',
             "</head>",
@@ -3673,8 +4089,8 @@ body {
             '<main class="doc-page">',
             self.render_page_branding(),
             '<header class="doc-page-header">',
-            '  <div class="doc-title">Appendix D: Global Variables</div>',
-            f'  <div class="doc-breadcrumb">{esc(product_name)} / Appendices / Appendix D: Global Variables</div>',
+            f'  <div class="doc-title">{esc(label)}</div>',
+            f'  <div class="doc-breadcrumb">{esc(product_name)} / Appendices / {esc(label)}</div>',
             "</header>",
             body,
             "</main>",
@@ -3819,61 +4235,217 @@ body {
                     return name, path.read_text(encoding="utf-8", errors="replace")
         return candidates[0], ""
 
-    # fn: render_markdown_document - Render markdown document
+    # fn: rewrite_document_target - Rewrite Markdown/HTML links for generated documentation
     # . Purpose
-    #   Render markdown document for the documentation rendering workflow.
-    #
+    #   Translate repository/document-source links and asset paths into generated-site paths.
+    #   External URLs and anchors are preserved unchanged.
     # . Arguments
-    #   markdown_text  Value consumed by this function; see the typed Python signature for its contract.
+    #   target        Source href/src value.
+    #   product_name  Owning product when a product appendix is being rendered.
+    #   attribute     Either href or src.
     # . Usage
-    #   self.render_markdown_document(<markdown_text>)
-    def render_markdown_document(self, markdown_text: str) -> str:
+    #   self.rewrite_document_target(<target>, <product_name>, <attribute>)
+    def rewrite_document_target(self, target: str, product_name: str = "", attribute: str = "href") -> str:
+        value = (target or "").strip()
+        if not value:
+            return value
+        if re.match(r"^(?:https?:|mailto:|data:|javascript:)", value, flags=re.IGNORECASE) or value.startswith("#"):
+            return value
+
+        path_part, marker, fragment = value.partition("#")
+        normalized = path_part.replace("\\", "/")
+        while normalized.startswith("./"):
+            normalized = normalized[2:]
+
+        asset_markers = (
+            "target-root/usr/local/share/doc-sources/assets/",
+            "usr/local/share/doc-sources/assets/",
+            "/usr/local/share/doc-sources/assets/",
+            # Compatibility with README/assets written before documentation assets moved.
+            "target-root/usr/local/assets/",
+            "usr/local/assets/",
+            "/usr/local/assets/",
+        )
+        for asset_marker in asset_markers:
+            position = normalized.find(asset_marker)
+            if position >= 0:
+                relative = normalized[position + len(asset_marker):].lstrip("/")
+                mapped = f"../assets/images/{relative}"
+                return mapped + (f"#{fragment}" if marker else "")
+
+        if normalized.startswith("assets/"):
+            mapped = f"../assets/images/{normalized[len('assets/'):]}"
+            return mapped + (f"#{fragment}" if marker else "")
+
+        if attribute.casefold() == "href":
+            basename = Path(normalized).name.casefold()
+            mapped_ref = ""
+            enabled_keys = {item.key for item in self.enabled_appendices(product_name)} if product_name else set()
+            if basename in {"changelog", "changelog.md"} and product_name and "changelog" in enabled_keys:
+                mapped_ref = changelog_ref(product_name)
+            elif basename in {"readme", "readme.md"} and product_name and "readme" in enabled_keys:
+                mapped_ref = readme_ref(product_name)
+            elif basename in {"license", "license.md", "license.txt"} and product_name and "license" in enabled_keys:
+                mapped_ref = license_ref(product_name)
+            elif basename in {"install", "install.md", "sgnd_install.md"}:
+                if self.suite_has_document(("sgnd_install.md", "SGND_INSTALL.md")):
+                    mapped_ref = suite_install_ref()
+
+            if mapped_ref:
+                mapped = Path(page_href_from_contentref(mapped_ref)).name
+                return mapped + (f"#{fragment}" if marker else "")
+
+        return value
+
+    # fn: rewrite_document_html - Rewrite links and images inside trusted raw HTML
+    # . Purpose
+    #   Preserve legitimate raw HTML blocks in repository Markdown while remapping href/src
+    #   attributes to generated-site locations. Documentation sources are trusted project input.
+    # . Usage
+    #   self.rewrite_document_html(<html_text>, <product_name>)
+    def rewrite_document_html(self, html_text: str, product_name: str = "") -> str:
+        attribute_pattern = re.compile(
+            r"(?P<prefix>\b(?P<attr>href|src)\s*=\s*)(?P<quote>[\"'])(?P<target>.*?)(?P=quote)",
+            re.IGNORECASE,
+        )
+
+        def replace_attribute(match: re.Match[str]) -> str:
+            target = self.rewrite_document_target(
+                match.group("target"),
+                product_name,
+                match.group("attr"),
+            )
+            quote = match.group("quote")
+            return f'{match.group("prefix")}{quote}{esc(target)}{quote}'
+
+        return attribute_pattern.sub(replace_attribute, html_text)
+
+    # fn: render_markdown_inline - Render lightweight inline Markdown
+    # . Purpose
+    #   Render common inline Markdown constructs used by repository/supporting documents.
+    #   Raw HTML is handled separately at block level.
+    # . Usage
+    #   self.render_markdown_inline(<text>, <product_name>)
+    def render_markdown_inline(self, text: str, product_name: str = "") -> str:
+        tokens: Dict[str, str] = {}
+
+        def stash(value: str) -> str:
+            key = f"SGNDTOKEN{len(tokens)}PLACEHOLDER"
+            tokens[key] = value
+            return key
+
+        working = text
+
+        def image_repl(match: re.Match[str]) -> str:
+            alt = match.group(1)
+            target = self.rewrite_document_target(match.group(2), product_name, "src")
+            return stash(f'<img src="{esc(target)}" alt="{esc(alt)}">')
+
+        def link_repl(match: re.Match[str]) -> str:
+            label = match.group(1)
+            target = self.rewrite_document_target(match.group(2), product_name, "href")
+            return stash(f'<a href="{esc(target)}">{esc(label)}</a>')
+
+        def code_repl(match: re.Match[str]) -> str:
+            return stash(f'<code>{esc(match.group(1))}</code>')
+
+        working = re.sub(r"!\[([^\]]*)\]\(([^)]+)\)", image_repl, working)
+        working = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", link_repl, working)
+        working = re.sub(r"`([^`]+)`", code_repl, working)
+        rendered = esc(working)
+        rendered = re.sub(r"\*\*([^*]+)\*\*", r"<strong>\1</strong>", rendered)
+        rendered = re.sub(r"__([^_]+)__", r"<strong>\1</strong>", rendered)
+        rendered = re.sub(r"(?<!\*)\*([^*]+)\*(?!\*)", r"<em>\1</em>", rendered)
+
+        for key, value in tokens.items():
+            rendered = rendered.replace(key, value)
+        return rendered
+
+    # fn: render_markdown_document - Render Markdown document
+    # . Purpose
+    #   Render trusted project Markdown, including headings, lists, fenced code, Markdown tables,
+    #   inline links/code, and raw HTML blocks used by repository README files.
+    # . Arguments
+    #   markdown_text  Markdown source text.
+    #   product_name   Owning product for product-relative appendix/link resolution.
+    # . Usage
+    #   self.render_markdown_document(<markdown_text>, <product_name>)
+    def render_markdown_document(self, markdown_text: str, product_name: str = "") -> str:
         if not markdown_text.strip():
             return ""
 
-        lines: List[str] = []
+        output: List[str] = []
         paragraph: List[str] = []
         list_type = ""
         in_code = False
         code_lines: List[str] = []
+        raw_html_block_tag = ""
+        raw_lines = markdown_text.splitlines()
 
-        # fn: flush_paragraph - Flush paragraph
-        # . Purpose
-        #   Flush paragraph for the documentation rendering workflow.
-        # . Usage
-        #   self.flush_paragraph()
         def flush_paragraph() -> None:
             if paragraph:
-                lines.append(f'<p class="ct-documentbody">{esc(" ".join(paragraph))}</p>')
+                rendered = self.render_markdown_inline(" ".join(paragraph), product_name)
+                output.append(f'<p class="ct-documentbody">{rendered}</p>')
                 paragraph.clear()
 
-        # fn: close_list - Close list
-        # . Purpose
-        #   Close list for the documentation rendering workflow.
-        # . Usage
-        #   self.close_list()
         def close_list() -> None:
             nonlocal list_type
             if list_type:
-                lines.append(f"</{list_type}>")
+                output.append(f"</{list_type}>")
                 list_type = ""
 
-        for raw_line in markdown_text.splitlines():
+        def table_cells(line: str) -> List[str]:
+            value = line.strip()
+            if value.startswith("|"):
+                value = value[1:]
+            if value.endswith("|"):
+                value = value[:-1]
+            return [cell.strip() for cell in value.split("|")]
+
+        def is_table_separator(line: str) -> bool:
+            cells = table_cells(line)
+            return bool(cells) and all(re.fullmatch(r":?-{3,}:?", cell.replace(" ", "")) for cell in cells)
+
+        index = 0
+        while index < len(raw_lines):
+            raw_line = raw_lines[index]
             stripped = raw_line.strip()
 
             if stripped.startswith("```"):
                 flush_paragraph()
                 close_list()
                 if in_code:
-                    lines.append('<pre class="doc-license-text"><code>' + esc("\n".join(code_lines)) + '</code></pre>')
+                    output.append('<pre class="doc-license-text"><code>' + esc("\n".join(code_lines)) + '</code></pre>')
                     code_lines.clear()
                     in_code = False
                 else:
                     in_code = True
+                index += 1
                 continue
 
             if in_code:
                 code_lines.append(raw_line)
+                index += 1
+                continue
+
+            # Repository README files legitimately use raw HTML for richer Git-hosted layouts.
+            # Preserve complete blocks (including text-only lines inside a table/div) and only
+            # rewrite href/src locations for generated output.
+            if raw_html_block_tag:
+                output.append(self.rewrite_document_html(raw_line, product_name))
+                if re.search(rf"</{re.escape(raw_html_block_tag)}\s*>", stripped, flags=re.IGNORECASE):
+                    raw_html_block_tag = ""
+                index += 1
+                continue
+
+            if stripped.startswith("<") and re.match(r"^</?[A-Za-z][^>]*>", stripped):
+                flush_paragraph()
+                close_list()
+                block_match = re.match(r"^<(table|div|details|figure|section|picture|blockquote)\b", stripped, flags=re.IGNORECASE)
+                if block_match and not re.search(rf"</{re.escape(block_match.group(1))}\s*>", stripped, flags=re.IGNORECASE):
+                    raw_html_block_tag = block_match.group(1)
+                output.append(self.rewrite_document_html(raw_line, product_name))
+                index += 1
                 continue
 
             heading = re.match(r"^(#{1,6})\s+(.+)$", stripped)
@@ -3881,7 +4453,40 @@ body {
                 flush_paragraph()
                 close_list()
                 level = min(len(heading.group(1)) + 1, 6)
-                lines.append(f'<h{level} class="ct-L{min(level - 1, 3)}Sectionheader">{esc(heading.group(2))}</h{level}>')
+                heading_text = heading.group(2).strip()
+                heading_id = slugify(re.sub(r"[`*_]", "", heading_text))
+                output.append(
+                    f'<h{level} id="{esc(heading_id)}" class="ct-L{min(level - 1, 3)}Sectionheader">'
+                    f'{self.render_markdown_inline(heading_text, product_name)}</h{level}>'
+                )
+                index += 1
+                continue
+
+            # GitHub-style Markdown table: header row followed by --- separator row.
+            if "|" in stripped and index + 1 < len(raw_lines) and is_table_separator(raw_lines[index + 1]):
+                flush_paragraph()
+                close_list()
+                headers = table_cells(raw_line)
+                index += 2
+                rows: List[List[str]] = []
+                while index < len(raw_lines):
+                    candidate = raw_lines[index]
+                    if not candidate.strip() or "|" not in candidate:
+                        break
+                    rows.append(table_cells(candidate))
+                    index += 1
+                output.append('<table class="doc-data-table">')
+                output.append('<thead><tr>' + ''.join(
+                    f'<th>{self.render_markdown_inline(cell, product_name)}</th>' for cell in headers
+                ) + '</tr></thead>')
+                if rows:
+                    output.append('<tbody>')
+                    for row in rows:
+                        output.append('<tr>' + ''.join(
+                            f'<td>{self.render_markdown_inline(cell, product_name)}</td>' for cell in row
+                        ) + '</tr>')
+                    output.append('</tbody>')
+                output.append('</table>')
                 continue
 
             unordered = re.match(r"^[-*+]\s+(.+)$", stripped)
@@ -3892,42 +4497,60 @@ body {
                 if list_type != wanted:
                     close_list()
                     list_type = wanted
-                    lines.append(f"<{list_type}>")
+                    output.append(f"<{list_type}>")
                 item = (unordered or ordered).group(1)
-                lines.append(f"<li>{esc(item)}</li>")
+                output.append(f"<li>{self.render_markdown_inline(item, product_name)}</li>")
+                index += 1
+                continue
+
+            if re.fullmatch(r"(?:-{3,}|\*{3,}|_{3,})", stripped):
+                flush_paragraph()
+                close_list()
+                output.append("<hr>")
+                index += 1
+                continue
+
+            if stripped.startswith(">"):
+                flush_paragraph()
+                close_list()
+                quote = stripped[1:].strip()
+                output.append(f'<blockquote><p class="ct-documentbody">{self.render_markdown_inline(quote, product_name)}</p></blockquote>')
+                index += 1
                 continue
 
             if not stripped:
                 flush_paragraph()
                 close_list()
+                index += 1
                 continue
 
             paragraph.append(stripped)
+            index += 1
 
         flush_paragraph()
         close_list()
         if in_code:
-            lines.append('<pre class="doc-license-text"><code>' + esc("\n".join(code_lines)) + '</code></pre>')
+            output.append('<pre class="doc-license-text"><code>' + esc("\n".join(code_lines)) + '</code></pre>')
 
-        return "\n".join(lines)
+        return "\n".join(output)
 
-    # fn: render_project_document_page - Render project document page
+    # fn: render_project_document_page - Render project-document appendix page
     # . Purpose
-    #   Render project document page for the documentation rendering workflow.
+    #   Render a Markdown document from the owning repository as a dynamically numbered appendix.
     #
     # . Arguments
-    #   product_name  Value consumed by this function; see the typed Python signature for its contract.
-    #   ref  Value consumed by this function; see the typed Python signature for its contract.
-    #   letter  Value consumed by this function; see the typed Python signature for its contract.
-    #   title  Value consumed by this function; see the typed Python signature for its contract.
-    #   candidates  Value consumed by this function; see the typed Python signature for its contract.
+    #   product_name  Product that owns the source document.
+    #   ref           Generated content reference for the appendix page.
+    #   appendix_key  Appendix key used to resolve the product-specific numeric position.
+    #   title         Reader-facing appendix title.
+    #   candidates    Candidate source filenames in preference order.
     # . Usage
-    #   self.render_project_document_page(<product_name>, <ref>, <letter>, <title>, <candidates>)
+    #   self.render_project_document_page(<product_name>, <ref>, <appendix_key>, <title>, <candidates>)
     def render_project_document_page(
         self,
         product_name: str,
         ref: str,
-        letter: str,
+        appendix_key: str,
         title: str,
         candidates: Sequence[str],
     ) -> None:
@@ -3936,13 +4559,13 @@ body {
         output_file.parent.mkdir(parents=True, exist_ok=True)
 
         source_name, markdown_text = self.read_optional_project_document(candidates, product_name)
-        body = self.render_markdown_document(markdown_text)
+        body = self.render_markdown_document(markdown_text, product_name)
         if not body:
             body = (
                 f'<div class="ct-documentbody">No {esc(source_name)} document was found in the renderer input directory.</div>'
             )
 
-        label = f"Appendix {letter}: {title}"
+        label = self.appendix_label(product_name, appendix_key, title)
         html_lines = [
             "<!doctype html>",
             "<html>",
@@ -3966,26 +4589,90 @@ body {
         ]
         output_file.write_text("\n".join(html_lines), encoding="utf-8")
 
-    # fn: render_canonical_page - Render canonical page
+    # fn: render_readme_page - Render repository README appendix
     # . Purpose
-    #   Render canonical page for the documentation rendering workflow.
+    #   Render the owning product's README.md as the first generated appendix.
     #
     # . Arguments
-    #   product_name  Value consumed by this function; see the typed Python signature for its contract.
+    #   product_name  Product whose repository README should be rendered.
     # . Usage
-    #   self.render_canonical_page(<product_name>)
-    def render_canonical_page(self, product_name: str) -> None:
+    #   self.render_readme_page(<product_name>)
+    def render_readme_page(self, product_name: str) -> None:
         self.render_project_document_page(
             product_name,
-            canonical_ref(product_name),
-            "0",
-            "Unimatrix 01",
-            (
-                "SolidGroundUX-Canonical.md",
-                "SolidGroundUX-Cannonical.md",
-                "solidgroundux-canonical.md",
-            ),
+            readme_ref(product_name),
+            "readme",
+            "README",
+            ("README.md", "Readme.md", "readme.md"),
         )
+
+    # fn: render_constitution_page - Render optional product Constitution
+    # . Purpose
+    #   Render the product-prefixed Constitution from shared doc-sources (for example,
+    #   sux_constitution.md) immediately beneath the product landing page. Constitution is
+    #   deliberately outside the appendix sequence. Historical root filenames remain fallbacks.
+    #
+    # . Arguments
+    #   product_name  Product whose Constitution document should be rendered.
+    # . Usage
+    #   self.render_constitution_page(<product_name>)
+    def render_constitution_page(self, product_name: str) -> None:
+        ref = constitution_ref(product_name)
+        href = page_href_from_contentref(ref)
+        output_file = self.output_dir / href
+        output_file.parent.mkdir(parents=True, exist_ok=True)
+
+        prefix = self.product_doc_prefix(product_name)
+        source_name = f"{prefix}_constitution.md" if prefix else "constitution.md"
+        markdown_text = ""
+        if prefix:
+            source_name, markdown_text = self.read_optional_document(
+                (f"{prefix}_constitution.md",),
+                self.product_document_source_dirs(product_name),
+            )
+
+        if not markdown_text:
+            source_name, markdown_text = self.read_optional_project_document(
+                (
+                    "CONSTITUTION.md",
+                    "Constitution.md",
+                    "constitution.md",
+                    "SolidGroundUX-Canonical.md",
+                    "SolidGroundUX-Cannonical.md",
+                    "solidgroundux-canonical.md",
+                ),
+                product_name,
+            )
+
+        body = self.render_markdown_document(markdown_text, product_name)
+        if not body:
+            body = (
+                f'<div class="ct-documentbody">No {esc(source_name)} Constitution document was found.</div>'
+            )
+
+        title = f"{product_name} Constitution"
+        html_lines = [
+            "<!doctype html>",
+            "<html>",
+            "<head>",
+            '  <meta charset="utf-8">',
+            f"  <title>{esc(title)}</title>",
+            '  <link rel="stylesheet" href="../assets/doc.css">',
+            '  <link rel="stylesheet" href="../assets/theme.css">',
+            "</head>",
+            "<body>",
+            '<main class="doc-page">',
+            self.render_page_branding(),
+            '<header class="doc-page-header">',
+            f'  <div class="doc-title">{esc(title)}</div>',
+            f'  <div class="doc-breadcrumb">{esc(product_name)} / Constitution</div>',
+            "</header>",
+            body,
+            "</main>",
+            "</body>",
+            "</html>",
+        ]
+        output_file.write_text("\n".join(html_lines), encoding="utf-8")
 
     # fn: render_changelog_page - Render changelog page
     # . Purpose
@@ -3999,27 +4686,51 @@ body {
         self.render_project_document_page(
             product_name,
             changelog_ref(product_name),
-            "Y",
+            "changelog",
             "Change Log",
             ("CHANGELOG.md", "Changelog.md", "changelog.md"),
         )
 
-    # fn: render_install_page - Render install page
+    # fn: render_suite_install_page - Render suite installation/lifecycle page
     # . Purpose
-    #   Render install page for the documentation rendering workflow.
-    #
-    # . Arguments
-    #   product_name  Value consumed by this function; see the typed Python signature for its contract.
+    #   Render sgnd_install.md once at suite level rather than repeating installation
+    #   documentation as a product appendix.
     # . Usage
-    #   self.render_install_page(<product_name>)
-    def render_install_page(self, product_name: str) -> None:
-        self.render_project_document_page(
-            product_name,
-            install_ref(product_name),
-            "Z",
-            "First Installation",
-            ("INSTALL.md", "Install.md", "install.md"),
-        )
+    #   self.render_suite_install_page()
+    def render_suite_install_page(self) -> None:
+        ref = suite_install_ref()
+        href = page_href_from_contentref(ref)
+        output_file = self.output_dir / href
+        output_file.parent.mkdir(parents=True, exist_ok=True)
+
+        source_name, markdown_text = self.read_suite_document(("sgnd_install.md", "SGND_INSTALL.md"))
+        body = self.render_markdown_document(markdown_text)
+        if not body:
+            body = f'<div class="ct-documentbody">No {esc(source_name)} document was found.</div>'
+
+        title = "Installing SolidGroundUX"
+        html_lines = [
+            "<!doctype html>",
+            "<html>",
+            "<head>",
+            '  <meta charset="utf-8">',
+            f"  <title>{esc(title)}</title>",
+            '  <link rel="stylesheet" href="../assets/doc.css">',
+            '  <link rel="stylesheet" href="../assets/theme.css">',
+            "</head>",
+            "<body>",
+            '<main class="doc-page">',
+            self.render_page_branding(),
+            '<header class="doc-page-header">',
+            f'  <div class="doc-title">{esc(title)}</div>',
+            '  <div class="doc-breadcrumb">SolidGroundUX Documentation / Installation</div>',
+            "</header>",
+            body,
+            "</main>",
+            "</body>",
+            "</html>",
+        ]
+        output_file.write_text("\n".join(html_lines), encoding="utf-8")
 
     # fn: render_content_page - Render content page
     # . Purpose
@@ -4041,7 +4752,13 @@ body {
         
         breadcrumb = self.breadcrumb_from_contentref(node.contentref)
 
-        if self.is_module_level_special_page(node):
+        if self.is_parent_preface_page(node):
+            body_parts = [
+                self.render_module_content(module.get("name", ""), skip_first_header=True)
+                for module in self.parent_prefaces.get(node.nodeid, [])
+            ]
+            body = "\n".join(part for part in body_parts if part)
+        elif self.is_module_level_special_page(node):
             module_name = node.contentref.split(":", 1)[0]
             body = self.render_module_content(module_name, skip_first_header=True)
         else:
@@ -4153,6 +4870,18 @@ body {
         ]
 
         return " / ".join(part for part in breadcrumb_parts if part)
+
+    # fn: is_parent_preface_page - Determine whether a parent node owns preface content
+    # . Purpose
+    #   Identify product, group, and subgroup nodes whose page body is supplied by one
+    #   or more preface modules registered during hierarchy construction.
+    #
+    # . Arguments
+    #   node  Navigation node to inspect.
+    # . Usage
+    #   self.is_parent_preface_page(<node>)
+    def is_parent_preface_page(self, node: NavNode) -> bool:
+        return bool(self.parent_prefaces.get(node.nodeid))
 
     # fn: is_module_level_special_page - Determine whether module level special page
     # . Purpose

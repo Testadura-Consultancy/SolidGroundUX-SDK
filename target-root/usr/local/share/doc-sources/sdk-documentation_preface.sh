@@ -3,8 +3,8 @@
 # ----------------------------------------------------------------------------------
 # Metadata:
 #   Version     : 2.1
-#   Build       : 2627501
-#   Checksum    : 8ddc3f1ac3eb56036507a5a960d3767cc141871d2e9b51bfde59e8582f203d27
+#   Build       : 2627700
+#   Checksum    : a2fd443bfa308d802e9a389e882d4e6f052f3c5d865af1f591b70faf11194f1e
 #   Source      : sdk-documentation_preface.sh
 #   Type        : documentation
 #   Group       : SDK
@@ -303,23 +303,31 @@
 # -- Prefaces and Epilogues ---------------------------------------------------------
 #
 # > Documentation-only sources can provide introductory or closing content for a
-# > product, group, or subgroup. The renderer recognizes these sources as prefaces or
-# > epilogues and places them in the generated index around the normal content at the
-# > corresponding hierarchy level.
+# > product, group, or subgroup. Prefaces and epilogues intentionally behave
+# > differently in the generated hierarchy.
+#
+# > A preface supplies the content of the hierarchy node itself. Selecting the product,
+# > group, or subgroup therefore opens its introductory page directly instead of first
+# > navigating to a separate child named "Preface". This makes authored introduction
+# > material act as the landing page for the section it explains.
+#
+# > An epilogue remains a trailing child page beneath the corresponding hierarchy node.
+# > It is emitted after the normal children and is appropriate for closing notes,
+# > consolidated reference material, migration guidance, or other content that genuinely
+# > belongs at the end of a section.
 #
 # > The role is primarily selected by the Metadata Purpose value:
 #
-# >     Product preface    <> First documentation entry beneath the product
-# >     Product epilogue   <> Final documentation entry beneath the product
-# >     Group preface      <> First documentation entry beneath the named Group
-# >     Group epilogue     <> Final documentation entry beneath the named Group
-# >     Subgroup preface   <> First documentation entry beneath the named Subgroup
-# >     Subgroup epilogue  <> Final documentation entry beneath the named Subgroup
+# >     Product preface    <> Product-node content
+# >     Product epilogue   <> Final child beneath the product
+# >     Group preface      <> Group-node content
+# >     Group epilogue     <> Final child beneath the named Group
+# >     Subgroup preface   <> Subgroup-node content
+# >     Subgroup epilogue  <> Final child beneath the named Subgroup
 #
-# > Group and Subgroup metadata determine where group- and subgroup-level sources are
-# > placed. Product-level sources belong directly to their product. A preface is emitted
-# > before the normal modules at that level; an epilogue is emitted after them. These
-# > files therefore affect both page order and the generated navigation index.
+# > Group and Subgroup metadata determine where group- and subgroup-level sources
+# > belong. Product-level sources belong directly to their product. Prefaces therefore
+# > affect the parent node's content reference; epilogues affect child ordering.
 #
 # > Filename recognition is also supported as a compatibility fallback. The renderer
 # > recognizes conventional names based on the product, group, or subgroup name followed
@@ -330,6 +338,11 @@
 # > relying on filename inference. This keeps placement independent of the physical
 # > doc-sources filename and leaves Group and Subgroup metadata as the authoritative
 # > description of where the content belongs.
+#
+# > Add prefaces and epilogues only when they improve the reader's path. A preface is
+# > useful when a section needs context, boundaries, a mental model, or a short guide to
+# > its children. An epilogue is useful when material is more valuable after those
+# > children have been read. Neither should be added merely to increase page count.
 #
 # > Example group preface metadata:
 #
