@@ -4,6 +4,8 @@ All notable changes to SolidGroundUX SDK are documented in this file.
 
 ## Unreleased
 
+## Release 2.1.2627700
+
 ### Changed
 - Reworked release preparation around a single product-package model: every selected product is now emitted as its own product release ZIP; multi-product bundled releases are no longer produced.
 - Removed the redundant primary-product selection from multi-product release preparation; selected products remain peers and are prepared in the operator-selected order.
