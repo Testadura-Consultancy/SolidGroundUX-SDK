@@ -1,11 +1,12 @@
 <table>
 <tr>
-<td width="170" align="center" valign="middle">
-  <img width="96" height="96" alt="SolidGroundUX SDK logo" src="target-root/usr/local/share/doc-sources/assets/sdk-readmelogo.png" />
+<td width="290" align="center" valign="middle">
+  <img width="256" alt="SolidGroundUX SDK logo"
+       src="target-root/usr/local/share/doc-sources/assets/sdk-readmelogo.png" />
 </td>
 <td valign="middle">
-  <big><big><big><strong>SolidGroundUX SDK</strong></big></big></big><br>
-  <sub>Version 2.1.2626414 · © 2026 Testadura</sub>
+  <h2>SolidGroundUX SDK</h2>
+  <h4>Version 2.1.2626414 · © 2026 Testadura</h4>
 </td>
 </tr>
 </table>
