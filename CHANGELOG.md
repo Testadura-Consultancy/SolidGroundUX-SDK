@@ -4,35 +4,44 @@ All notable changes to SolidGroundUX SDK are documented in this file.
 
 ## Unreleased
 
-## Release 2.1.2627700
+## Release 2.1.2627801
 
 ### Changed
+
 - Reworked release preparation around a single product-package model: every selected product is now emitted as its own product release ZIP; multi-product bundled releases are no longer produced.
 - Removed the redundant primary-product selection from multi-product release preparation; selected products remain peers and are prepared in the operator-selected order.
-- First-install packages now replace the former bundled-release role. Their Version follows `sgnd-setup.sh`, while their Build is the highest numeric build among `sgnd-setup.sh` and every product release ZIP included in the package.
+- First-install packages now replace the former bundled-release role and use the independent Version/Build identity of `sgnd-setup.sh` rather than borrowing a selected product's release identity.
 - Product `tar.gz` payloads and their checksum sidecars are now treated as ZIP-internal staging artifacts and are removed after successful product packaging/export instead of being retained as standalone release outputs.
 - Added a separate first-install transport ZIP containing `sgnd-setup.sh` plus the selected product release ZIPs, keeping bootstrap transport distinct from installable product packages.
 - Updated release package metadata to format 3 with `SGND_PACKAGE_TYPE=product`.
 - Added a configurable release output-directory prompt to `prepare-release`, persisted as state for reuse on subsequent runs.
 - Release preparation now reports the final destination path of the generated release artifacts explicitly.
-- Updated the deployment/release-lifecycle documentation model to describe independent product release ZIPs, the first-install bootstrap package, and `sgnd-setup` as the canonical installed-product lifecycle tool.
+- Changed documentation generation modes so **Full**, **Selected**, and **Changed** control source parsing only; after parsing, the renderer always rebuilds the complete generated site.
+- Moved persistent documentation parser and renderer caches out of the generated website tree to `usr/local/share/doc-sources/.cache/<site-slug>/parser` and `usr/local/share/doc-sources/.cache/<site-slug>/renderer` beneath the active framework root.
+- Changed local documentation publication to render into a fresh `<site>.new` staging tree and replace the previous generated site only after a successful complete render.
+- Changed Git documentation publication to stage a complete fresh copy and replace the previous published tree only after staging succeeds, with restoration of the previous tree if final replacement fails.
+- Clarified the documentation-generator UI that generation mode applies to source parsing, renamed the remaining behavior group to **Parser options**, and removed the redundant always-on “Fresh full site render” status line.
+- Corrected SDK convenience-template metadata so the SDK documentation, executable and library templates are grouped under **SDK -> Templates** rather than the former Deployment grouping.
 
 ### Fixed
+
 - Fixed non-interactive `receive-files.sh` execution hanging during workspace deployment by suppressing title rendering for the receiver path, avoiding terminal/titlebar probing when no controlling TTY is available.
 - Restored normal `deploy-workspace` completion after the receiver/confirmation handling regression; development-to-production streaming again returns cleanly after transfer.
 - Fixed release output cleanup so intermediate `tar.gz`, manifest, removal-manifest, and checksum artifacts remain staging-only and are removed after successful packaging; the release output directory now contains only the final product release ZIPs and first-install ZIP.
 - Fixed release preparation cleanup so packaging metadata and checksum sidecars are retained inside their owning product ZIPs without leaking duplicate loose artifacts into the final release directory.
-- Fixed first-install package naming so the outer package can never carry a lower build number than a product ZIP it contains; malformed/non-numeric contained build metadata now stops package creation instead of producing an ambiguous release identity.
-
+- Fixed incremental documentation runs leaving stale generated pages behind after source pages were renamed or removed by making every render a fresh complete-site rebuild.
+- Fixed parser/renderer cache data being coupled to the generated website output tree; cache state is now kept separately from publishable documentation content.
 
 ## Release 2.1.2626712
 
 ### Changed
+
 - `prepare-release` now synchronizes existing literal `SGND_*_MODULE_VERSION` and `SGND_*_MODULE_BUILD` assignments when the corresponding canonical header Version or Build is updated, without creating metadata variables that are not already present.
 - Remote multi-product deployment now establishes one shared SSH connection for the deployment session and prepares remote receiver sudo access once before streaming products, limiting interactive authentication to at most one SSH password and one remote sudo password regardless of the number of selected products.
 - Standardized public executable wrappers on the current canonical wrapper template, including framework-root discovery and target resolution instead of fixed installed or development paths.
 
 ### Fixed
+
 - Removed a stale development-machine path from the Release Manager public wrapper by resolving the installed Release Manager through the canonical wrapper target mechanism.
 
 ## Release 2.1.2626612
@@ -49,6 +58,7 @@ All notable changes to SolidGroundUX SDK are documented in this file.
 - Added generated project README, changelog, license placeholder, default SolidGroundUX icon and Git placeholders for otherwise-empty canonical workspace directories.
 
 ### Changed
+
 - Made `deploy-workspace` product-aware: product repositories can now be discovered beneath a product root and deployed individually or together.
 - Added product selection, including an `All products` option, while retaining explicit single-source deployment compatibility.
 - Deployment filtering and reporting now operate per selected product.
@@ -67,4 +77,3 @@ All notable changes to SolidGroundUX SDK are documented in this file.
 - Fixed `prepare-release` product identity updates for canonically indented `*_VERSION` and `*_BUILD` assignments and improved failure reporting for identity/header/checksum update failures.
 - Fixed release baseline discovery so the Framework product-name prefix does not absorb similarly named companion products such as Management Console Modules.
 - Fixed documentation output behavior so duplicate modules and assets are reported without silently replacing previously collected product content.
-

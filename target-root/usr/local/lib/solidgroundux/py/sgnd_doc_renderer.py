@@ -846,7 +846,14 @@ class DocRenderer:
                     )
                 )
 
-            groups = sorted({module.get("group", "") or "Ungrouped" for module in normal_modules}, key=str.casefold)
+            # A valid group preface/epilogue is sufficient to establish the group.
+            # Special comment modules have already been removed from normal_modules, so
+            # deriving groups only from normal modules would orphan preface-only groups.
+            groups = sorted(
+                {module.get("group", "") or "Ungrouped" for module in normal_modules}
+                | set(group_specials.keys()),
+                key=str.casefold,
+            )
 
             for group_name in groups:
                 sequence_index += 1

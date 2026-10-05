@@ -3,8 +3,8 @@
 # ----------------------------------------------------------------------------------
 # Metadata:
 #   Version     : 2.1
-#   Build       : 2627501
-#   Checksum    : eea836588eeb28a5146abe4d95414b273cdcc8b5a1b03644dbb589dd70907372
+#   Build       : 2627808
+#   Checksum    : 54fe2bfc039b9e6e241f891504e7130bf285c2a52cdc86a66832eb8386815570
 #   Source      : doc-renderer.sh
 #   Type        : library
 #   Group       : SDK
@@ -88,14 +88,25 @@ set -uo pipefail
         sgnd_module_init_metadata "${BASH_SOURCE[0]}"
     fi
 # - Local definitions -------------------------------------------------------------
+    # var: DOC_PARSER_CACHE_DIR - Persistent parser dataset cache directory
+        # . Purpose
+        #   Hold the normalized parser tables used by Full-update, Selected, and Changed modes.
+        #
+        # . Behavior
+        #   - Defaults to usr/local/share/doc-sources/.cache/<site-slug>/parser.
+        #   - Lives outside the rendered website so the output tree is fully disposable.
+        #   - May be overridden by callers before rendering.
+        DOC_PARSER_CACHE_DIR=""
+
     # var: DOC_RENDER_CACHE_DIR - Persistent renderer input cache directory
         # . Purpose
         #   Hold the complete exported renderer input set for fast HTML-only rebuilds.
         #
         # . Behavior
-        #   - Defaults to a hidden directory beneath VAL_OUTDIR.
+        #   - Defaults to usr/local/share/doc-sources/.cache/<site-slug>/renderer.
         #   - Is refreshed after Full, Selected, and Changed generation.
         #   - Is consumed directly by Render mode without reparsing source files.
+        #   - Lives outside the rendered website so every render can replace the full site.
         #   - May be overridden by callers before rendering.
         DOC_RENDER_CACHE_DIR=""
 
@@ -174,89 +185,187 @@ set -uo pipefail
             DOC_RENDER_DATE="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
         }
 
-        # fn: _prepare_output_directory - Create and optionally clean the documentation output directory
+        # fn: _doc_cache_site_slug - Resolve the site-specific cache key
             # . Purpose
-            #   Ensure the configured output directory exists and is ready for rendering.
+            #   Convert VAL_SITE_NAME into the same filesystem-safe slug used for generated sites.
             #
-            # . Behavior
-            #   - Creates VAL_OUTDIR when it does not exist.
-            #   - Cleans existing output when FLAG_CLEAN_OUTPUT is enabled.
-            #   - Preserves an existing assets/theme.css file across clean output runs.
-            #
-            # . Inputs (globals):
-            #   VAL_OUTDIR, FLAG_CLEAN_OUTPUT
-            #
-            # . Outputs
-            #   Creates or modifies files under VAL_OUTDIR.
-            #
-            # . Returns
-            #   0 when the directory is ready.
-            #   1 when creation, cleanup, or theme preservation fails.
+            # . Output
+            #   Writes the normalized site slug to stdout.
             #
             # . Usage
-            #   _prepare_output_directory
-        _prepare_output_directory() {
-            if [[ -d "$VAL_OUTDIR" ]]; then
-                sayinfo "Output directory already exists: $VAL_OUTDIR"
-            else
-                mkdir -p "$VAL_OUTDIR" && sayinfo "Created output directory: $VAL_OUTDIR" || {
-                    sayfail "Failed to create output directory: $VAL_OUTDIR"
+            #   _doc_cache_site_slug
+        _doc_cache_site_slug() {
+            local value="${VAL_SITE_NAME:-Documentation}"
+            value="${value// /-}"
+            value="$(printf '%s' "$value" | tr '[:upper:]' '[:lower:]' | tr -cd '[:alnum:]_.-')"
+            printf '%s\n' "${value:-documentation}"
+        }
+
+        # fn: _doc_cache_root_dir - Resolve the external cache root for the current site
+            # . Purpose
+            #   Keep parser and renderer working state beneath canonical doc-sources,
+            #   separate from the disposable generated website tree.
+            #
+            # . Output
+            #   Writes usr/local/share/doc-sources/.cache/<site-slug> beneath the active framework root.
+            #
+            # . Usage
+            #   _doc_cache_root_dir
+        _doc_cache_root_dir() {
+            local framework_root="${SGND_FRAMEWORK_ROOT:-/}"
+            local site_slug=""
+            site_slug="$(_doc_cache_site_slug)"
+            printf '%s/usr/local/share/doc-sources/.cache/%s\n' "${framework_root%/}" "$site_slug"
+        }
+
+        # fn: _doc_parser_cache_dir - Resolve the persistent parser cache directory
+            # . Output
+            #   Writes the resolved parser cache path to stdout.
+            # . Usage
+            #   _doc_parser_cache_dir
+        _doc_parser_cache_dir() {
+            printf '%s\n' "${DOC_PARSER_CACHE_DIR:-$(_doc_cache_root_dir)/parser}"
+        }
+
+        # fn: _prepare_render_staging_directory - Prepare a fresh renderer output staging tree
+            # . Purpose
+            #   Guarantee that each HTML render starts from an empty directory without touching
+            #   the currently published local site until rendering has succeeded.
+            #
+            # . Arguments
+            #   $1  Final output directory.
+            #
+            # . Output
+            #   Creates <output>.new as an empty staging directory.
+            #
+            # . Returns
+            #   0 when the staging directory is ready; 1 on invalid/unsafe paths or filesystem failure.
+            #
+            # . Usage
+            #   _prepare_render_staging_directory "$VAL_OUTDIR"
+        _prepare_render_staging_directory() {
+            local output_folder="${1:-}"
+            local staging_dir=""
+            local parent_dir=""
+
+            [[ -n "$output_folder" && "$output_folder" != "/" ]] || {
+                sayfail "Refusing unsafe documentation output directory: $output_folder"
+                return 1
+            }
+
+            staging_dir="${output_folder%/}.new"
+            parent_dir="$(dirname -- "$output_folder")"
+
+            mkdir -p "$parent_dir" || {
+                sayfail "Failed to create documentation output parent directory: $parent_dir"
+                return 1
+            }
+
+            rm -rf -- "$staging_dir" || {
+                sayfail "Failed to clear stale documentation staging directory: $staging_dir"
+                return 1
+            }
+            mkdir -p "$staging_dir" || {
+                sayfail "Failed to create documentation staging directory: $staging_dir"
+                return 1
+            }
+
+            return 0
+        }
+
+        # fn: _publish_rendered_site - Replace the local site with a completed staged render
+            # . Purpose
+            #   Publish a complete new site only after rendering has succeeded.
+            #
+            # . Behavior
+            #   - Moves the previous site aside temporarily when it exists.
+            #   - Promotes <output>.new to the final output path.
+            #   - Restores the previous site when final promotion fails.
+            #   - Removes the temporary backup after successful replacement.
+            #
+            # . Arguments
+            #   $1  Final output directory.
+            #
+            # . Returns
+            #   0 when replacement succeeds; 1 when promotion or restoration fails.
+            #
+            # . Usage
+            #   _publish_rendered_site "$VAL_OUTDIR"
+        _publish_rendered_site() {
+            local output_folder="${1:-}"
+            local staging_dir="${output_folder%/}.new"
+            local backup_dir="${output_folder%/}.old"
+
+            [[ -n "$output_folder" && "$output_folder" != "/" && -d "$staging_dir" ]] || {
+                sayfail "Cannot publish documentation from staging directory: $staging_dir"
+                return 1
+            }
+
+            rm -rf -- "$backup_dir" || return 1
+
+            if [[ -e "$output_folder" ]]; then
+                mv -- "$output_folder" "$backup_dir" || {
+                    sayfail "Failed to stage previous documentation site for replacement: $output_folder"
                     return 1
                 }
             fi
 
-           if (( FLAG_CLEAN_OUTPUT == 1 )); then
-                sayinfo "Cleaning output directory: $VAL_OUTDIR"
-
-                local preserved_theme=""
-                local preserved_images=""
-
-                if [[ -f "$VAL_OUTDIR/assets/theme.css" ]]; then
-                    preserved_theme="$(mktemp /tmp/sgnd-doc-theme.XXXXXX.css)" || return 1
-                    cp "$VAL_OUTDIR/assets/theme.css" "$preserved_theme" || return 1
+            if ! mv -- "$staging_dir" "$output_folder"; then
+                if [[ -e "$backup_dir" ]]; then
+                    mv -- "$backup_dir" "$output_folder" || {
+                        sayfail "Failed to restore previous documentation site after replacement failure"
+                        return 1
+                    }
                 fi
-
-                if [[ -d "$VAL_OUTDIR/assets/images" ]]; then
-                    preserved_images="$(mktemp -d /tmp/sgnd-doc-images.XXXXXX)" || return 1
-                    cp -a "$VAL_OUTDIR/assets/images/." "$preserved_images/" || return 1
-                fi
-
-                rm -rf "${VAL_OUTDIR:?}/"* && sayinfo "Cleaned output directory: $VAL_OUTDIR" || {
-                    sayfail "Failed to clean output directory: $VAL_OUTDIR"
-                    return 1
-                }
-
-                if [[ -n "$preserved_theme" && -f "$preserved_theme" ]]; then
-                    mkdir -p "$VAL_OUTDIR/assets" || return 1
-                    cp "$preserved_theme" "$VAL_OUTDIR/assets/theme.css" || return 1
-                    rm -f "$preserved_theme"
-                    sayinfo "Preserved existing theme.css"
-                fi
-
-                if [[ -n "$preserved_images" && -d "$preserved_images" ]]; then
-                    mkdir -p "$VAL_OUTDIR/assets/images" || return 1
-                    cp -a "$preserved_images/." "$VAL_OUTDIR/assets/images/" || return 1
-                    rm -rf "$preserved_images"
-                    sayinfo "Preserved documentation images"
-                fi
+                sayfail "Failed to publish newly rendered documentation site: $output_folder"
+                return 1
             fi
 
-            local image_source_dir="${VAL_SRCDIR}/usr/local/lib/solidgroundux/assets"
-            local image_target_dir="${VAL_OUTDIR}/assets/images"
-            
-            if [[ -d "$image_source_dir" ]]; then
-                mkdir -p "$image_target_dir" || {
-                    sayfail "Failed to create documentation image directory: $image_target_dir"
+            rm -rf -- "$backup_dir"
+            sayinfo "Documentation site replaced with fresh render: $output_folder"
+            return 0
+        }
+
+        # fn: _render_python_site - Render a complete site into staging and publish it
+            # . Purpose
+            #   Give the Python renderer a fresh output tree for every render operation.
+            #
+            # . Arguments
+            #   $1  Complete renderer input directory.
+            #   $2  Final output directory.
+            #
+            # . Returns
+            #   0 when the staged render is complete and published; 1 otherwise.
+            #
+            # . Usage
+            #   _render_python_site "<input_dir>" "$VAL_OUTDIR"
+        _render_python_site() {
+            local input_dir="${1:?missing renderer input directory}"
+            local output_folder="${2:?missing output directory}"
+            local staging_dir="${output_folder%/}.new"
+
+            _prepare_render_staging_directory "$output_folder" || return 1
+
+            sayinfo "Python renderer input : $input_dir"
+            sayinfo "Python renderer output: $staging_dir"
+            sayinfo "Python renderer script: $SGND_PYTHON_DIR/sgnd_doc_renderer.py"
+
+            python3 "$SGND_PYTHON_DIR/sgnd_doc_renderer.py" \
+                "$input_dir" \
+                "$staging_dir" || {
+                    rm -rf -- "$staging_dir"
+                    sayfail "Python documentation renderer failed"
                     return 1
                 }
 
-                cp -a "$image_source_dir/." "$image_target_dir/" || {
-                    sayfail "Failed to copy documentation images from: $image_source_dir"
-                    return 1
-                }
+            [[ -f "$staging_dir/index.html" ]] || {
+                rm -rf -- "$staging_dir"
+                sayfail "Python renderer completed, but index.html was not created in: $staging_dir"
+                return 1
+            }
 
-                sayinfo "Copied documentation images from: $image_source_dir"
-            fi
+            _publish_rendered_site "$output_folder" || return 1
+            return 0
         }
 
         # fn: _export_render_config - Export renderer configuration to a PSV file
@@ -265,8 +374,8 @@ set -uo pipefail
             #
             # . Behavior
             #   - Writes a key|value header.
-            #   - Exports title, subtitle, version, product, clean-output behavior, and navigation width.
-            #   - Forces FLAG_CLEAN_OUTPUT to 0 for the Python renderer hand-off to avoid recursive cleanup.
+            #   - Exports title, subtitle, version, product, and navigation width.
+            #   - Disables Python-side cleanup because the shell always supplies a fresh staging directory.
             #
             # . Arguments
             #   $1  Target render_config.psv file.
@@ -476,37 +585,44 @@ set -uo pipefail
 
         # fn: _doc_render_cache_dir - Resolve the persistent renderer cache directory
             # . Purpose
-            #   Return the active renderer cache directory for the current output tree.
+            #   Return the site-scoped renderer cache below canonical doc-sources.
             #
             # . Output
             #   Writes the resolved path to stdout.
             # . Usage
             #   _doc_render_cache_dir
         _doc_render_cache_dir() {
-            printf '%s\n' "${DOC_RENDER_CACHE_DIR:-$VAL_OUTDIR/.sgnd-render-cache}"
+            printf '%s\n' "${DOC_RENDER_CACHE_DIR:-$(_doc_cache_root_dir)/renderer}"
         }
 
-        # fn: _clear_render_cache - Remove cached renderer input data
+        # fn: _persist_parser_cache - Persist the normalized parser table set
             # . Purpose
-            #   Delete the persistent renderer cache when explicitly requested.
+            #   Replace the site-specific parser cache atomically outside the generated website.
+            #
+            # . Arguments
+            #   $1  Source export directory.
             #
             # . Returns
-            #   0 when the cache is absent or removed successfully.
+            #   0 when the parser cache is replaced successfully; 1 otherwise.
             # . Usage
-            #   _clear_render_cache
-        _clear_render_cache() {
+            #   _persist_parser_cache "<source_dir>"
+        _persist_parser_cache() {
+            local source_dir="${1:?missing source render directory}"
             local cache_dir=""
-            cache_dir="$(_doc_render_cache_dir)"
+            local staging_dir=""
 
-            [[ -n "$cache_dir" ]] || return 1
-            [[ -d "$cache_dir" ]] || return 0
+            cache_dir="$(_doc_parser_cache_dir)"
+            staging_dir="${cache_dir}.new"
 
-            rm -rf -- "$cache_dir" || {
-                sayfail "Failed to clear renderer cache: $cache_dir"
-                return 1
-            }
+            mkdir -p "$(dirname -- "$cache_dir")" || return 1
+            rm -rf -- "$staging_dir" || return 1
+            mkdir -p "$staging_dir" || return 1
+            cp -f "$source_dir"/*.psv "$staging_dir/" || return 1
 
-            sayinfo "Cleared renderer cache: $cache_dir"
+            rm -rf -- "$cache_dir" || return 1
+            mv -- "$staging_dir" "$cache_dir" || return 1
+
+            sayinfo "Parser cache updated: $cache_dir"
             return 0
         }
 
@@ -529,12 +645,13 @@ set -uo pipefail
             cache_dir="$(_doc_render_cache_dir)"
             staging_dir="${cache_dir}.new"
 
+            mkdir -p "$(dirname -- "$cache_dir")" || return 1
             rm -rf -- "$staging_dir" || return 1
             mkdir -p "$staging_dir" || return 1
             cp -a "$source_dir/." "$staging_dir/" || return 1
 
             rm -rf -- "$cache_dir" || return 1
-            mv "$staging_dir" "$cache_dir" || return 1
+            mv -- "$staging_dir" "$cache_dir" || return 1
 
             sayinfo "Renderer cache updated: $cache_dir"
             return 0
@@ -609,38 +726,33 @@ set -uo pipefail
 # - Main sequence ----------------------------------------------------------
     # fn: _render_site - Render collected documentation data
         # . Purpose
-        #   Provide the renderer hand-off point for collected documentation tables.
+        #   Export the complete normalized dataset, refresh persistent caches, and publish
+        #   a fresh full HTML site regardless of parser update strategy.
         #
         # . Behavior
         #   - Validates the output folder argument.
-        #   - Prepares and optionally cleans the output directory.
         #   - Initializes document-level metadata.
         #   - Exports parser tables and renderer configuration to a temporary hand-off directory.
-        #   - Persists the complete hand-off set for future Render-mode runs.
-        #   - Invokes the Python HTML renderer.
-        #   - Verifies that index.html was created.
+        #   - Replaces the external parser and renderer caches for the current site.
+        #   - Renders into a fresh staging directory and replaces the previous local site only on success.
+        #   - Does not vary render completeness for Full, Selected, or Changed parser modes.
         #
         # . Arguments
         #   $1  Output folder for generated documentation.
         #
         # . Returns
-        #   0 when rendering completes and index.html exists.
-        #   1 when validation, preparation, export, rendering, or output verification fails.
+        #   0 when rendering completes and the fresh site is published.
+        #   1 when validation, export, cache persistence, rendering, or publication fails.
         #
         # . Usage
         #   _render_site "example"
     _render_site(){
         local output_folder="${1:-}"
-        [[ -z "$output_folder" ]] && {
-            sayfail "No outputfolder was passed"
+        [[ -n "$output_folder" ]] || {
+            sayfail "No output folder was passed"
             return 1
         }
-        saydebug "Rendering site to $output_folder"
-
-        _prepare_output_directory || {
-            sayfail "Failed to prepare output directory"
-            return 1
-        }
+        saydebug "Rendering fresh site to $output_folder"
 
         _init_metadata || {
             sayfail "Failed to initialize documentation metadata"
@@ -660,66 +772,38 @@ set -uo pipefail
             return 1
         }
 
-        # Parser cache remains the source for Selected/Changed generation.
-        local parser_cache_dir="$VAL_OUTDIR/.sgnd-doc-cache"
-        mkdir -p "$parser_cache_dir" || {
-            sayfail "Failed to create documentation cache directory: $parser_cache_dir"
+        _persist_parser_cache "$export_dir" || {
+            sayfail "Failed to update persistent parser cache"
             return 1
         }
-
-        cp -f "$export_dir"/*.psv "$parser_cache_dir/" || {
-            sayfail "Failed to update documentation cache: $parser_cache_dir"
-            return 1
-        }
-        sayinfo "Documentation cache updated: $parser_cache_dir"
-
-        if (( ${FLAG_CLEAR_RENDER_CACHE:-0} )); then
-            _clear_render_cache || return 1
-        fi
 
         _persist_render_cache "$export_dir" || {
             sayfail "Failed to update persistent renderer cache"
             return 1
         }
 
-        sayinfo "Python renderer input : $export_dir"
-        sayinfo "Python renderer output: $output_folder"
-        sayinfo "Python renderer script: $SGND_PYTHON_DIR/sgnd_doc_renderer.py"
+        _render_python_site "$export_dir" "$output_folder" || return 1
 
-        python3 "$SGND_PYTHON_DIR/sgnd_doc_renderer.py" \
-            "$export_dir" \
-            "$output_folder" || {
-                sayfail "Python documentation renderer failed"
-                return 1
-        }
-
-
-
-        if [[ ! -f "$output_folder/index.html" ]]; then
-            sayfail "Python renderer completed, but index.html was not created in: $output_folder"
-            return 1
-        fi
         sayinfo "Documentation rendering complete. Output available at: $output_folder"
-
         return 0
-    } 
+    }
 
     # fn: _render_cached_site - Render HTML from the persistent renderer cache
         # . Purpose
-        #   Rebuild the generated site without rescanning or reparsing source files.
+        #   Rebuild a fresh complete generated site without rescanning or reparsing source files.
         #
         # . Behavior
         #   - Uses the complete renderer input set saved by a previous generation.
-        #   - Preserves the parser cache and source tables unchanged.
-        #   - Prepares the output directory without cleaning it.
+        #   - Leaves the parser and renderer caches unchanged.
+        #   - Renders into a fresh staging directory and replaces the previous local site only on success.
         #   - Fails explicitly when no valid renderer cache exists.
         #
         # . Arguments
         #   $1  Output folder for generated documentation.
         #
         # . Returns
-        #   0 when rendering completes and index.html exists.
-        #   1 when the cache is missing/invalid or rendering fails.
+        #   0 when rendering completes and the fresh site is published.
+        #   1 when the cache is missing/invalid or rendering/publication fails.
         # . Usage
         #   _render_cached_site "<output_folder>"
     _render_cached_site() {
@@ -738,32 +822,8 @@ set -uo pipefail
             return 1
         }
 
-        FLAG_CLEAN_OUTPUT=0
-        _prepare_output_directory || {
-            sayfail "Failed to prepare output directory"
-            return 1
-        }
-
-        sayinfo "Python renderer input : $cache_dir"
-        sayinfo "Python renderer output: $output_folder"
-        sayinfo "Python renderer script: $SGND_PYTHON_DIR/sgnd_doc_renderer.py"
-
-        python3 "$SGND_PYTHON_DIR/sgnd_doc_renderer.py" \
-            "$cache_dir" \
-            "$output_folder" || {
-                sayfail "Python documentation renderer failed"
-                return 1
-            }
-
-        [[ -f "$output_folder/index.html" ]] || {
-            sayfail "Python renderer completed, but index.html was not created in: $output_folder"
-            return 1
-        }
+        _render_python_site "$cache_dir" "$output_folder" || return 1
 
         sayinfo "Documentation rendering complete. Output available at: $output_folder"
         return 0
     }
-    
-
-
-    

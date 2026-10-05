@@ -3,13 +3,13 @@
 # ----------------------------------------------------------------------------------
 # Metadata:
 #   Version     : 2.1
-#   Build       : 2627501
-#   Checksum    : 9bd698057da84f826391b9ab8add3976abf5f9710601290b4891f3cb7574f275
+#   Build       : 2627808
+#   Checksum    : 19ae2baa1cd59d90b78b81eef65b037d5fa386f84a2efbd56a03f04c542a4bd0
 #   Source      : templates_preface.sh
 #   Type        : documentation
 #   Group       : SDK
 #   Subgroup    : Templates
-#   Purpose     : Group preface
+#   Purpose     : Subgroup preface
 #
 # Attribution:
 #   Developers  : Mark Fieten
@@ -20,8 +20,8 @@
 # ==================================================================================
 # - Templates -----------------------------------------------------------------------
 #
-# > The Templates group contains the starting points for creating new
-# > SolidGroundUX-compatible scripts, libraries, console modules, and wrappers.
+# > The Templates subgroup contains the SDK-owned starting points for creating
+# > SolidGroundUX-compatible executables, libraries, documentation source files, and wrappers.
 #
 # > These templates are intended to capture the current recommended structure for
 # > each type of component. Starting from a template helps keep bootstrap logic,
@@ -38,8 +38,8 @@
 # >     lib-template.sh
 # >         Template for reusable source-only libraries.
 #
-# >     mod-template.sh
-# >         Template for SolidGround Management Console page modules.
+# >     doc-template.sh
+# >         Template for documentation prefaces, epilogues, and authored source pages.
 #
 # >     wrapper-template
 # >         Template for lightweight launcher scripts.
@@ -72,21 +72,16 @@
 # > through public functions and keep implementation helpers internal where
 # > appropriate.
 #
-# -- Console Module Template --------------------------------------------------------
+# -- Documentation Template ---------------------------------------------------------
 #
-# > The module template is used for page modules loaded by the SolidGround Management
-# > Console. A module is source-only and is sourced only when its page is first opened.
-# > It registers menu groups and items through the public `sgnd_menu_*` API, but should
-# > not perform the actual action until the user selects the corresponding menu item.
+# > The documentation template is used for authored documentation source files such as
+# > product, group, and subgroup prefaces or epilogues. It provides the canonical
+# > documentation markers, style hints, image blocks, tables, and alignment syntax
+# > understood by the documentation generator.
 #
-# > The main index discovers pages before sourcing them, so each module must expose its
-# > page name and description as literal `*_MODULE_NAME="..."` and
-# > `*_MODULE_DESC="..."` assignments. Computed values cannot be used for these two
-# > discovery fields.
-#
-# > Modules must not depend on another lazy-loaded page having been opened first. A
-# > helper required by multiple modules belongs in `console-helpers.sh` or another
-# > appropriately scoped common library.
+# > The Management Console module template is owned by the Management Console Modules
+# > product and is therefore documented with that product rather than in this SDK
+# > Deployment/Templates subgroup.
 #
 # -- Wrapper Template ---------------------------------------------------------------
 #

@@ -4,8 +4,8 @@
 # ------------------------------------------------------------------------------------
 # Metadata:
 #   Version     : 2.1
-#   Build       : 2627700
-#   Checksum    : 20f2365dde7e084027c96ac6bf80fe1f8fe083db16a8a5445704c53eacef9e25
+#   Build       : 2627808
+#   Checksum    : 68495d860211dced4d767243324a20d74cf97659d940249392454197384974c1
 #   Source      : doc-generator.sh
 #   Type        : script
 #   Group       : SDK
@@ -179,8 +179,6 @@ set -uo pipefail
         #   - After parsing you can use: FLAG_VERBOSE, VAL_CONFIG, ENUM_MODE, ...
     SGND_ARGS_SPEC=(
         "auto|a|flag|FLAG_AUTO_RUN|Automatically run with last used or default parameters|0|"
-        "clean|c|flag|FLAG_CLEAN_OUTPUT|Clear output directory before writing|0|"
-        "clear-render-cache||flag|FLAG_CLEAR_RENDER_CACHE|Clear cached renderer input before rebuilding it|0|"
         "copy-to-git||flag|FLAG_COPY_TO_GIT|Publish generated documentation to the configured Git output path|0|"
         "collection|C|enum|VAL_COLLECTION_MODE|Collection action: create or update|update|create,update"
         "site-name||value|VAL_SITE_NAME|Generated documentation site name||"
@@ -278,8 +276,6 @@ set -uo pipefail
         "VAL_UPDATE_MODE|Generation mode (full, selected, changed, render)||"
         "VAL_UPDATE_FILES|Selected update files||"
         "FLAG_RECURSIVE_SCAN|Recursive Scan||"
-        "FLAG_CLEAN_OUTPUT|Clean Output Directory||"
-        "FLAG_CLEAR_RENDER_CACHE|Clear cached renderer input before rebuilding||"
         "FLAG_COPY_TO_GIT|Publish generated documentation to the configured Git output path||"
         "FLAG_REVIEW|Automatically open generated docs in browser after generation (desktop mode only)||"
         "VAL_DOCUMENT_TITLE|Document title||"
@@ -346,13 +342,17 @@ set -uo pipefail
         saydebug "Initializing parameters with defaults where not set by arguments"
 
         FLAG_AUTO_RUN="${FLAG_AUTO_RUN:-0}"
-        FLAG_CLEAN_OUTPUT="${FLAG_CLEAN_OUTPUT:-1}"
-        FLAG_CLEAR_RENDER_CACHE="${FLAG_CLEAR_RENDER_CACHE:-0}"
         FLAG_COPY_TO_GIT="${FLAG_COPY_TO_GIT:-0}"
         FLAG_RECURSIVE_SCAN="${FLAG_RECURSIVE_SCAN:-1}"
         FLAG_VIEW_RESULTS="${FLAG_VIEW_RESULTS:-1}"
 
-        VAL_FILESPEC="${VAL_FILESPEC:-*.sh,*.py}"
+        # Include the suffixless canonical wrapper template in the default scan.
+        # Migrate the previous persisted default without changing custom file masks.
+        if [[ -z "${VAL_FILESPEC:-}" ]]; then
+            VAL_FILESPEC="*.sh,*.py,wrapper-template"
+        elif [[ "$VAL_FILESPEC" == "*.sh,*.py" ]]; then
+            VAL_FILESPEC="*.sh,*.py,wrapper-template"
+        fi
         VAL_UPDATE_MODE="${VAL_UPDATE_MODE:-full}"
         VAL_UPDATE_FILES="${VAL_UPDATE_FILES:-}"
         # Product discovery starts above the individual repository target-roots.
@@ -494,6 +494,142 @@ set -uo pipefail
         printf '%s\n' "$user_file"
     }
 
+    # fn: _doc_load_release_excludes - Load the release exclusion policy for a product root
+        # . Purpose
+        #   Load the same mandatory, repository, and product-defined exclusions used by
+        #   prepare-release so documentation collection ignores development-only payload.
+        #
+        # . Arguments
+        #   $1  Product source root, normally <repository>/target-root.
+        #
+        # . Outputs (globals)
+        #   SGND_DOC_ACTIVE_RELEASE_EXCLUDES
+        #
+        # . Returns
+        #   0 after the exclusion list has been assembled.
+        #
+        # . Usage
+        #   _doc_load_release_excludes "$source_root"
+    _doc_load_release_excludes() {
+        local root="${1:?missing target root}"
+        local repo_root=""
+        local ignore_file=""
+        local line=""
+        local globals_dir="${root%/}/usr/local/lib/solidgroundux/globals"
+        local file=""
+        local value=""
+        local pattern=""
+
+        SGND_DOC_ACTIVE_RELEASE_EXCLUDES=(
+            '.*'
+            '*.state'
+            '*.cfg'
+            '*.code-workspace'
+            '/var/log/solidgroundux.log*'
+            '/var/lib/solidgroundux/archive/'
+            '/var/lib/solidgroundux/releases/'
+            '/var/lib/solidgroundux/projects/'
+        )
+
+        # Normal product workspaces package <repo>/target-root.  Read the same
+        # versioned repository policy that prepare-release consumes.
+        if [[ "$(basename -- "$root")" == "target-root" ]]; then
+            repo_root="$(dirname -- "$root")"
+            ignore_file="${repo_root%/}/.release-ignore"
+            if [[ -f "$ignore_file" ]]; then
+                while IFS= read -r line || [[ -n "$line" ]]; do
+                    line="${line#"${line%%[![:space:]]*}"}"
+                    line="${line%"${line##*[![:space:]]}"}"
+                    [[ -n "$line" && "$line" != \#* ]] && SGND_DOC_ACTIVE_RELEASE_EXCLUDES+=("$line")
+                done < "$ignore_file"
+            fi
+        fi
+
+        # Product definitions own exceptional/generated release exclusions.  This is
+        # the rule that excludes local template copies from SDK and MCM documentation.
+        [[ -d "$globals_dir" ]] || return 0
+        while IFS= read -r -d '' file; do
+            value="$(bash -c '
+                source "$1"
+                for var in $(compgen -A variable SGND_); do
+                    case "$var" in *_RELEASE_EXCLUDES|SGND_RELEASE_EXCLUDES) printf "%s\n" "${!var-}"; exit;; esac
+                done
+            ' bash "$file" 2>/dev/null || true)"
+            [[ -n "$value" ]] || continue
+            while IFS= read -r pattern; do
+                pattern="${pattern#"${pattern%%[![:space:]]*}"}"
+                pattern="${pattern%"${pattern##*[![:space:]]}"}"
+                [[ -n "$pattern" ]] && SGND_DOC_ACTIVE_RELEASE_EXCLUDES+=("$pattern")
+            done < <(tr ',' '\n' <<< "$value")
+            return 0
+        done < <(find "$globals_dir" -maxdepth 1 -type f \( -name 'sgnd-definitions.sh' -o -name '*-definitions.sh' \) -print0 2>/dev/null | sort -z)
+
+        return 0
+    }
+
+    # fn: _doc_path_is_release_excluded - Test a source file against release policy
+        # . Purpose
+        #   Apply release-style path exclusions to documentation source discovery.
+        #
+        # . Behavior
+        #   - Patterns without a slash match any path component, like rsync excludes.
+        #   - Patterns containing a slash are matched relative to the product root.
+        #   - Directory patterns exclude the directory and everything beneath it.
+        #
+        # . Arguments
+        #   $1  Absolute source path.
+        #   $2  Product source root.
+        #
+        # . Returns
+        #   0 when the path is excluded from the release/documentation payload.
+        #   1 otherwise.
+        #
+        # . Usage
+        #   _doc_path_is_release_excluded "$file" "$source_root"
+    _doc_path_is_release_excluded() {
+        local path="${1:-}"
+        local source_root="${2:-}"
+        local rel=""
+        local pattern=""
+        local normalized=""
+        local tree_pattern=""
+        local component=""
+        local -a components=()
+
+        [[ -n "$path" && -n "$source_root" ]] || return 1
+        [[ "$path" == "${source_root%/}/"* ]] || return 1
+
+        rel="${path#${source_root%/}/}"
+
+        for pattern in "${SGND_DOC_ACTIVE_RELEASE_EXCLUDES[@]-}"; do
+            pattern="${pattern%$'\r'}"
+            pattern="${pattern#"${pattern%%[![:space:]]*}"}"
+            pattern="${pattern%"${pattern##*[![:space:]]}"}"
+            [[ -n "$pattern" && "${pattern:0:1}" != "#" ]] || continue
+
+            normalized="${pattern#./}"
+            if [[ "$normalized" == /* ]]; then
+                normalized="${normalized#/}"
+            fi
+
+            if [[ "$normalized" == */* ]]; then
+                if [[ "$normalized" == */ ]]; then
+                    normalized="${normalized%/}"
+                fi
+                tree_pattern="${normalized%/}/*"
+                [[ "$rel" == $normalized || "$rel" == $tree_pattern ]] && return 0
+                continue
+            fi
+
+            IFS='/' read -r -a components <<< "$rel"
+            for component in "${components[@]}"; do
+                [[ "$component" == $normalized ]] && return 0
+            done
+        done
+
+        return 1
+    }
+
     # fn: _doc_path_is_ignored - Test a source file against the active product .docignore
     _doc_path_is_ignored() {
         local path="${1:-}" source_root="${2:-}" ignore_file="${3:-}"
@@ -511,9 +647,13 @@ set -uo pipefail
         return 1
     }
 
-    # fn: _doc_parse_product_file - Apply ignore/duplicate policy before parsing a product file
+    # fn: _doc_parse_product_file - Apply release, ignore, and duplicate policy before parsing a product file
     _doc_parse_product_file() {
         local file="${1:-}" name="${file##*/}" previous=""
+        if _doc_path_is_release_excluded "$file" "$SGND_DOC_ACTIVE_SOURCE_ROOT"; then
+            ((SGND_DOC_IGNORED_COUNT++))
+            return 0
+        fi
         if _doc_path_is_ignored "$file" "$SGND_DOC_ACTIVE_SOURCE_ROOT" "$SGND_DOC_ACTIVE_IGNORE_FILE"; then
             ((SGND_DOC_IGNORED_COUNT++))
             return 0
@@ -870,6 +1010,7 @@ set -uo pipefail
                 SGND_DOC_ACTIVE_PRODUCT="$product"
                 SGND_DOC_ACTIVE_SOURCE_ROOT="$source_root"
                 SGND_DOC_ACTIVE_IGNORE_FILE="$(_doc_resolve_ignore_file "$product")" || return 1
+                _doc_load_release_excludes "$source_root" || return 1
                 before_count="${#MOD_TABLE[@]}"
                 if [[ "$callback" == "_parse_module_file" ]]; then
                     _iterate_files "$source_root" "$VAL_FILESPEC" "$FLAG_RECURSIVE_SCAN" _doc_parse_product_file || return 1
@@ -1020,6 +1161,7 @@ set -uo pipefail
         # . Behavior
         #   - Prompts for product discovery, source scope, generation mode, and collection action.
         #   - Prompts for a persistent site name and documentation root, then derives VAL_OUTDIR.
+        #   - Rendering always produces a fresh complete site; update modes affect parsing only.
         #   - When publication is enabled, prompts for a persistent Git output path.
         #   - Saves confirmed state immediately when state persistence is enabled.
         #   - Repeats until the user confirms, cancels, or requests redo.
@@ -1032,7 +1174,6 @@ set -uo pipefail
         #   VAL_OUTDIR
         #   VAL_FILESPEC
         #   FLAG_COPY_TO_GIT
-        #   FLAG_CLEAN_OUTPUT
         #   FLAG_RECURSIVE_SCAN
         #   FLAG_REVIEW
         #   SGND_STATE_SAVE
@@ -1059,6 +1200,8 @@ set -uo pipefail
 
             sgnd_print
             sgnd_print_sectionheader "Generation mode" --padend 0
+            sgnd_print "  NB: Generation mode only pertains to the source parsing phase; the renderer always rebuilds the site."
+            sgnd_print
             case "$VAL_UPDATE_MODE" in
                 full) mode_reply="1" ;; selected) mode_reply="2" ;; changed) mode_reply="3" ;; render) mode_reply="4" ;; *) mode_reply="1" ;;
             esac
@@ -1106,22 +1249,13 @@ set -uo pipefail
             VAL_DOCUMENT_PRODUCT="$VAL_SITE_NAME"
 
             sgnd_print
-            sgnd_print_sectionheader "Behavioral flags" --padend 0
+            sgnd_print_sectionheader "Parser options" --padend 0
             lw=45
-            if [[ "$VAL_COLLECTION_MODE" == "create" && "$VAL_UPDATE_MODE" == "full" ]]; then
-                FLAG_CLEAN_OUTPUT=1; sgnd_print "    Clean output directory before writing : Yes (new collection)"
-            else
-                FLAG_CLEAN_OUTPUT=0; sgnd_print "    Clean output directory before writing : No (collection update)"
-            fi
             if [[ "$VAL_UPDATE_MODE" == "render" ]]; then
-                FLAG_CLEAR_RENDER_CACHE=0; FLAG_REVIEW=0
-                sgnd_print "    Clear cached render data             : No (Render mode uses the cache)"
+                FLAG_REVIEW=0
                 sgnd_print "    Scan recursively                     : Not applicable"
                 sgnd_print "    View parsed data                     : Not applicable"
             else
-                [[ "$VAL_UPDATE_MODE" == "full" ]] && default="Y" || default="N"
-                ask --label "Clear cached render data" --var reply --type flag --default "$default" --validate sgnd_validate_yesno --colorize both --labelclr "${CYAN}" --pad "$lp" --labelwidth "$lw"
-                [[ "${reply,,}" =~ ^(y|yes)$ ]] && FLAG_CLEAR_RENDER_CACHE=1 || FLAG_CLEAR_RENDER_CACHE=0
                 (( ${FLAG_RECURSIVE_SCAN:-0} )) && default="Y" || default="N"
                 ask --label "Scan recursively" --var reply --type flag --default "$default" --validate sgnd_validate_yesno --colorize both --labelclr "${CYAN}" --pad "$lp" --labelwidth "$lw"
                 [[ "${reply,,}" =~ ^(y|yes)$ ]] && FLAG_RECURSIVE_SCAN=1 || FLAG_RECURSIVE_SCAN=0
@@ -1200,7 +1334,8 @@ set -uo pipefail
         # . Usage
         #   _doc_load_cache
     _doc_load_cache() {
-        local cache_dir="$VAL_OUTDIR/.sgnd-doc-cache"
+        local cache_dir=""
+        cache_dir="$(_doc_parser_cache_dir)"
 
         [[ -d "$cache_dir" ]] || {
             sayfail "No documentation cache found: $cache_dir"
@@ -1326,6 +1461,7 @@ set -uo pipefail
         local spec="${VAL_UPDATE_FILES:-}"
         local entry=""
         local path=""
+        local requested_count=0
         local -a entries=()
 
         SGND_DOC_UPDATE_FILES=()
@@ -1341,6 +1477,7 @@ set -uo pipefail
             entry="${entry#"${entry%%[![:space:]]*}"}"
             entry="${entry%"${entry##*[![:space:]]}"}"
             [[ -n "$entry" ]] || continue
+            ((requested_count++))
 
             if [[ "$entry" == /* ]]; then
                 path="$entry"
@@ -1357,12 +1494,16 @@ set -uo pipefail
                 sayfail "Selected source file does not match $VAL_FILESPEC: $entry"
                 return 1
             }
+            if _doc_path_is_release_excluded "$path" "$VAL_SRCDIR"; then
+                sayinfo "Skipping release-excluded documentation source: $entry"
+                continue
+            fi
 
             SGND_DOC_UPDATE_FILES+=("$path")
             SGND_DOC_REMOVE_MODULES+=("${path##*/}")
         done
 
-        (( ${#SGND_DOC_UPDATE_FILES[@]} > 0 ))
+        (( requested_count > 0 ))
     }
 
     # fn: _doc_collect_changed_files - Collect Git additions, modifications, deletions, and renames
@@ -1405,7 +1546,9 @@ set -uo pipefail
             if [[ "$status" == R* || "$status" == C* ]]; then
                 IFS= read -r -d '' new_rel || break
                 path="$(readlink -m -- "$repo_root/$old_rel")"
-                if [[ "$path" == "$source_root"/* ]] && _doc_path_matches_filespec "$path"; then
+                if [[ "$path" == "$source_root"/* ]] \
+                    && _doc_path_matches_filespec "$path" \
+                    && ! _doc_path_is_release_excluded "$path" "$source_root"; then
                     module="${path##*/}"
                     remove_seen["$module"]=1
                 fi
@@ -1417,6 +1560,7 @@ set -uo pipefail
             path="$(readlink -m -- "$repo_root/$rel")"
             [[ "$path" == "$source_root"/* ]] || continue
             _doc_path_matches_filespec "$path" || continue
+            _doc_path_is_release_excluded "$path" "$source_root" && continue
 
             module="${path##*/}"
             remove_seen["$module"]=1
@@ -1429,6 +1573,7 @@ set -uo pipefail
             path="$(readlink -m -- "$repo_root/$rel")"
             [[ "$path" == "$source_root"/* ]] || continue
             _doc_path_matches_filespec "$path" || continue
+            _doc_path_is_release_excluded "$path" "$source_root" && continue
             [[ -f "$path" ]] || continue
 
             module="${path##*/}"
@@ -1695,8 +1840,9 @@ set -uo pipefail
         # . Behavior
         #   - Uses VAL_GIT_OUTPUT_PATH when configured.
         #   - Falls back to <primary-repo-root>/docs for compatibility when no path is stored.
-        #   - Replaces the previous published copy so removed pages do not remain stale.
-        #   - Excludes internal documentation cache directories from the published copy.
+        #   - Stages a complete copy of the freshly rendered site beside the destination.
+        #   - Replaces the previous published tree only after the staged copy succeeds.
+        #   - Restores the previous published tree if final replacement fails.
         #   - Does nothing when FLAG_COPY_TO_GIT is disabled.
         #
         # . Returns
@@ -1709,6 +1855,9 @@ set -uo pipefail
         (( ${FLAG_COPY_TO_GIT:-0} )) || return 0
 
         local git_docs_dir="${VAL_GIT_OUTPUT_PATH:-}"
+        local staging_dir=""
+        local backup_dir=""
+        local parent_dir=""
 
         if [[ -z "$git_docs_dir" ]]; then
             git_docs_dir="$(_doc_default_git_output_path)" || {
@@ -1717,6 +1866,9 @@ set -uo pipefail
             }
         fi
         git_docs_dir="${git_docs_dir%/}"
+        staging_dir="${git_docs_dir}.new"
+        backup_dir="${git_docs_dir}.old"
+        parent_dir="$(dirname -- "$git_docs_dir")"
 
         [[ -d "$VAL_OUTDIR" ]] || {
             sayfail "Generated documentation directory does not exist: $VAL_OUTDIR"
@@ -1730,25 +1882,41 @@ set -uo pipefail
 
         saystart "Publishing generated documentation to: $git_docs_dir"
 
-        mkdir -p "$git_docs_dir" || {
-            sayfail "Cannot create Git output directory: $git_docs_dir"
+        mkdir -p "$parent_dir" || {
+            sayfail "Cannot create Git output parent directory: $parent_dir"
             return 1
         }
 
-        find "$git_docs_dir" -mindepth 1 -maxdepth 1 -exec rm -rf -- {} + || {
-            sayfail "Cannot clear Git output directory: $git_docs_dir"
+        rm -rf -- "$staging_dir" "$backup_dir" || {
+            sayfail "Cannot clear stale Git publication staging directories"
+            return 1
+        }
+        mkdir -p "$staging_dir" || {
+            sayfail "Cannot create Git publication staging directory: $staging_dir"
             return 1
         }
 
-        cp -a "$VAL_OUTDIR/." "$git_docs_dir/" || {
-            sayfail "Cannot publish generated documentation to: $git_docs_dir"
+        cp -a "$VAL_OUTDIR/." "$staging_dir/" || {
+            rm -rf -- "$staging_dir"
+            sayfail "Cannot stage generated documentation for: $git_docs_dir"
             return 1
         }
 
-        rm -rf -- \
-            "$git_docs_dir/.sgnd-doc-cache" \
-            "$git_docs_dir/.sgnd-render-cache"
+        if [[ -e "$git_docs_dir" ]]; then
+            mv -- "$git_docs_dir" "$backup_dir" || {
+                rm -rf -- "$staging_dir"
+                sayfail "Cannot stage previous Git documentation tree for replacement: $git_docs_dir"
+                return 1
+            }
+        fi
 
+        if ! mv -- "$staging_dir" "$git_docs_dir"; then
+            [[ -e "$backup_dir" ]] && mv -- "$backup_dir" "$git_docs_dir"
+            sayfail "Cannot replace Git documentation tree: $git_docs_dir"
+            return 1
+        fi
+
+        rm -rf -- "$backup_dir"
         sayok "Published generated documentation to: $git_docs_dir"
         return 0
     }
@@ -1771,7 +1939,7 @@ set -uo pipefail
         sgnd_print
         if [[ "$VAL_UPDATE_MODE" == "render" ]]; then
             sgnd_print "  Source parsing: skipped (existing renderer cache reused)"
-            sgnd_print "  Renderer cache: ${DOC_RENDER_CACHE_DIR:-$VAL_OUTDIR/.sgnd-render-cache}"
+            sgnd_print "  Renderer cache: $(_doc_render_cache_dir)"
         else
             sgnd_print  "  Modules processed: ${#MOD_TABLE[@]}"
             sgnd_print  "  Sections processed: ${#MOD_SECTIONS[@]}"
@@ -1866,10 +2034,14 @@ set -uo pipefail
             sayfail "Creating a new documentation collection requires Full mode."
             return 1
         fi
-        if [[ "$VAL_COLLECTION_MODE" == "update" && "$VAL_UPDATE_MODE" != "render" && ! -d "$VAL_OUTDIR/.sgnd-doc-cache" ]]; then
-            sayfail "Cannot update documentation collection without an existing cache: $VAL_OUTDIR/.sgnd-doc-cache"
-            sayinfo "Choose Create new collection for the first build."
-            return 1
+        if [[ "$VAL_COLLECTION_MODE" == "update" && "$VAL_UPDATE_MODE" != "render" ]]; then
+            local parser_cache_dir=""
+            parser_cache_dir="$(_doc_parser_cache_dir)"
+            if [[ ! -d "$parser_cache_dir" ]]; then
+                sayfail "Cannot update documentation collection without an existing cache: $parser_cache_dir"
+                sayinfo "Choose Create new collection for the first build."
+                return 1
+            fi
         fi
 
         local start_time
@@ -1887,18 +2059,17 @@ set -uo pipefail
         case "$VAL_UPDATE_MODE" in
             full)
                 if [[ "$VAL_COLLECTION_MODE" == "update" ]]; then
-                    FLAG_CLEAN_OUTPUT=0
                     _doc_load_cache || return 1
                     _doc_full_update_collection || return 1
                 else
-                    FLAG_CLEAN_OUTPUT=1
                     _doc_iterate_selected_product_roots _parse_module_file || return 1
                     _doc_filter_current_tables_to_selected_products
                 fi
                 ;;
             selected)
-                FLAG_CLEAN_OUTPUT=0
                 _doc_load_cache || return 1
+                SGND_DOC_ACTIVE_SOURCE_ROOT="$VAL_SRCDIR"
+                _doc_load_release_excludes "$VAL_SRCDIR" || return 1
                 _doc_collect_selected_files || return 1
                 local before_selected_count="${#MOD_TABLE[@]}"
                 _doc_remove_modules "${SGND_DOC_REMOVE_MODULES[@]}"
@@ -1908,8 +2079,9 @@ set -uo pipefail
                 _doc_prune_new_modules_to_selected_products "$before_selected_count"
                 ;;
             changed)
-                FLAG_CLEAN_OUTPUT=0
                 _doc_load_cache || return 1
+                SGND_DOC_ACTIVE_SOURCE_ROOT="$VAL_SRCDIR"
+                _doc_load_release_excludes "$VAL_SRCDIR" || return 1
                 _doc_collect_changed_files || return 1
                 local before_changed_count="${#MOD_TABLE[@]}"
                 _doc_remove_modules "${SGND_DOC_REMOVE_MODULES[@]}"
@@ -1919,8 +2091,6 @@ set -uo pipefail
                 _doc_prune_new_modules_to_selected_products "$before_changed_count"
                 ;;
             render)
-                FLAG_CLEAN_OUTPUT=0
-                FLAG_CLEAR_RENDER_CACHE=0
                 ;;
             *)
                 sayfail "Unknown generation mode: $VAL_UPDATE_MODE"
