@@ -481,6 +481,7 @@ class DocRenderer:
         self.doc_product = ""
         self.collection_name = ""
         self.doc_render_date = ""
+        self.favicon_filename = ""
 
     # fn: run - Run
     # . Purpose
@@ -1656,6 +1657,7 @@ class DocRenderer:
         self.ensure_theme_css()
         self.copy_documentation_images()
         self.copy_branding_assets()
+        self.copy_site_favicon()
 
     # fn: copy_documentation_images - Copy shared documentation images
     # . Purpose
@@ -1719,6 +1721,51 @@ class DocRenderer:
                 if source_file.is_file():
                     shutil.copy2(source_file, branding_dir / target_name)
                     break
+
+    # fn: copy_site_favicon - Publish an optional site-wide favicon
+    # . Purpose
+    #   Select one favicon for this documentation collection and publish it at the
+    #   generated site root. Without an explicit path, find favicon.ico among the
+    #   site documentation asset sources. Do not synthesize or embed an icon.
+    # . Usage
+    #   self.copy_site_favicon()
+    def copy_site_favicon(self) -> None:
+        configured = self.config.get("VAL_SITE_FAVICON", "").strip()
+        sources: List[Path] = []
+        if configured:
+            path = Path(configured).expanduser()
+            if path.is_absolute():
+                sources.append(path)
+            else:
+                sources.extend(root / path for root in self.doc_source_dirs)
+                sources.extend(root / path for root in self.asset_source_dirs)
+                sources.append(self.input_dir / path)
+        else:
+            sources.extend(root / "favicon.ico" for root in self.asset_source_dirs)
+            sources.extend(root / "favicon.ico" for root in self.doc_source_dirs)
+        source = next((path for path in sources if path.is_file()), None)
+        if source is None:
+            if configured:
+                print(f"WARNING: configured site favicon not found: {configured}", file=sys.stderr)
+            return
+        extension = source.suffix.lower()
+        if extension not in (".ico", ".png", ".svg"):
+            print(f"WARNING: unsupported favicon format: {source}", file=sys.stderr)
+            return
+        self.favicon_filename = "favicon" + extension
+        shutil.copy2(source, self.output_dir / self.favicon_filename)
+
+    # fn: favicon_link - Render the site favicon link for a generated page
+    # . Purpose
+    #   Return the same favicon reference in both root and pages/ HTML heads.
+    # . Usage
+    #   self.favicon_link(<in_pages>)
+    def favicon_link(self, in_pages: bool) -> str:
+        if not self.favicon_filename:
+            return ""
+        mime = {".ico": "image/x-icon", ".png": "image/png", ".svg": "image/svg+xml"}[Path(self.favicon_filename).suffix]
+        prefix = "../" if in_pages else ""
+        return f'  <link rel="icon" type="{mime}" href="{prefix}{self.favicon_filename}">'
 
     # fn: branding_asset_exists - Branding asset exists
     # . Purpose
@@ -3191,6 +3238,7 @@ body {
             "<html>",
             "<head>",
             '  <meta charset="utf-8">',
+            self.favicon_link(True),
             f"  <title>{esc(self.doc_title)}</title>",
             '  <link rel="stylesheet" href="../assets/doc.css">',
             '  <link rel="stylesheet" href="../assets/theme.css">',
@@ -3228,6 +3276,7 @@ body {
             "<html>",
             "<head>",
             '  <meta charset="utf-8">',
+            self.favicon_link(False),
             f"  <title>{esc(self.doc_title)}</title>",
             '  <link rel="stylesheet" href="assets/doc.css">\n  <link rel="stylesheet" href="assets/theme.css">',
             "</head>",
@@ -3502,6 +3551,7 @@ body {
             "<html>",
             "<head>",
             '  <meta charset="utf-8">',
+            self.favicon_link(True),
             f"  <title>{esc(label)}</title>",
             '  <link rel="stylesheet" href="../assets/doc.css">',
             '  <link rel="stylesheet" href="../assets/theme.css">',
@@ -3626,6 +3676,7 @@ body {
             "<html>",
             "<head>",
             '  <meta charset="utf-8">',
+            self.favicon_link(True),
             f"  <title>{esc(label)}</title>",
             '  <link rel="stylesheet" href="../assets/doc.css">',
             '  <link rel="stylesheet" href="../assets/theme.css">',
@@ -3836,6 +3887,7 @@ body {
             "<html>",
             "<head>",
             '  <meta charset="utf-8">',
+            self.favicon_link(True),
             f"  <title>{esc(label)}</title>",
             '  <link rel="stylesheet" href="../assets/doc.css">',
             '  <link rel="stylesheet" href="../assets/theme.css">',
@@ -3938,6 +3990,7 @@ body {
             "<html>",
             "<head>",
             '  <meta charset="utf-8">',
+            self.favicon_link(True),
             f"  <title>{esc(label)}</title>",
             '  <link rel="stylesheet" href="../assets/doc.css">',
             '  <link rel="stylesheet" href="../assets/theme.css">',
@@ -3999,6 +4052,7 @@ body {
             "<html>",
             "<head>",
             '  <meta charset="utf-8">',
+            self.favicon_link(True),
             f"  <title>{esc(label)}</title>",
             '  <link rel="stylesheet" href="../assets/doc.css">',
             '  <link rel="stylesheet" href="../assets/theme.css">',
@@ -4088,6 +4142,7 @@ body {
             "<html>",
             "<head>",
             '  <meta charset="utf-8">',
+            self.favicon_link(True),
             f"  <title>{esc(label)}</title>",
             '  <link rel="stylesheet" href="../assets/doc.css">',
             '  <link rel="stylesheet" href="../assets/theme.css">',
@@ -4578,6 +4633,7 @@ body {
             "<html>",
             "<head>",
             '  <meta charset="utf-8">',
+            self.favicon_link(True),
             f"  <title>{esc(label)}</title>",
             '  <link rel="stylesheet" href="../assets/doc.css">',
             '  <link rel="stylesheet" href="../assets/theme.css">',
@@ -4663,6 +4719,7 @@ body {
             "<html>",
             "<head>",
             '  <meta charset="utf-8">',
+            self.favicon_link(True),
             f"  <title>{esc(title)}</title>",
             '  <link rel="stylesheet" href="../assets/doc.css">',
             '  <link rel="stylesheet" href="../assets/theme.css">',
@@ -4721,6 +4778,7 @@ body {
             "<html>",
             "<head>",
             '  <meta charset="utf-8">',
+            self.favicon_link(True),
             f"  <title>{esc(title)}</title>",
             '  <link rel="stylesheet" href="../assets/doc.css">',
             '  <link rel="stylesheet" href="../assets/theme.css">',
@@ -4786,6 +4844,7 @@ body {
             "<html>",
             "<head>",
             '  <meta charset="utf-8">',
+            self.favicon_link(True),
             f"  <title>{esc(title)}</title>",
             '  <link rel="stylesheet" href="../assets/doc.css">',
             '  <link rel="stylesheet" href="../assets/theme.css">',
@@ -4833,6 +4892,7 @@ body {
             "<html>",
             "<head>",
             '  <meta charset="utf-8">',
+            self.favicon_link(True),
             f"  <title>{esc(title)}</title>",
             '  <link rel="stylesheet" href="../assets/doc.css">',
             '  <link rel="stylesheet" href="../assets/theme.css">',

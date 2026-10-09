@@ -182,6 +182,7 @@ set -uo pipefail
         "copy-to-git||flag|FLAG_COPY_TO_GIT|Publish generated documentation to the configured Git output path|0|"
         "collection|C|enum|VAL_COLLECTION_MODE|Collection action: create or update|update|create,update"
         "site-name||value|VAL_SITE_NAME|Generated documentation site name||"
+        "favicon||value|VAL_SITE_FAVICON|Optional site favicon file (defaults to favicon.ico in documentation assets)||"
         "doc-root||value|VAL_DOCUMENT_ROOT|Root directory containing generated documentation sites||"
         "git-output||value|VAL_GIT_OUTPUT_PATH|Destination directory used when publishing the generated site||"
         "products|p|value|VAL_DOCUMENT_PRODUCTS|Comma-separated product names or ALL||"
@@ -268,6 +269,7 @@ set -uo pipefail
         "VAL_DISCOVERY_ROOT|Product discovery root||"
         "VAL_COLLECTION_MODE|Collection action (create or update)||"
         "VAL_SITE_NAME|Generated documentation site name||"
+        "VAL_SITE_FAVICON|Optional site favicon file||"
         "VAL_DOCUMENT_ROOT|Documentation root directory||"
         "VAL_GIT_OUTPUT_PATH|Git publication output path||"
         "VAL_DOCUMENT_PRODUCTS|Selected documentation products||"
@@ -1244,6 +1246,7 @@ set -uo pipefail
             sgnd_print_sectionheader "Documentation destination" --padend 0
             ask --label "Site name" --var VAL_SITE_NAME --default "$VAL_SITE_NAME" --colorize both --labelclr "${CYAN}" --pad "$lp" --labelwidth "$lw"
             ask --label "Documentation root" --var VAL_DOCUMENT_ROOT --default "$VAL_DOCUMENT_ROOT" --colorize both --labelclr "${CYAN}" --pad "$lp" --labelwidth "$lw"
+            ask --label "Site favicon (optional)" --var VAL_SITE_FAVICON --default "${VAL_SITE_FAVICON:-}" --colorize both --labelclr "${CYAN}" --pad "$lp" --labelwidth "$lw"
             _doc_finalize_outdir
             sgnd_print_labeledvalue --label "Generated site" --value "$VAL_OUTDIR" --labelwidth "$lw" --pad "$lp" --labelclr "${CYAN}" --valueclr "${YELLOW}"
             VAL_DOCUMENT_PRODUCT="$VAL_SITE_NAME"

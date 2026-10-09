@@ -400,6 +400,7 @@ set -uo pipefail
                 printf 'VAL_DOCUMENT_PRODUCTS|%s\n' "${VAL_DOCUMENT_PRODUCTS:-ALL}"
                 printf 'FLAG_CLEAN_OUTPUT|0\n'
                 printf 'VAL_NAV_WIDTH|%s\n' "${VAL_NAV_WIDTH:-320px}"
+                printf 'VAL_SITE_FAVICON|%s\n' "${VAL_SITE_FAVICON:-}"
 
             } > "$config_file"
         }
