@@ -1,0 +1,684 @@
+modulename|section|parent|grandparent|title|level
+sux-bootstrap_preface.sh|Bootstrap|||Bootstrap|1
+sux-bootstrap_preface.sh|Bootstrap Sequence|Bootstrap||Bootstrap Sequence|2
+sux-bootstrap_preface.sh|Bootstrap Environment|Bootstrap||Bootstrap Environment|2
+sux-bootstrap_preface.sh|Automatic Library Loading|Bootstrap||Automatic Library Loading|2
+sux-bootstrap_preface.sh|Global Definitions|Bootstrap||Global Definitions|2
+sux-bootstrap_preface.sh|Configuration Management|Bootstrap||Configuration Management|2
+sux-bootstrap_preface.sh|Transferable Framework State|Bootstrap||Transferable Framework State|2
+sux-bootstrap_preface.sh|Console and File Log Levels|Bootstrap||Console and File Log Levels|2
+sux-bootstrap_preface.sh|Built-in Arguments|Bootstrap||Built-in Arguments|2
+sux-bootstrap_preface.sh|Relationship to the Executable Template|Bootstrap||Relationship to the Executable Template|2
+sux-bootstrap_preface.sh|Why Bootstrap Matters|Bootstrap||Why Bootstrap Matters|2
+sux-ui_preface.sh|User Interface|||User Interface|1
+sux-ui_preface.sh|UI Architecture|User Interface||UI Architecture|2
+sux-ui_preface.sh|Rendering and Layout|User Interface||Rendering and Layout|2
+sux-ui_preface.sh|Themes, Palettes, and Run Modes|User Interface||Themes, Palettes, and Run Modes|2
+sux-ui_preface.sh|Messages and Logging|User Interface||Messages and Logging|2
+sux-ui_preface.sh|Prompts and User Input|User Interface||Prompts and User Input|2
+sux-ui_preface.sh|Dialog-Oriented Interaction|User Interface||Dialog-Oriented Interaction|2
+sux-ui_preface.sh|Glyphs and Character Fallbacks|User Interface||Glyphs and Character Fallbacks|2
+sux-ui_preface.sh|Rendering Width and Message Routing|User Interface||Rendering Width and Message Routing|2
+sux-ui_preface.sh|Guidance for Applications|User Interface||Guidance for Applications|2
+sux-ui_preface.sh|Scope and Non-Goals|User Interface||Scope and Non-Goals|2
+sux_preface.sh|How it came to pass...|||How it came to pass...|1
+sux_preface.sh|SolidGroundUX in a nutshell|||SolidGroundUX in a nutshell|1
+sux_preface.sh|Framework capabilities summary|||Framework capabilities summary|1
+sux_preface.sh|Bootstrap and runtime initialization|Framework capabilities summary||Bootstrap and runtime initialization|2
+sux_preface.sh|Library loading with sgnd_using|Framework capabilities summary||Library loading with sgnd_using|2
+sux_preface.sh|Arguments, configuration, and state|Framework capabilities summary||Arguments, configuration, and state|2
+sux_preface.sh|Logging and terminal UI|Framework capabilities summary||Logging and terminal UI|2
+sux_preface.sh|Reusable APIs|Framework capabilities summary||Reusable APIs|2
+sux_preface.sh|Products built on the Framework|Framework capabilities summary||Products built on the Framework|2
+sux_preface.sh|Architecture|||Architecture|1
+sux_preface.sh|Framework Locator and Resource Resolution|Architecture||Framework Locator and Resource Resolution|2
+sux_preface.sh|Bootstrap Architecture|Architecture||Bootstrap Architecture|2
+sux_preface.sh|Public and Internal APIs|Architecture||Public and Internal APIs|2
+sux_preface.sh|Convention Over Configuration|Architecture||Convention Over Configuration|2
+sux-common-core_preface.sh|Available Services|||Available Services|1
+sux-common-core_preface.sh|Configuration Management|Available Services||Configuration Management|2
+sux-common-core_preface.sh|State Management|Available Services||State Management|2
+sux-common-core_preface.sh|Command-Line Arguments|Available Services||Command-Line Arguments|2
+sux-common-core_preface.sh|User Interface Services|Available Services||User Interface Services|2
+sux-common-core_preface.sh|Console Applications|Available Services||Console Applications|2
+sux-common-core_preface.sh|Documentation Generation|Available Services||Documentation Generation|2
+sux-deployment_preface.sh|Deployment|||Deployment|1
+sux-deployment_preface.sh|Setup|Deployment||Setup|2
+sux-deployment_preface.sh|SDK Ownership|Deployment||SDK Ownership|2
+sux-deployment_preface.sh|Mental Model|Deployment||Mental Model|2
+sux-deployment_preface.sh|Where to Continue|Deployment||Where to Continue|2
+sux_epilogue.sh|How do I...?|||How do I...?|1
+sux_epilogue.sh|Add a command-line argument|How do I...?||Add a command-line argument|2
+sux_epilogue.sh|Use configuration files|How do I...?||Use configuration files|2
+sux_epilogue.sh|Use persistent state variables|How do I...?||Use persistent state variables|2
+sux_epilogue.sh|Source an additional framework library|How do I...?||Source an additional framework library|2
+sux_epilogue.sh|Use themed colors, styles, and glyphs|How do I...?||Use themed colors, styles, and glyphs|2
+sux_epilogue.sh|Ask the user for input|How do I...?||Ask the user for input|2
+sux_epilogue.sh|Show an auto-continue prompt|How do I...?||Show an auto-continue prompt|2
+sux_epilogue.sh|Write screen output|How do I...?||Write screen output|2
+sux_epilogue.sh|Work with pipe-separated datatables|How do I...?||Work with pipe-separated datatables|2
+sux_epilogue.sh|Create a VS Code workspace|How do I...?||Create a VS Code workspace|2
+sux_epilogue.sh|Deploy a workspace|How do I...?||Deploy a workspace|2
+sux_epilogue.sh|Generate documentation|How do I...?||Generate documentation|2
+sux_epilogue.sh|Add a console command|How do I...?||Add a console command|2
+sux_epilogue.sh|Add generated help examples|How do I...?||Add generated help examples|2
+sux_epilogue.sh|Subsystem Reference Guide|||Subsystem Reference Guide|1
+sux_epilogue.sh|1. Executable Startup Contract|Subsystem Reference Guide||1. Executable Startup Contract|2
+sux_epilogue.sh|2. Bootstrap and Runtime Initialization|Subsystem Reference Guide||2. Bootstrap and Runtime Initialization|2
+sux_epilogue.sh|3. Framework Directory and Global Model|Subsystem Reference Guide||3. Framework Directory and Global Model|2
+sux_epilogue.sh|4. Command-Line Argument Parsing|Subsystem Reference Guide||4. Command-Line Argument Parsing|2
+sux_epilogue.sh|5. Configuration Support|Subsystem Reference Guide||5. Configuration Support|2
+sux_epilogue.sh|6. State Support|Subsystem Reference Guide||6. State Support|2
+sux_epilogue.sh|7. Dependency Loading|Subsystem Reference Guide||7. Dependency Loading|2
+sux_epilogue.sh|8. Console Messaging and Log Levels|Subsystem Reference Guide||8. Console Messaging and Log Levels|2
+sux_epilogue.sh|9. File Logging|Subsystem Reference Guide||9. File Logging|2
+sux_epilogue.sh|10. UI Rendering, Theming, and Palettes|Subsystem Reference Guide||10. UI Rendering, Theming, and Palettes|2
+sux_epilogue.sh|11. User Input and Dialogs|Subsystem Reference Guide||11. User Input and Dialogs|2
+sux_epilogue.sh|12. Progress Helpers|Subsystem Reference Guide||12. Progress Helpers|2
+sux_epilogue.sh|13. Metadata and Header Parsing|Subsystem Reference Guide||13. Metadata and Header Parsing|2
+sux_epilogue.sh|14. Documentation Generation|Subsystem Reference Guide||14. Documentation Generation|2
+sux_epilogue.sh|15. Datatable Helpers|Subsystem Reference Guide||15. Datatable Helpers|2
+sux_epilogue.sh|16. Menu API and Management Console Boundary|Subsystem Reference Guide||16. Menu API and Management Console Boundary|2
+sux_epilogue.sh|17. Related Products|Subsystem Reference Guide||SDK and MCM|2
+untar-it.sh|Bootstrap|||Bootstrap|1
+untar-it.sh|Script metadata|||Script metadata|1
+untar-it.sh|Framework integration|||Framework integration|1
+untar-it.sh|Local declarations|||Local declarations|1
+untar-it.sh|Helpers|||Helpers|1
+untar-it.sh|Main|||Main|1
+sgnd-repair-permissions.sh|Bootstrap|||Bootstrap|1
+sgnd-repair-permissions.sh|Script identity|||Script identity|1
+sgnd-repair-permissions.sh|Framework integration|||Framework integration|1
+sgnd-repair-permissions.sh|Local helpers|||Local helpers|1
+sgnd-repair-permissions.sh|Main|||Main|1
+tar-it.sh|Bootstrap|||Bootstrap|1
+tar-it.sh|Script metadata|||Script metadata|1
+tar-it.sh|Framework integration|||Framework integration|1
+tar-it.sh|Local declarations|||Local declarations|1
+tar-it.sh|Helpers|||Helpers|1
+tar-it.sh|Main|||Main|1
+normalize-canon.sh|Bootstrap|||Bootstrap|1
+normalize-canon.sh|Script identity|||Script identity|1
+normalize-canon.sh|Framework integration|||Framework integration|1
+normalize-canon.sh|Local script declarations|||Local script declarations|1
+normalize-canon.sh|Parameter collection|||Parameter collection|1
+normalize-canon.sh|Local script functions|||Local script functions|1
+normalize-canon.sh|Main|||Main|1
+sgnd.sh|Bootstrap|||Bootstrap|3
+sgnd.sh|Script metadata|||Script metadata|3
+sgnd.sh|Framework integration|||Framework integration|3
+sgnd.sh|Helpers|||Helpers|3
+sgnd.sh|Main|||Main|3
+sgnd-smoketest.sh|Bootstrap|||Bootstrap|1
+sgnd-smoketest.sh|Script identity|||Script identity|1
+sgnd-smoketest.sh|Framework integration|||Framework integration|1
+sgnd-smoketest.sh|Smoke-test input declarations|||Smoke-test input declarations|1
+sgnd-smoketest.sh|Sample/demo renderers|Smoke-test input declarations||Sample/demo renderers|2
+sgnd-smoketest.sh|Validation engine|||Validation engine|1
+sgnd-smoketest.sh|Smoke test menu|||Smoke test menu|1
+sgnd-smoketest.sh|Aggregate runner|||Aggregate runner|1
+sgnd-smoketest.sh|Main|||Main|1
+sgnd-exe-common.sh|Library guard|||Library guard|1
+sgnd-exe-common.sh|Minimal UI|||Minimal UI|1
+sgnd-exe-common.sh|Framework path resolution|||Framework path resolution|1
+sgnd-exe-common.sh|Local helpers|||Local helpers|1
+sgnd-exe-common.sh|Public API|||Public API|1
+sgnd-args.sh|Library guard|||Library guard|1
+sgnd-args.sh|Helper functions|||Helper functions|1
+sgnd-args.sh|Public API|||Public API|1
+sgnd-cfg.sh|Library guard|||Library guard|1
+sgnd-cfg.sh|Internal helpers|||Internal helpers|1
+sgnd-cfg.sh|Public API (CFG)|||Public API (CFG)|1
+sgnd-cfg.sh|Public API (STATE)|||Public API (STATE)|1
+ui-glyphs.sh|Library guard|||Library guard|1
+ui-glyphs.sh|Glyph variable reference|||Glyph variable reference|1
+ui-glyphs.sh|Light line drawing|||Light line drawing|1
+ui-glyphs.sh|Double line drawing|||Double line drawing|1
+ui-glyphs.sh|Common characters|||Common characters|1
+ui-glyphs.sh|Math / comparison|||Math / comparison|1
+ui-glyphs.sh|Keyboard hints|||Keyboard hints|1
+ui-glyphs.sh|Greek letters|||Greek letters|1
+sgnd-bootstrap.sh|Library guard|||Library guard|1
+sgnd-bootstrap.sh|Main sequence helpers + EXIT dispatch|||Main sequence helpers + EXIT dispatch|1
+sgnd-bootstrap.sh|Banner (Product / Title)|||Banner (Product / Title)|3
+sgnd-bootstrap.sh|Description (multiline section)|||Description (multiline section)|3
+sgnd-bootstrap.sh|Load sections once|||Load sections once|3
+sgnd-bootstrap.sh|Metadata fields|||Metadata fields|3
+sgnd-bootstrap.sh|Attribution fields|||Attribution fields|3
+sgnd-bootstrap.sh|Short description (first line of Description)|||Short description (first line of Description)|3
+sgnd-bootstrap.sh|Load header buffer and sections once|||Load header buffer and sections once|3
+sgnd-bootstrap.sh|Metadata identity|||Metadata identity|3
+sgnd-bootstrap.sh|Structural variables|||Structural variables|3
+sgnd-bootstrap.sh|Banner (Product / Title)|||Banner (Product / Title)|3
+sgnd-bootstrap.sh|Description (multiline section)|||Description (multiline section)|3
+sgnd-bootstrap.sh|Metadata fields|||Metadata fields|3
+sgnd-bootstrap.sh|Attribution fields|||Attribution fields|3
+sgnd-datatable.sh|Library guard|||Library guard|1
+sgnd-datatable.sh|DDL functions|||DDL functions|1
+sgnd-datatable.sh|DML functions|||DML functions|1
+ui-say.sh|Library guard|||Library guard|1
+ui-say.sh|Global defaults|||Global defaults|1
+ui-say.sh|Helpers|||Helpers|1
+ui-say.sh|Public API ---------------------------------------------------------------------q|||Public API ---------------------------------------------------------------------q|1
+ui-say.sh|Declarations|Public API ---------------------------------------------------------------------q||Declarations|2
+ui-say.sh|Parse options|Public API ---------------------------------------------------------------------q||Parse options|2
+ui-say.sh|Resolve style tokens for this TYPE via maps (LBL_*, ICO_*, SYM_*, MSG_CLR_*)|Public API ---------------------------------------------------------------------q||Resolve style tokens for this TYPE via maps (LBL_*, ICO_*, SYM_*, MSG_CLR_*)|2
+ui-say.sh|Decode --show (supports "label,icon", "label+symbol", "all")|Public API ---------------------------------------------------------------------q||Decode --show (supports "label,icon", "label+symbol", "all")|2
+ui-say.sh|Build final output line and print|Public API ---------------------------------------------------------------------q||Build final output line and print|2
+ui-say.sh|Convenience wrappers for say() with a fixed TYPE.|Public API ---------------------------------------------------------------------q||Convenience wrappers for say() with a fixed TYPE.|2
+sgnd-core.sh|Library guard|||Library guard|1
+sgnd-core.sh|Public API|||Public API|1
+sgnd-core.sh|Runtime requirements|Public API||Runtime requirements|2
+sgnd-core.sh|Filesystem and paths|Public API||Filesystem and paths|2
+sgnd-core.sh|Values and variables|Public API||Values and variables|2
+sgnd-core.sh|Process and runtime|Public API||Process and runtime|2
+sgnd-core.sh|Diagnostics and execution|Public API||Diagnostics and execution|2
+sgnd-core.sh|Collections and strings|Public API||Collections and strings|2
+sgnd-core.sh|Terminal text layout|Public API||Terminal text layout|2
+sgnd-core.sh|Validation|Public API||Validation|2
+ui.sh|Library guard|||Library guard|1
+ui.sh|Compatibility overrides|||Compatibility overrides|1
+ui.sh|Helpers|||Helpers|1
+ui.sh|Public API|||Public API|1
+ui.sh|Public helpers|Public API||Public helpers|2
+ui.sh|Theme loading|Public API||Theme loading|2
+ui.sh|Styling helpers|Public API||Styling helpers|2
+ui.sh|Runmode indicators|Public API||Runmode indicators|2
+ui.sh|Rendering primitives|Public API||Rendering primitives|2
+ui.sh|Externals|Public API||Externals|2
+ui.sh|Sample/demo renderers|Public API||Sample/demo renderers|2
+ui-dlg.sh|Library guard|||Library guard|1
+ui-dlg.sh|Internal helpers|||Internal helpers|1
+ui-dlg.sh|Public API|||Public API|1
+ui-dlg.sh|Helpers|||Helpers|3
+ui-dlg.sh|Runtime state|||Runtime state|3
+sgnd-system.sh|Library guard|||Library guard|1
+sgnd-system.sh|Public API|||Public API|1
+sgnd-system.sh|Privilege and runtime requirements|Public API||Privilege and runtime requirements|2
+sgnd-system.sh|Network|Public API||Network|2
+sgnd-system.sh|User context and ownership|Public API||User context and ownership|2
+sgnd-system.sh|Operating system information|Public API||Operating system information|2
+sgnd-system.sh|Failure and command execution|Public API||Failure and command execution|2
+sgnd-bootstrap-env.sh|Library guard|||Library guard|1
+sgnd-bootstrap-env.sh|Runtime directory metadata|||Runtime directory metadata|1
+sgnd-bootstrap-env.sh|Helpers|||Helpers|1
+sgnd-info.sh|Library guard|||Library guard|1
+sgnd-info.sh|Internal helpers|||Internal helpers|1
+sgnd-info.sh|Public API|||Public API|1
+sgnd-comment-header-parser.sh|Library guard|||Library guard|1
+sgnd-comment-header-parser.sh|Public API|||Public API|1
+ui-ask.sh|Library guard|||Library guard|1
+ui-ask.sh|Internal helpers|||Internal helpers|1
+ui-ask.sh|Public API|||Public API|1
+ui-ask.sh|Use shared prompt builder|||Use shared prompt builder|3
+ui-ask.sh|Instant choice handling|||Instant choice handling|3
+ui-ask.sh|Input coloring (match ask behavior)|||Input coloring (match ask behavior)|3
+ui-ask.sh|auto-align pass|||auto-align pass|3
+ui-ask.sh|prompt pass|||prompt pass|3
+sgnd-menu.sh|Library guard|||Library guard|1
+sgnd-menu.sh|Internal helpers|||Internal helpers|1
+sgnd-menu.sh|Toggle formatting|||Toggle formatting|1
+sgnd-menu.sh|Toggle labels|||Toggle labels|1
+sgnd-menu.sh|Toggle actions|||Toggle actions|1
+sgnd-menu.sh|Session actions|||Session actions|1
+sgnd-menu.sh|Menu model cache|||Menu model cache|1
+sgnd-menu.sh|Menu model indexes|||Menu model indexes|1
+sgnd-menu.sh|Menu layout measurement|||Menu layout measurement|1
+sgnd-menu.sh|Menu pagination|||Menu pagination|1
+sgnd-menu.sh|Menu rendering|||Menu rendering|1
+sgnd-menu.sh|Public API|||Public API|1
+sgnd-menu.sh|Menu input and dispatch|||Menu input and dispatch|1
+sgnd-definitions.sh|Library guard|||Library guard|1
+sgnd-definitions.sh|Framework identity|||Framework identity|1
+sgnd-definitions.sh|Framework defaults|||Framework defaults|1
+sgnd-definitions.sh|Framework metadata|||Framework metadata|1
+23-style-psychedelic.sh|say() global defaults|||say() global defaults|1
+23-style-psychedelic.sh|Say prefixes|||Say prefixes|1
+23-style-psychedelic.sh|Semantic colors|||Semantic colors|1
+23-style-psychedelic.sh|Documentation summaries|||Documentation summaries|1
+22-style-redalert.sh|Documentation summaries|||Documentation summaries|1
+default-ui-palette.sh|Text attributes (SGR)|||Text attributes (SGR)|1
+default-ui-palette.sh|Color codes|||Color codes|1
+default-ui-palette.sh|Foreground colors|||Foreground colors|1
+default-ui-palette.sh|Background colors|||Background colors|1
+10-style-dark.sh|Documentation summaries|||Documentation summaries|1
+30-style-mono-green.sh|Documentation summaries|||Documentation summaries|1
+21-style-fantasy.sh|Documentation summaries|||Documentation summaries|1
+20-style-testadura.sh|Message colors|||Message colors|1
+20-style-testadura.sh|Progress display|||Progress display|1
+20-style-testadura.sh|Semantic UI colors|||Semantic UI colors|1
+20-style-testadura.sh|Documentation summaries|||Documentation summaries|1
+11-style-steelblue.sh|say() global defaults|||say() global defaults|1
+11-style-steelblue.sh|Say prefixes|||Say prefixes|1
+11-style-steelblue.sh|Semantic colors|||Semantic colors|1
+11-style-steelblue.sh|Documentation summaries|||Documentation summaries|1
+32-style-mono-blue.sh|say() global defaults|||say() global defaults|1
+32-style-mono-blue.sh|Say prefixes|||Say prefixes|1
+32-style-mono-blue.sh|Semantic colors|||Semantic colors|1
+32-style-mono-blue.sh|Documentation summaries|||Documentation summaries|1
+00-style-default.sh|Message type labels and icons|||Message type labels and icons|1
+00-style-default.sh|say() global defaults|||say() global defaults|1
+00-style-default.sh|Say prefixes|||Say prefixes|1
+00-style-default.sh|Colors|||Colors|1
+31-style-mono-amber.sh|say() global defaults|||say() global defaults|1
+31-style-mono-amber.sh|Say prefixes|||Say prefixes|1
+31-style-mono-amber.sh|Semantic colors|||Semantic colors|1
+31-style-mono-amber.sh|Documentation summaries|||Documentation summaries|1
+sgnd-setup.sh|Defaults|||Defaults|3
+sgnd-setup.sh|Standalone UI|||Standalone UI|3
+sgnd-setup.sh|Arguments and paths|||Arguments and paths|3
+sgnd-setup.sh|Standalone configuration|||Standalone configuration|3
+sgnd-setup.sh|Bootstrap housekeeping|||Bootstrap housekeeping|3
+sgnd-setup.sh|Release identity and discovery|||Release identity and discovery|3
+sgnd-setup.sh|Release verification|||Release verification|3
+sgnd-setup.sh|Manifest operations|||Manifest operations|3
+sgnd-setup.sh|Archive/release movement|||Archive/release movement|3
+sgnd-setup.sh|Release channel|||Release channel|3
+sgnd-setup.sh|Installation engine|||Installation engine|3
+sgnd-setup.sh|GitHub/source acquisition|||GitHub/source acquisition|3
+sgnd-setup.sh|Product package ZIP workflow|||Product package ZIP workflow|3
+sgnd-setup.sh|Interactive helpers|||Interactive helpers|3
+sgnd-setup.sh|Action dispatch|||Action dispatch|3
+sgnd-setup.sh|Main|||Main|3
+mcm-web-content-manager_preface.sh|Web Content Manager Authoring|||Web Content Manager Authoring|1
+mcm-web-content-manager_preface.sh|Tiles in a Responsive Grid|Web Content Manager Authoring||Tiles in a Responsive Grid|2
+mcm-web-content-manager_preface.sh|Sliding Image Gallery|Web Content Manager Authoring||Sliding Image Gallery|2
+mcm-web-content-manager_preface.sh|Callouts|Web Content Manager Authoring||Callouts|2
+mcm-web-content-manager_preface.sh|Inline and Image Classes|Web Content Manager Authoring||Inline and Image Classes|2
+mcm-web-content-manager_preface.sh|Featured Content|Web Content Manager Authoring||Featured Content|2
+mcm-web-content-manager_preface.sh|Publishing|Web Content Manager Authoring||drafts, previews, SEO, feeds|2
+manage-docker-server.sh|Bootstrap|||Bootstrap|1
+manage-docker-server.sh|Script metadata|||Script metadata|1
+manage-docker-server.sh|Framework integration|||Framework integration|1
+manage-docker-server.sh|Local declarations|||Local declarations|1
+manage-docker-server.sh|Host operations|||Host operations|1
+manage-docker-server.sh|Status / validation|||Status / validation|1
+manage-docker-server.sh|Action dispatch|||Action dispatch|1
+manage-docker-server.sh|Main|||Main|1
+manage-samba-file-server.sh|Bootstrap|||Bootstrap|1
+manage-samba-file-server.sh|Project libraries|||Project libraries|1
+manage-samba-file-server.sh|Script metadata|||Script metadata|1
+manage-samba-file-server.sh|Framework integration|||Framework integration|1
+manage-samba-file-server.sh|Local declarations|||Local declarations|1
+manage-samba-file-server.sh|Helpers|||Helpers|1
+manage-samba-file-server.sh|Actions|||Actions|1
+manage-samba-file-server.sh|Main|||Main|1
+manage-samba-shares.sh|Bootstrap|||Bootstrap|1
+manage-samba-shares.sh|Script identity|||Script identity|1
+manage-samba-shares.sh|Framework integration|||Framework integration|1
+manage-samba-shares.sh|Example|||Arguments|3
+manage-samba-shares.sh|Local declarations|||Local declarations|1
+manage-samba-shares.sh|Helpers|||Helpers|1
+manage-samba-shares.sh|Authentication-aware access-group selection|||Authentication-aware access-group selection|1
+manage-samba-shares.sh|Share-management menu|||Share-management menu|1
+manage-samba-shares.sh|Main|||Main|1
+manage-storage.sh|Bootstrap|||Bootstrap|1
+manage-storage.sh|Script metadata|||Script metadata|1
+manage-storage.sh|Framework integration|||Framework integration|1
+manage-storage.sh|Local declarations|||Local declarations|1
+manage-storage.sh|Internal helpers|||Internal helpers|1
+manage-storage.sh|Public module actions|||Public module actions|1
+manage-storage.sh|Action dispatch|||Action dispatch|1
+manage-storage.sh|Main|||Main|1
+manage-solidgroundux.sh|Bootstrap|||Bootstrap|1
+manage-solidgroundux.sh|Script metadata|||Script metadata|1
+manage-solidgroundux.sh|Framework integration|||Framework integration|1
+manage-solidgroundux.sh|Helpers|||Helpers|1
+manage-solidgroundux.sh|Actions|||Actions|1
+manage-solidgroundux.sh|Main|||Main|1
+management-console.sh|Bootstrap|||Bootstrap|3
+management-console.sh|Script metadata (identity)|||Script metadata (identity)|3
+management-console.sh|Script metadata (framework integration)|||Script metadata (framework integration)|3
+management-console.sh|Example|||Arguments|3
+management-console.sh|Local scripts and definitions|||Local scripts and definitions|3
+management-console.sh|Console state|||Console state|3
+management-console.sh|Console state ownership|||Console state ownership|3
+management-console.sh|Console paths|||Console paths|3
+management-console.sh|Console application context|||Console application context|3
+management-console.sh|Console configuration|||Console configuration|3
+management-console.sh|Action result tracking|||Action result tracking|3
+management-console.sh|Built-in menu registration|||Built-in menu registration|3
+management-console.sh|Module visibility|||Module visibility|3
+management-console.sh|Module loading|||Module loading|3
+management-console.sh|Script execution|||Script execution|3
+management-console.sh|Console loop|||Console loop|3
+management-console.sh|Console execution-context controls|||Console execution-context controls|3
+management-console.sh|Console module API|||Console module API|3
+management-console.sh|Main|||Main|3
+management-console.sh|Startup|||Startup|2
+management-console.sh|Main script logic|||Main script logic|2
+manage-samba-directories.sh|Bootstrap|||Bootstrap|1
+manage-samba-directories.sh|Script metadata|||Script metadata|1
+manage-samba-directories.sh|Framework integration|||Framework integration|1
+manage-samba-directories.sh|Local declarations|||Local declarations|1
+manage-samba-directories.sh|Storage and Samba discovery|||Storage and Samba discovery|1
+manage-samba-directories.sh|Identity discovery|||Identity discovery|1
+manage-samba-directories.sh|Directory ACL helpers|||Directory ACL helpers|1
+manage-samba-directories.sh|Directory lifecycle|||Directory lifecycle|1
+manage-samba-directories.sh|Menu|||Menu|1
+manage-samba-directories.sh|Main|||Main|1
+manage-identity.sh|Bootstrap|||Bootstrap|1
+manage-identity.sh|Script identity|||Script identity|1
+manage-identity.sh|Framework integration|||Framework integration|1
+manage-identity.sh|Example|||Arguments|3
+manage-identity.sh|Local script declarations|||Local script declarations|1
+manage-identity.sh|Local script functions|||Local script functions|1
+manage-identity.sh|Main|||Main|1
+manage-active-directory-server.sh|Bootstrap|||Bootstrap|1
+manage-active-directory-server.sh|Script metadata|||Script metadata|1
+manage-active-directory-server.sh|Framework integration|||Framework integration|1
+manage-active-directory-server.sh|Provisioning context|||Provisioning context|1
+manage-active-directory-server.sh|Helpers|||Helpers|1
+manage-active-directory-server.sh|Provisioning steps|||Provisioning steps|1
+manage-active-directory-server.sh|Validation/status|||Validation/status|1
+manage-active-directory-server.sh|Action dispatch|||Action dispatch|1
+manage-active-directory-server.sh|Main|||Main|1
+manage-sqlserver.sh|Bootstrap|||Bootstrap|1
+manage-sqlserver.sh|Script metadata|||Script metadata|1
+manage-sqlserver.sh|Framework integration|||Framework integration|1
+manage-sqlserver.sh|Local declarations|||Local declarations|1
+manage-sqlserver.sh|Internal helpers|||Internal helpers|1
+manage-sqlserver.sh|Role preparation|||Role preparation|1
+manage-sqlserver.sh|Configuration|||Configuration|1
+manage-sqlserver.sh|Status / validation|||Status / validation|1
+manage-sqlserver.sh|Action dispatch|||Action dispatch|1
+manage-sqlserver.sh|Main|||Main|1
+60-sqlserver.sh|Library guard|||Library guard|1
+60-sqlserver.sh|Module metadata|||Module metadata|1
+60-sqlserver.sh|Management dispatch|||Management dispatch|1
+60-sqlserver.sh|Module validation contract|||Module validation contract|1
+60-sqlserver.sh|Console registration|||Console registration|1
+10-computer-setup.sh|Library guard|||Library guard|1
+10-computer-setup.sh|Module metadata|||Module metadata|1
+10-computer-setup.sh|Module actions|||Module actions|1
+10-computer-setup.sh|Module validation contract|||Module validation contract|1
+10-computer-setup.sh|Console registration|||Console registration|1
+30-samba-file-server.sh|Library guard|||Library guard|1
+30-samba-file-server.sh|Module metadata|||Module metadata|1
+30-samba-file-server.sh|Project executable dispatch|||Project executable dispatch|1
+30-samba-file-server.sh|Server management dispatchers|||Server management dispatchers|1
+30-samba-file-server.sh|Share management dispatch|||Share management dispatch|1
+30-samba-file-server.sh|Module validation contract|||Module validation contract|1
+30-samba-file-server.sh|Console registration|||Console registration|1
+25-active-directory-client.sh|Library guard|||Library guard|1
+25-active-directory-client.sh|Module metadata|||Module metadata|1
+25-active-directory-client.sh|Management dispatch|||Management dispatch|1
+25-active-directory-client.sh|Module validation contract|||Module validation contract|1
+25-active-directory-client.sh|Console registration|||Console registration|1
+70-docker-server.sh|Library guard|||Library guard|1
+70-docker-server.sh|Module metadata|||Module metadata|1
+70-docker-server.sh|Management dispatch|||Management dispatch|1
+70-docker-server.sh|Module validation contract|||Module validation contract|1
+70-docker-server.sh|Console registration|||Console registration|1
+20-active-directory-server.sh|Library guard|||Library guard|1
+20-active-directory-server.sh|Module metadata|||Module metadata|1
+20-active-directory-server.sh|Management dispatch|||Management dispatch|1
+20-active-directory-server.sh|Module validation contract|||Module validation contract|1
+20-active-directory-server.sh|Console registration|||Console registration|1
+40-solidgroundux.sh|Library guard|||Library guard|1
+40-solidgroundux.sh|Module metadata|||Module metadata|1
+40-solidgroundux.sh|SolidGroundUX installation actions|||SolidGroundUX installation actions|1
+40-solidgroundux.sh|Framework diagnostics|||Framework diagnostics|1
+40-solidgroundux.sh|Framework configuration actions|||Framework configuration actions|1
+40-solidgroundux.sh|Framework logging actions|||Framework logging actions|1
+40-solidgroundux.sh|Framework state actions|||Framework state actions|1
+40-solidgroundux.sh|Module validation contract|||Module validation contract|1
+40-solidgroundux.sh|Console registration|||Console registration|1
+27-active-directory-management.sh|Library guard|||Library guard|1
+27-active-directory-management.sh|Module metadata|||Module metadata|1
+27-active-directory-management.sh|Management dispatch|||Management dispatch|1
+27-active-directory-management.sh|Module validation contract|||Module validation contract|1
+27-active-directory-management.sh|Console registration|||Console registration|1
+90-development.sh|Library guard|||Library guard|1
+90-development.sh|Module metadata|||Module metadata|1
+90-development.sh|Development actions|||Development actions|1
+90-development.sh|Module validation contract|||Module validation contract|1
+90-development.sh|Console registration|||Console registration|1
+55-web-content-management.sh|Library guard|||Library guard|1
+55-web-content-management.sh|Module metadata|||Module metadata|1
+55-web-content-management.sh|Management dispatch|||Management dispatch|1
+55-web-content-management.sh|Module validation contract|||Module validation contract|1
+55-web-content-management.sh|Console registration|||Console registration|1
+50-web-server.sh|Library guard|||Library guard|1
+50-web-server.sh|Module metadata|||Module metadata|1
+50-web-server.sh|Management dispatch|||Management dispatch|1
+50-web-server.sh|Module validation contract|||Module validation contract|1
+50-web-server.sh|Console registration|||Console registration|1
+45-solidground-framework-test.sh|Library guard|||Library guard|1
+45-solidground-framework-test.sh|Module metadata|||Module metadata|1
+45-solidground-framework-test.sh|Test agent|||Test agent|1
+45-solidground-framework-test.sh|Module validation contract|||Module validation contract|1
+45-solidground-framework-test.sh|Console registration|||Console registration|1
+15-storage.sh|Library guard|||Library guard|1
+15-storage.sh|Module metadata|||Module metadata|1
+15-storage.sh|Management dispatch|||Management dispatch|1
+15-storage.sh|Module validation contract|||Module validation contract|1
+15-storage.sh|Console registration|||Console registration|1
+manage-docker-containers.sh|Bootstrap|||Bootstrap|1
+manage-docker-containers.sh|Script metadata|||Script metadata|1
+manage-docker-containers.sh|Framework integration|||Framework integration|1
+manage-docker-containers.sh|Helpers|||Helpers|1
+manage-docker-containers.sh|Read-only actions|||Read-only actions|1
+manage-docker-containers.sh|Mutating actions|||Mutating actions|1
+manage-docker-containers.sh|Action dispatch|||Action dispatch|1
+manage-docker-containers.sh|Main|||Main|1
+manage-web-server.sh|Bootstrap|||Bootstrap|1
+manage-web-server.sh|Script metadata|||Script metadata|1
+manage-web-server.sh|Framework integration|||Framework integration|1
+manage-web-server.sh|Local declarations|||Local declarations|1
+manage-web-server.sh|Role preparation|||Role preparation|1
+manage-web-server.sh|Configuration|||Configuration|1
+manage-web-server.sh|Site management|||Site management|1
+manage-web-server.sh|SolidGroundUX documentation|||SolidGroundUX documentation|1
+manage-web-server.sh|Status / validation|||Status / validation|1
+manage-web-server.sh|Action dispatch|||Action dispatch|1
+manage-web-server.sh|Main|||Main|1
+publish-web-content.sh|Bootstrap|||Bootstrap|1
+publish-web-content.sh|Script metadata|||Script metadata|1
+publish-web-content.sh|Framework integration|||Framework integration|1
+publish-web-content.sh|Local declarations|||Local declarations|1
+publish-web-content.sh|Action dispatch|||Action dispatch|1
+publish-web-content.sh|Main|||Main|1
+manage-active-directory.sh|Bootstrap|||Bootstrap|1
+manage-active-directory.sh|Script metadata|||Script metadata|1
+manage-active-directory.sh|Framework integration|||Framework integration|1
+manage-active-directory.sh|Internal helpers|||Internal helpers|1
+manage-active-directory.sh|Directory overview|||Directory overview|1
+manage-active-directory.sh|User actions|||User actions|1
+manage-active-directory.sh|Group actions|||Group actions|1
+manage-active-directory.sh|Computer actions|||Computer actions|1
+manage-active-directory.sh|Action dispatch|||Action dispatch|1
+manage-active-directory.sh|Main|||Main|1
+manage-active-directory-client.sh|Bootstrap|||Bootstrap|1
+manage-active-directory-client.sh|Script metadata|||Script metadata|1
+manage-active-directory-client.sh|Framework integration|||Framework integration|1
+manage-active-directory-client.sh|Active Directory client implementation|||Active Directory client implementation|1
+manage-active-directory-client.sh|Internal helpers|||Internal helpers|1
+manage-active-directory-client.sh|Action dispatch|||Action dispatch|1
+manage-active-directory-client.sh|Main|||Main|1
+manage-framework-logging.sh|Bootstrap|||Bootstrap|1
+manage-framework-logging.sh|Script identity|||Script identity|1
+manage-framework-logging.sh|Framework integration|||Framework integration|1
+manage-framework-logging.sh|Example|||Arguments|3
+manage-framework-logging.sh|Local script declarations|||Local script declarations|1
+manage-framework-logging.sh|Local script functions|||Local script functions|1
+manage-framework-logging.sh|Main|||Main|1
+manage-framework-state.sh|Bootstrap|||Bootstrap|1
+manage-framework-state.sh|Script identity|||Script identity|1
+manage-framework-state.sh|Framework integration|||Framework integration|1
+manage-framework-state.sh|Example|||Arguments|3
+manage-framework-state.sh|Local script declarations|||Local script declarations|1
+manage-framework-state.sh|Local script functions|||Local script functions|1
+manage-framework-state.sh|Main|||Main|1
+manage-web-content.sh|Bootstrap|||Bootstrap|1
+manage-web-content.sh|Script metadata|||Script metadata|1
+manage-web-content.sh|Framework integration|||Framework integration|1
+manage-web-content.sh|Local declarations|||Local declarations|1
+manage-web-content.sh|Helpers|||Helpers|1
+manage-web-content.sh|Actions|||Actions|1
+manage-web-content.sh|Action dispatch|||Action dispatch|1
+manage-web-content.sh|Main|||Main|1
+manage-samba-users.sh|Bootstrap|||Bootstrap|1
+manage-samba-users.sh|Script metadata|||Script metadata|1
+manage-samba-users.sh|Framework integration|||Framework integration|1
+manage-samba-users.sh|Helpers|||Helpers|1
+manage-samba-users.sh|Overview|||Overview|1
+manage-samba-users.sh|Samba users|||Samba users|1
+manage-samba-users.sh|Local groups|||Local groups|1
+manage-samba-users.sh|Menu|||Menu|1
+manage-samba-users.sh|Main|||Main|1
+active-directory-management.sh|Library guard|||Library guard|1
+active-directory-management.sh|Shared DNS configuration|||Shared DNS configuration|1
+active-directory-management.sh|Shared validation|||Shared validation|1
+active-directory-management.sh|Shared host/network discovery|||Shared host/network discovery|1
+active-directory-management.sh|Shared AD state|||Shared AD state|1
+active-directory-management.sh|Shared discovery|||Shared discovery|1
+wrapper-template|Bootstrap|||Bootstrap|1
+wrapper-template|Wrapper target|||Wrapper target|1
+wrapper-template|Main|||Main|1
+exe-template.sh|Bootstrap|||Bootstrap|1
+exe-template.sh|Script identity|||Script identity|1
+exe-template.sh|Framework integration|||Framework integration|1
+exe-template.sh|Example|||Arguments|3
+exe-template.sh|Local script declarations|||Local script declarations|1
+exe-template.sh|Local script functions|||Local script functions|1
+exe-template.sh|Main|||Main|1
+lib-template.sh|Library guard|||Library guard|1
+lib-template.sh|Internal helpers|||Internal helpers|1
+lib-template.sh|Public API|||Public API|1
+sdk-documentation_preface.sh|Documentation Generator|||Documentation Generator|1
+sdk-documentation_preface.sh|Documentation Workflow|Documentation Generator||Documentation Workflow|2
+sdk-documentation_preface.sh|Module Headers|Documentation Generator||Module Headers|2
+sdk-documentation_preface.sh|Documentation Labels|Documentation Generator||Documentation Labels|2
+sdk-documentation_preface.sh|Sections and Structure|Documentation Generator||Sections and Structure|2
+sdk-documentation_preface.sh|Style Hints|Documentation Generator||Style Hints|2
+sdk-documentation_preface.sh|Aligned Documentation|Documentation Generator||Aligned Documentation|2
+sdk-documentation_preface.sh|Tables|Documentation Generator||Tables|2
+sdk-documentation_preface.sh|Images|Documentation Generator||Images|2
+sdk-documentation_preface.sh|Generated Output|Documentation Generator||Generated Output|2
+sdk-documentation_preface.sh|Prefaces and Epilogues|Documentation Generator||Prefaces and Epilogues|2
+sdk-documentation_preface.sh|Documentation Conventions|Documentation Generator||Documentation Conventions|2
+sdk-documentation_preface.sh|Why Source-Based Documentation|Documentation Generator||Why Source-Based Documentation|2
+sdk_preface.sh|SolidGroundUX SDK|||SolidGroundUX SDK|1
+sdk_preface.sh|Product Boundaries|SolidGroundUX SDK||Product Boundaries|2
+sdk_preface.sh|Typical Workflow|SolidGroundUX SDK||Typical Workflow|2
+sdk_preface.sh|Repository-Shaped Workspaces|SolidGroundUX SDK||Repository-Shaped Workspaces|2
+sdk_preface.sh|Documentation as Part of Development|SolidGroundUX SDK||Documentation as Part of Development|2
+sdk_preface.sh|Deployment and Release|SolidGroundUX SDK||Deployment and Release|2
+sdk_preface.sh|Documentation Map|SolidGroundUX SDK||Documentation Map|2
+sdk-tools_preface.sh|SDK|||SDK|1
+sdk-tools_preface.sh|Typical Development Workflow|SDK||Typical Development Workflow|2
+sdk-tools_preface.sh|Creating a New Project|SDK||Creating a New Project|2
+sdk-tools_preface.sh|Development Phase|SDK||Development Phase|2
+sdk-tools_preface.sh|Development Deployment|SDK||Development Deployment|2
+sdk-tools_preface.sh|Metadata Management|SDK||Metadata Management|2
+sdk-tools_preface.sh|Documentation Generation|SDK||Documentation Generation|2
+sdk-tools_preface.sh|Workspace Deployment|SDK||Workspace Deployment|2
+sdk-tools_preface.sh|Preparing a Release|SDK||Preparing a Release|2
+sdk-tools_preface.sh|Why These Tools Exist|SDK||Why These Tools Exist|2
+sdk-tools_preface.sh|Workspace Layout|SDK||Workspace Layout|2
+sdk-tools_preface.sh|Development Conventions|SDK||Development Conventions|2
+sdk-deployment_preface.sh|Deployment|||Deployment|1
+sdk-deployment_preface.sh|Release Preparation|Deployment||Release Preparation|2
+sdk-deployment_preface.sh|Product Packages and First-Install Bundle|Deployment||Product Packages and First-Install Bundle|2
+sdk-deployment_preface.sh|Setup|Deployment||Setup|2
+sdk-deployment_preface.sh|First Installation|Deployment||First Installation|2
+sdk-deployment_preface.sh|Updating and Reconciliation|Deployment||Updating and Reconciliation|2
+sdk-deployment_preface.sh|Rollback, Reinstall, and Removal|Deployment||Rollback, Reinstall, and Removal|2
+sdk-deployment_preface.sh|GitHub Acquisition|Deployment||GitHub Acquisition|2
+sdk-deployment_preface.sh|Workspace Deployment|Deployment||Workspace Deployment|2
+sdk-deployment_preface.sh|Integrity and Recovery|Deployment||Integrity and Recovery|2
+templates_preface.sh|Templates|||Templates|1
+templates_preface.sh|Template Overview|Templates||Template Overview|2
+templates_preface.sh|Executable Template|Templates||Executable Template|2
+templates_preface.sh|Library Template|Templates||Library Template|2
+templates_preface.sh|Documentation Template|Templates||Documentation Template|2
+templates_preface.sh|Wrapper Template|Templates||Wrapper Template|2
+templates_preface.sh|Why Templates Matter|Templates||Why Templates Matter|2
+doc-generator.sh|Bootstrap|||Bootstrap|1
+doc-generator.sh|Script identity|||Script identity|1
+doc-generator.sh|Framework integration|||Framework integration|1
+doc-generator.sh|Local script functions|||Local script functions|1
+doc-generator.sh|Main|||Main|1
+doc-generator.sh|Startup|Main||Startup|2
+doc-generator.sh|Main script logic|Main||Main script logic|2
+prepare-template.sh|Bootstrap|||Bootstrap|1
+prepare-template.sh|Script identity|||Script identity|1
+prepare-template.sh|Framework integration|||Framework integration|1
+prepare-template.sh|Example|||Arguments|3
+prepare-template.sh|Local script declarations|||Local script declarations|1
+prepare-template.sh|Local script functions|||Local script functions|1
+prepare-template.sh|Main|||Main|1
+receive-files.sh|Bootstrap|||Bootstrap|1
+receive-files.sh|Script metadata (identity)|||Script metadata (identity)|1
+receive-files.sh|Script metadata (framework integration)|||Script metadata (framework integration)|1
+receive-files.sh|Local declarations|||Local declarations|1
+receive-files.sh|Receive helpers|||Receive helpers|1
+receive-files.sh|Main|||Main|1
+deploy-workspace.sh|Bootstrap|||Bootstrap|3
+deploy-workspace.sh|Script metadata (identity)|||Script metadata (identity)|3
+deploy-workspace.sh|Script metadata (framework integration)|||Script metadata (framework integration)|3
+deploy-workspace.sh|Local declarations|||Local declarations|3
+deploy-workspace.sh|Product discovery|||Product discovery|3
+deploy-workspace.sh|Selection helpers|||Selection helpers|3
+deploy-workspace.sh|Parameter collection|||Parameter collection|3
+deploy-workspace.sh|Reporting|||Reporting|3
+deploy-workspace.sh|Transport|||Transport|3
+deploy-workspace.sh|Main|||Main|3
+create-workspace.sh|Bootstrap|||Bootstrap|3
+create-workspace.sh|Script metadata|||Script metadata|1
+create-workspace.sh|Script metadata (framework integration)|Script metadata||Script metadata (framework integration)|2
+create-workspace.sh|Workspace template selection|||Workspace template selection|1
+create-workspace.sh|Local script functions|||Local script functions|1
+create-workspace.sh|General helpers|Local script functions||General helpers|2
+create-workspace.sh|Manifest helpers|Local script functions||Manifest helpers|2
+create-workspace.sh|Main sequence|Local script functions||Main sequence|2
+create-workspace.sh|Main|||Main|1
+create-workspace.sh|Startup|Main||Startup|2
+create-workspace.sh|Main script logic|Main||Main script logic|2
+create-workspace.sh|Uncreate mode|Main||Uncreate mode|2
+create-workspace.sh|'Normal' operation|Main||'Normal' operation|2
+prepare-release.sh|Bootstrap|||Bootstrap|1
+prepare-release.sh|Script metadata (identity)|||Script metadata (identity)|1
+prepare-release.sh|Script metadata (framework integration)|||Script metadata (framework integration)|1
+prepare-release.sh|Local script Declarations|||Local script Declarations|1
+prepare-release.sh|Local script functions|||Local script functions|1
+prepare-release.sh|Ensure staging directory|||Ensure staging directory|3
+prepare-release.sh|Stage clean copy|||Stage clean copy|3
+prepare-release.sh|Build paths|||Build paths|3
+prepare-release.sh|Create uncompressed tar|||Create uncompressed tar|3
+prepare-release.sh|Write uninstall manifest (external)|||Write uninstall manifest (external)|3
+prepare-release.sh|Write removed-path delta|||Write removed-path delta|3
+prepare-release.sh|Embed manifest into tar|||Embed manifest into tar|3
+prepare-release.sh|Compress to tar.gz|||Compress to tar.gz|3
+prepare-release.sh|Update SHA256SUMS|||Update SHA256SUMS|3
+prepare-release.sh|Release artifact identity|||Release artifact identity|1
+prepare-release.sh|Individual product release helpers|||Individual product release helpers|1
+prepare-release.sh|Main Sequence|||Main Sequence|1
+prepare-release.sh|Startup|Main Sequence||Startup|2
+prepare-release.sh|Main script logic|Main Sequence||Main script logic|2
+create-wrappers.sh|Bootstrap|||Bootstrap|1
+create-wrappers.sh|Script identity|||Script identity|1
+create-wrappers.sh|Framework integration|||Framework integration|1
+create-wrappers.sh|Helpers|||Helpers|1
+create-wrappers.sh|Main|||Main|1
+sgnd_doc_renderer.py|Python Renderer Backend|||Python Renderer Backend|1
+doc-sample.sh|This is a list item.|||This is a list item.|1
+doc-sample.sh|This is another list item.|||This is another list item.|1
+doc-sample.sh|Add list items where useful.|||Add list items where useful.|1
+doc-sample.sh|Keep list items concise.|||Keep list items concise.|1
+doc-processor.sh|Library guard|||Library guard|1
+doc-processor.sh|Local definitions|||Local definitions|1
+doc-processor.sh|Parser expressions|Local definitions||Parser expressions|2
+doc-processor.sh|Semantic registries|Local definitions||Semantic registries|2
+doc-processor.sh|Detectors|Local definitions||Detectors|2
+doc-processor.sh|Action|Local definitions||Action|2
+doc-processor.sh|Emitters|Local definitions||Emitters|2
+doc-processor.sh|Internal API|||Internal API|1
+doc-renderer.sh|Library guard|||Library guard|1
+doc-renderer.sh|Local definitions|||Local definitions|1
+doc-renderer.sh|Arguments|Local definitions||Arguments|2
+doc-renderer.sh|Helpers|Local definitions||Helpers|2
+doc-renderer.sh|Main sequence|||Main sequence|1
+solidgroundux-sdk-definitions.sh|Library guard|||Library guard|1
+solidgroundux-sdk-definitions.sh|SDK identity|||SDK identity|1

@@ -1,0 +1,46 @@
+linenr|content
+1|Testadura Non-Commercial License (TD-NC)
+2|Version 1.1 — 2026
+3|
+4|Copyright (c) 2026 Testadura Consultancy
+5|
+6|Permission is granted to any person obtaining a copy of this software (“the Software”) to
+7|use, copy, modify, and install it on any number of systems, including within commercial
+8|organizations for internal operational use, subject to the following conditions:
+9|
+10|1. Non-Commercial Restriction  
+11|   Redistribution, resale, sublicensing, or inclusion of the Software (or any derivative
+12|   work) in a commercially distributed product, commercial cloud-hosted platform, Software-as-a-Service (SaaS), 
+13|   or service is prohibited without prior written permission from the copyright holder.
+14|
+15|2. Attribution  
+16|   Copyright and attribution notices must be preserved in all copies or substantial
+17|   portions of the Software.
+18|
+19|3. No Trademark Rights  
+20|   No rights to the “Testadura”, “SolidGround”, “SolidgroundUX”, or related names, logos,
+21|   or branding are granted by this license.
+22|
+23|4. Warranty Disclaimer  
+24|   THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+25|   INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+26|   PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL THE COPYRIGHT HOLDER BE
+27|   LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+28|   TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE
+29|   USE OR OTHER DEALINGS IN THE SOFTWARE.
+30|
+31|5. Clarification of Intent  
+32|   Internal use within a commercial business — including modification and daily operational
+33|   use — is permitted and does not constitute “commercial use” under this license. The
+34|   restriction applies only to distribution or commercialization of the Software itself.
+35|
+36|   Use of the Software by consultants, contractors, or internal teams to deliver
+37|   services, automation, or infrastructure for a client is permitted, provided
+38|   the Software itself is not redistributed or sold as a standalone product.
+39|   
+40|   Scripts, tooling, or systems created using the Software are not considered
+41|   derivative works for the purpose of this license, provided they do not include
+42|   or redistribute the Software itself.
+43|
+44|For commercial licensing inquiries, please contact:
+45|    Mark Fieten, mark.fieten@testadura.nl

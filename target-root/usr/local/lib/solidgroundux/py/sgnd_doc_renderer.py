@@ -1722,38 +1722,25 @@ class DocRenderer:
                     shutil.copy2(source_file, branding_dir / target_name)
                     break
 
-    # fn: copy_site_favicon - Publish an optional site-wide favicon
+    # fn: copy_site_favicon - Publish an automatically discovered site favicon
     # . Purpose
-    #   Select one favicon for this documentation collection and publish it at the
-    #   generated site root. Without an explicit path, find favicon.ico among the
-    #   site documentation asset sources. Do not synthesize or embed an icon.
+    #   Find an icon in the selected products' documentation asset directories.
+    #   Prefer favicon.ico over favicon.png, regardless of source-directory order.
+    #   Publish the first matching icon at the generated site root. Without an
+    #   icon, leave the site without an explicit favicon link.
     # . Usage
     #   self.copy_site_favicon()
     def copy_site_favicon(self) -> None:
-        configured = self.config.get("VAL_SITE_FAVICON", "").strip()
-        sources: List[Path] = []
-        if configured:
-            path = Path(configured).expanduser()
-            if path.is_absolute():
-                sources.append(path)
-            else:
-                sources.extend(root / path for root in self.doc_source_dirs)
-                sources.extend(root / path for root in self.asset_source_dirs)
-                sources.append(self.input_dir / path)
-        else:
-            sources.extend(root / "favicon.ico" for root in self.asset_source_dirs)
-            sources.extend(root / "favicon.ico" for root in self.doc_source_dirs)
-        source = next((path for path in sources if path.is_file()), None)
-        if source is None:
-            if configured:
-                print(f"WARNING: configured site favicon not found: {configured}", file=sys.stderr)
-            return
-        extension = source.suffix.lower()
-        if extension not in (".ico", ".png", ".svg"):
-            print(f"WARNING: unsupported favicon format: {source}", file=sys.stderr)
-            return
-        self.favicon_filename = "favicon" + extension
-        shutil.copy2(source, self.output_dir / self.favicon_filename)
+        self.favicon_filename = ""
+        for filename in ("favicon.ico", "favicon.png"):
+            source = next(
+                (root / filename for root in self.asset_source_dirs if (root / filename).is_file()),
+                None,
+            )
+            if source is not None:
+                shutil.copy2(source, self.output_dir / filename)
+                self.favicon_filename = filename
+                return
 
     # fn: favicon_link - Render the site favicon link for a generated page
     # . Purpose

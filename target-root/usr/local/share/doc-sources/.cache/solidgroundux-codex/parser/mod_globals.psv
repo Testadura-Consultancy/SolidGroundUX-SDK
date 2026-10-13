@@ -1,0 +1,51 @@
+modulename|scope|audience|name|description|extra|currentvalue
+sgnd-definitions.sh|framework|system|SGND_SYSCFG_DIR|Framework-wide system configuration directory||/srv/storage/development/SolidGroundUX-SDK/target-root/etc/solidgroundux
+sgnd-definitions.sh|framework|system|SGND_DOCS_DIR|Framework-wide documentation directory||/srv/storage/development/SolidGroundUX-SDK/target-root/usr/local/share/doc
+sgnd-definitions.sh|framework|both|SGND_CONSOLE_LOG_LEVEL|Controls console message visibility. Supported values are silent, quiet, normal, verbose, debug, and trace.||normal
+sgnd-definitions.sh|framework|both|SGND_FILE_LOG_LEVEL|Controls file message visibility. Supported values are silent, quiet, normal, verbose, debug, and trace.||verbose
+sgnd-definitions.sh|framework|system|SGND_LOG_PATH|Primary log file or directory path||/srv/storage/development/SolidGroundUX-SDK/target-root/var/log/solidgroundux.log
+sgnd-definitions.sh|framework|both|SGND_ALTLOG_PATH|Alternate log path override||/home/sysadmin/.log/solidgroundux.log
+sgnd-definitions.sh|framework|system|SGND_LOG_MAX_BYTES|Maximum log file size before rotation||26214400
+sgnd-definitions.sh|framework|system|SGND_LOG_KEEP|Number of rotated log files to retain||20
+sgnd-definitions.sh|framework|system|SGND_LOG_COMPRESS|Compress rotated log files||1
+sgnd-definitions.sh|framework|user|SGND_STATE_DIR|User-specific persistent state directory||/home/sysadmin/.state/solidgroundux
+sgnd-definitions.sh|framework|user|SGND_USRCFG_DIR|User-specific configuration directory||/home/sysadmin/.config/solidgroundux
+sgnd-definitions.sh|framework|both|SGND_UI_STYLE|Default UI style file (basename or path)||00-style-default.sh
+sgnd-definitions.sh|framework|both|SGND_UI_PALETTE|Default UI palette file (basename or path)||default-ui-palette.sh
+sgnd-definitions.sh|framework|both|SGND_UI_WARNING_DELAY|Default delay in seconds after warning messages; -1 waits for a keypress.||0.5
+sgnd-definitions.sh|framework|both|SGND_UI_ERROR_DELAY|Default delay in seconds after error messages; -1 waits for a keypress.||0.5
+sgnd-definitions.sh|framework|user|SAY_COLORIZE_DEFAULT|Default colorized console output setting||label
+sgnd-definitions.sh|framework|user|SAY_DATE_DEFAULT|Default timestamp visibility||0
+sgnd-definitions.sh|framework|user|SAY_SHOW_DEFAULT|Default console message visibility||label
+sgnd-definitions.sh|framework|user|SAY_DATE_FORMAT|Default date/time format for console output||%Y-%m-%d %H:%M:%S
+sgnd-definitions.sh|framework|both|SGND_CONSOLE_WIDTH|Prefered standard console width||80
+sgnd-definitions.sh|framework|both|SGND_MAX_RENDER_WIDTH|Render width upper limit||140
+sgnd-definitions.sh|runtime|both|SGND_FRAMEWORK_ROOT|Root path used as the base for framework filesystem locations.||/srv/storage/development/SolidGroundUX-SDK/target-root
+sgnd-definitions.sh|runtime|both|SGND_COMMON_LIB|Directory containing common SolidGroundUX library files.||/srv/storage/development/SolidGroundUX-SDK/target-root/usr/local/lib/solidgroundux/common
+sgnd-definitions.sh|runtime|both|SGND_GLOBALS_FOLDER|Directory containing framework and project definition libraries.||/srv/storage/development/SolidGroundUX-SDK/target-root/usr/local/lib/solidgroundux/globals
+sgnd-definitions.sh|runtime|both|SGND_COMMON_EXE|Directory containing common SolidGroundUX executable files.||/srv/storage/development/SolidGroundUX-SDK/target-root/usr/local/libexec/solidgroundux
+sgnd-definitions.sh|runtime|system|SGND_SYSCFG_DIR|Directory containing system-level SolidGroundUX configuration files.||/srv/storage/development/SolidGroundUX-SDK/target-root/etc/solidgroundux
+sgnd-definitions.sh|runtime|user|SGND_USRCFG_DIR|Directory containing user-level SolidGroundUX configuration files.||/home/sysadmin/.config/solidgroundux
+sgnd-definitions.sh|runtime|user|SGND_STATE_DIR|Directory containing user-level SolidGroundUX state files.||/home/sysadmin/.state/solidgroundux
+sgnd-definitions.sh|runtime|system|SGND_STYLE_DIR|Directory containing SolidGroundUX style and palette files.||/usr/local/lib/solidgroundux/styles
+sgnd-definitions.sh|runtime|system|SGND_DOCS_DIR|Directory containing SolidGroundUX documentation files.||/srv/storage/development/SolidGroundUX-SDK/target-root/usr/local/share/doc
+sgnd-definitions.sh|runtime|system|SGND_LOG_PATH|Primary logfile path for framework or application logging.||/srv/storage/development/SolidGroundUX-SDK/target-root/var/log/solidgroundux.log
+sgnd-definitions.sh|runtime|user|SGND_ALTLOG_PATH|Fallback user-level logfile path for framework or application logging.||/home/sysadmin/.log/solidgroundux.log
+sgnd-definitions.sh|runtime|both|SGND_LOG_MAX_BYTES|Maximum logfile size before log rotation is attempted.||26214400
+sgnd-definitions.sh|runtime|both|SGND_LOG_KEEP|Number of rotated logfile copies to retain.||20
+sgnd-definitions.sh|runtime|both|SGND_LOG_COMPRESS|Controls whether rotated logfiles are compressed.||1
+sgnd-definitions.sh|runtime|both|SGND_CONSOLE_LOG_LEVEL|Controls console message visibility. Supported values are silent, quiet, normal, verbose, debug, and trace.||normal
+sgnd-definitions.sh|runtime|both|SGND_FILE_LOG_LEVEL|Controls file message visibility. Supported values are silent, quiet, normal, verbose, debug, and trace.||verbose
+sgnd-definitions.sh|runtime|user|SGND_USER_HOME|Effective user home directory, honoring SUDO_USER when present.||/home/sysadmin
+sgnd-definitions.sh|runtime|both|SGND_UI_STYLE|Selected SolidGroundUX UI style file.||00-style-default.sh
+sgnd-definitions.sh|runtime|both|SGND_UI_PALETTE|Selected SolidGroundUX UI palette file.||default-ui-palette.sh
+sgnd-definitions.sh|runtime|both|SGND_UI_WARNING_DELAY|Delay in seconds after warning messages; -1 waits for a keypress.||0.5
+sgnd-definitions.sh|runtime|both|SGND_UI_ERROR_DELAY|Delay in seconds after error messages; -1 waits for a keypress.||0.5
+sgnd-definitions.sh|runtime|both|SGND_CONSOLE_WIDTH|Preferred standard width for console rendering primitives.||80
+sgnd-definitions.sh|runtime|both|SGND_MAX_RENDER_WIDTH|Upper limit applied to console rendering width.||140
+sgnd-definitions.sh|runtime|both|SAY_DATE_DEFAULT|Default setting controlling whether say output includes a timestamp.||0
+sgnd-definitions.sh|runtime|both|SAY_SHOW_DEFAULT|Default say output prefix mode, such as label, icon, symbol, or combinations.||label
+sgnd-definitions.sh|runtime|both|SAY_COLORIZE_DEFAULT|Default say colorization mode, such as none, label, msg, both, all, or date.||label
+sgnd-definitions.sh|runtime|both|SAY_DATE_FORMAT|Date format used when say output includes timestamps.||%Y-%m-%d %H:%M:%S
+sgnd-definitions.sh|runtime|both|SGND_FRAMEWORK_CFG_BASENAME|Basename of the framework globals configuration file.||sgnd_framework_globals.cfg
+sgnd-definitions.sh|runtime|user|SGND_FRAMEWORK_STATEFILE|User-specific framework runtime state file.||/home/sysadmin/.config/solidgroundux/framework.state

@@ -93,7 +93,7 @@ set -uo pipefail
         #   Hold the normalized parser tables used by Full-update, Selected, and Changed modes.
         #
         # . Behavior
-        #   - Defaults to usr/local/share/doc-sources/.cache/<site-slug>/parser.
+        #   - Defaults to the configured documentation collection cache's parser directory.
         #   - Lives outside the rendered website so the output tree is fully disposable.
         #   - May be overridden by callers before rendering.
         DOC_PARSER_CACHE_DIR=""
@@ -103,7 +103,7 @@ set -uo pipefail
         #   Hold the complete exported renderer input set for fast HTML-only rebuilds.
         #
         # . Behavior
-        #   - Defaults to usr/local/share/doc-sources/.cache/<site-slug>/renderer.
+        #   - Defaults to the configured documentation collection cache's renderer directory.
         #   - Is refreshed after Full, Selected, and Changed generation.
         #   - Is consumed directly by Render mode without reparsing source files.
         #   - Lives outside the rendered website so every render can replace the full site.
@@ -201,21 +201,38 @@ set -uo pipefail
             printf '%s\n' "${value:-documentation}"
         }
 
-        # fn: _doc_cache_root_dir - Resolve the external cache root for the current site
+        # fn: _doc_cache_root_dir - Resolve the persistent cache for the selected documentation root
             # . Purpose
-            #   Keep parser and renderer working state beneath canonical doc-sources,
-            #   separate from the disposable generated website tree.
+            #   Keep parser and renderer state tied to VAL_DOCUMENT_ROOT, not to the
+            #   installation or development location of the framework executable.
+            #   For the canonical share/doc root, use the sibling share/doc-sources/.cache;
+            #   for another configured documentation root, use its own .cache directory.
+            #   In both cases the cache stays outside the disposable generated site.
             #
             # . Output
-            #   Writes usr/local/share/doc-sources/.cache/<site-slug> beneath the active framework root.
+            #   Writes <cache-base>/<site-slug> to stdout.
             #
+            # . Returns
+            #   0 when the documentation root is configured; 1 otherwise.
             # . Usage
             #   _doc_cache_root_dir
         _doc_cache_root_dir() {
-            local framework_root="${SGND_FRAMEWORK_ROOT:-/}"
+            local document_root="${VAL_DOCUMENT_ROOT:-}"
+            local cache_base=""
             local site_slug=""
+
+            [[ -n "$document_root" && "$document_root" != "/" ]] || {
+                sayfail "Cannot resolve documentation cache: VAL_DOCUMENT_ROOT is missing or unsafe"
+                return 1
+            }
+            document_root="${document_root%/}"
+            if [[ "${document_root##*/}" == "doc" ]]; then
+                cache_base="$(dirname -- "$document_root")/doc-sources/.cache"
+            else
+                cache_base="$document_root/.cache"
+            fi
             site_slug="$(_doc_cache_site_slug)"
-            printf '%s/usr/local/share/doc-sources/.cache/%s\n' "${framework_root%/}" "$site_slug"
+            printf '%s/%s\n' "$cache_base" "$site_slug"
         }
 
         # fn: _doc_parser_cache_dir - Resolve the persistent parser cache directory
@@ -224,7 +241,13 @@ set -uo pipefail
             # . Usage
             #   _doc_parser_cache_dir
         _doc_parser_cache_dir() {
-            printf '%s\n' "${DOC_PARSER_CACHE_DIR:-$(_doc_cache_root_dir)/parser}"
+            if [[ -n "${DOC_PARSER_CACHE_DIR:-}" ]]; then
+                printf '%s\n' "$DOC_PARSER_CACHE_DIR"
+            else
+                local cache_root=""
+                cache_root="$(_doc_cache_root_dir)" || return 1
+                printf '%s/parser\n' "$cache_root"
+            fi
         }
 
         # fn: _prepare_render_staging_directory - Prepare a fresh renderer output staging tree
@@ -593,7 +616,13 @@ set -uo pipefail
             # . Usage
             #   _doc_render_cache_dir
         _doc_render_cache_dir() {
-            printf '%s\n' "${DOC_RENDER_CACHE_DIR:-$(_doc_cache_root_dir)/renderer}"
+            if [[ -n "${DOC_RENDER_CACHE_DIR:-}" ]]; then
+                printf '%s\n' "$DOC_RENDER_CACHE_DIR"
+            else
+                local cache_root=""
+                cache_root="$(_doc_cache_root_dir)" || return 1
+                printf '%s/renderer\n' "$cache_root"
+            fi
         }
 
         # fn: _persist_parser_cache - Persist the normalized parser table set
@@ -612,16 +641,37 @@ set -uo pipefail
             local cache_dir=""
             local staging_dir=""
 
-            cache_dir="$(_doc_parser_cache_dir)"
+            cache_dir="$(_doc_parser_cache_dir)" || {
+                sayfail "Failed to resolve parser cache directory"
+                return 1
+            }
             staging_dir="${cache_dir}.new"
 
-            mkdir -p "$(dirname -- "$cache_dir")" || return 1
-            rm -rf -- "$staging_dir" || return 1
-            mkdir -p "$staging_dir" || return 1
-            cp -f "$source_dir"/*.psv "$staging_dir/" || return 1
+            mkdir -p "$(dirname -- "$cache_dir")" || {
+                sayfail "Failed to create cache parent directory: $(dirname -- "$cache_dir")"
+                return 1
+            }
+            rm -rf -- "$staging_dir" || {
+                sayfail "Failed to clear cache staging directory: $staging_dir"
+                return 1
+            }
+            mkdir -p "$staging_dir" || {
+                sayfail "Failed to create cache staging directory: $staging_dir"
+                return 1
+            }
+            cp -f "$source_dir"/*.psv "$staging_dir/" || {
+                sayfail "Failed to copy cache files into staging directory: $staging_dir"
+                return 1
+            }
 
-            rm -rf -- "$cache_dir" || return 1
-            mv -- "$staging_dir" "$cache_dir" || return 1
+            rm -rf -- "$cache_dir" || {
+                sayfail "Failed to remove previous cache directory: $cache_dir"
+                return 1
+            }
+            mv -- "$staging_dir" "$cache_dir" || {
+                sayfail "Failed to promote cache staging directory: $cache_dir"
+                return 1
+            }
 
             sayinfo "Parser cache updated: $cache_dir"
             return 0
@@ -643,16 +693,37 @@ set -uo pipefail
             local cache_dir=""
             local staging_dir=""
 
-            cache_dir="$(_doc_render_cache_dir)"
+            cache_dir="$(_doc_render_cache_dir)" || {
+                sayfail "Failed to resolve render cache directory"
+                return 1
+            }
             staging_dir="${cache_dir}.new"
 
-            mkdir -p "$(dirname -- "$cache_dir")" || return 1
-            rm -rf -- "$staging_dir" || return 1
-            mkdir -p "$staging_dir" || return 1
-            cp -a "$source_dir/." "$staging_dir/" || return 1
+            mkdir -p "$(dirname -- "$cache_dir")" || {
+                sayfail "Failed to create cache parent directory: $(dirname -- "$cache_dir")"
+                return 1
+            }
+            rm -rf -- "$staging_dir" || {
+                sayfail "Failed to clear cache staging directory: $staging_dir"
+                return 1
+            }
+            mkdir -p "$staging_dir" || {
+                sayfail "Failed to create cache staging directory: $staging_dir"
+                return 1
+            }
+            cp -a "$source_dir/." "$staging_dir/" || {
+                sayfail "Failed to copy cache files into staging directory: $staging_dir"
+                return 1
+            }
 
-            rm -rf -- "$cache_dir" || return 1
-            mv -- "$staging_dir" "$cache_dir" || return 1
+            rm -rf -- "$cache_dir" || {
+                sayfail "Failed to remove previous cache directory: $cache_dir"
+                return 1
+            }
+            mv -- "$staging_dir" "$cache_dir" || {
+                sayfail "Failed to promote cache staging directory: $cache_dir"
+                return 1
+            }
 
             sayinfo "Renderer cache updated: $cache_dir"
             return 0
@@ -816,7 +887,10 @@ set -uo pipefail
             return 1
         }
 
-        cache_dir="$(_doc_render_cache_dir)"
+        cache_dir="$(_doc_render_cache_dir)" || {
+            sayfail "Failed to resolve renderer cache directory"
+            return 1
+        }
         _validate_render_cache "$cache_dir" || {
             sayfail "No valid renderer cache is available: $cache_dir"
             sayinfo "Run Full, Selected, or Changed generation before using Render mode"
