@@ -1,0 +1,8 @@
+:root{font-family:system-ui,sans-serif;color:#202630;background:white}*{box-sizing:border-box}body{margin:0;line-height:1.55}.doc-header{padding:.8rem 1.5rem;border-bottom:1px solid #ddd;display:flex;justify-content:space-between}.doc-layout{display:grid;grid-template-columns:minmax(13rem,19rem) minmax(0,1fr);min-height:80vh}.doc-nav{padding:1rem;border-right:1px solid #ddd;overflow-wrap:anywhere}.doc-main{max-width:76rem;padding:1rem 2rem 3rem;width:100%;min-width:0}.doc-main img{max-width:100%;height:auto}.doc-main pre,.doc-main table{max-width:100%;overflow:auto}.doc-footer{padding:1rem;border-top:1px solid #ddd}@media(max-width:750px){.doc-layout{grid-template-columns:1fr}.doc-nav{border-right:0;border-bottom:1px solid #ddd}.doc-main{padding:1rem}}
+
+/* Shared technical documentation layouts (not td-* components). */
+.doc-entry{min-width:0}
+.doc-entry>h1:first-child{margin-top:0}
+.doc-function,.doc-variable,.doc-class,.doc-declaration{max-width:76rem}
+.doc-source ul{line-height:1.7}
+.doc-entry pre{white-space:pre;overflow:auto}
