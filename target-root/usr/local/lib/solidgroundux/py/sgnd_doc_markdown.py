@@ -13,12 +13,13 @@ import sys
 from collections import Counter
 from pathlib import Path
 
-DECL = re.compile(r'^\s*#\s+(fn\$?|cls|var|mod|exe|lib|doc)(:|\$)\s+([A-Za-z_][\w.:-]*)(?:\s+-\s+(.+))?\s*$')
+DECL = re.compile(r'^\s*#\s+(fn|cls|var|mod|exe|lib|doc)(:|\$)\s+([A-Za-z_][\w.:-]*)(?:\s+-\s+(.+))?\s*$')
 FIELD = re.compile(r'^\s*#\s*\.\s+(.+?)\s*$')
 COMMENT = re.compile(r'^\s*#(?: ?)(.*)$')
 SECTION = re.compile(r'^\s*#\s(-{1,3})\s+(.+?)\s*$')
 HEADER_TITLE = re.compile(r'^#\s+([^-]+?)\s+-\s+(.+?)\s*$')
-META = re.compile(r'^\s*#\s*(Version|Build|Purpose|Description|Group|Subgroup|Title)\s*:\s*(.*?)\s*$', re.I)
+USELESS_TITLE = re.compile(r'^[#=\-_*~ ]+$')
+META = re.compile(r'^\s*#\s*(Version|Build|Purpose|Description|Group|Subgroup|Title|Type)\s*:\s*(.*?)\s*$', re.I)
 IDENTITY = re.compile(r'[^a-z0-9]+')
 SKIP_DIRS = {'.git', '.cache', '__pycache__', 'node_modules', '.venv', 'venv', 'www-html', 'www-md'}
 
@@ -27,8 +28,74 @@ def slug(value: str) -> str:
     return IDENTITY.sub('-', value.lower()).strip('-') or 'untitled'
 
 
-def front(title: str, order: int = 1000, summary: str = '', *, section: bool = True, template: str = 'page') -> str:
-    values = {'title': title, 'nav_title': title, 'summary': summary, 'template': template,
+def is_template_source(rel: Path, metadata: dict, path: Path) -> bool:
+    if metadata.get('type', '').strip().casefold() == 'template':
+        return True
+    parts = tuple(part.casefold() for part in rel.parts[:-1])
+    return path.stem.casefold().endswith('-template') and any(part in ('templates', 'convenience-templates') for part in parts)
+
+
+def template_priority(product_id: str, rel: Path) -> tuple:
+    parts = tuple(part.casefold() for part in rel.parts)
+    product_rank = 0 if 'software development kit' in product_id.casefold() else 1
+    if parts[:5] == ('usr', 'local', 'lib', 'solidgroundux', 'templates'):
+        location_rank = 0
+    elif 'convenience-templates' in parts:
+        location_rank = 2
+    else:
+        location_rank = 1
+    return (product_rank, location_rank, len(parts), rel.as_posix())
+
+
+def build_template_owners(products: list[dict]) -> dict[str, tuple[str, str]]:
+    owners: dict[str, tuple[tuple, tuple[str, str]]] = {}
+    for product in products:
+        source = Path(product['source_dir']).expanduser().resolve()
+        for candidate in sorted(p for p in source.rglob('*.sh') if p.is_file() and not any(part in SKIP_DIRS for part in p.relative_to(source).parts)):
+            rel = candidate.relative_to(source)
+            metadata, _, _ = parse_source(candidate)
+            if not is_template_source(rel, metadata, candidate):
+                continue
+            key = candidate.name.casefold()
+            current = (template_priority(product['id'], rel), (product['id'], rel.as_posix()))
+            if key not in owners or current[0] < owners[key][0]:
+                owners[key] = current
+    return {key: owner for key, (_, owner) in owners.items()}
+
+
+def prune_empty_headings(lines: list[str]) -> list[str]:
+    cleaned: list[str] = []
+    i = 0
+    heading = re.compile(r'^#{2,6}\s+')
+    while i < len(lines):
+        line = lines[i]
+        if heading.match(line.strip()):
+            j = i + 1
+            block: list[str] = []
+            while j < len(lines) and not heading.match(lines[j].strip()):
+                block.append(lines[j])
+                j += 1
+            meaningful = any(item.strip() and not re.fullmatch(r'[`*_=-]{3,}', item.strip()) for item in block)
+            if meaningful:
+                cleaned.append(line)
+                cleaned.extend(block)
+            i = j
+            continue
+        cleaned.append(line)
+        i += 1
+    result: list[str] = []
+    previous_blank = False
+    for line in cleaned:
+        blank = not line.strip()
+        if blank and previous_blank:
+            continue
+        result.append(line)
+        previous_blank = blank
+    return result
+
+
+def front(title: str, order: int = 1000, summary: str = '', *, section: bool = True, template: str = 'page', nav_title: str | None = None) -> str:
+    values = {'title': title, 'nav_title': title if nav_title is None else nav_title, 'summary': summary, 'template': template,
               'content_type': 'section' if section else 'page', 'nav_order': order,
               'draft': False, 'featured': False}
     return '---\n' + '\n'.join(f'{key}: {json.dumps(value, ensure_ascii=False)}' if isinstance(value, str)
@@ -74,7 +141,10 @@ def parse_source(path: Path):
     for line in lines[:30]:
         m = HEADER_TITLE.match(line)
         if m and 'title' not in meta:
-            meta['title'] = m.group(2).strip()
+            candidate = m.group(2).strip()
+            if not candidate or USELESS_TITLE.fullmatch(candidate):
+                continue
+            meta['title'] = candidate
             break
 
     entries = []
@@ -285,13 +355,13 @@ def directory_title(path: Path):
     return path.name.replace('-', ' ').replace('_', ' ').strip().title()
 
 
-def collect(product, content: Path, order: int, counters: Counter):
+def collect(product, content: Path, order: int, counters: Counter, template_owners: dict[str, tuple[str, str]]):
     """Use source metadata Group/Subgroup, never installation directories, for navigation."""
     source = Path(product['source_dir']).expanduser().resolve()
     if not source.is_dir():
         raise ValueError(f'Missing source directory: {source}')
     product_folder = content / slug(product['id'])
-    write_index(product_folder, product['title'], f'# {product["title"]}\n', order, template='chapter')
+    write_index(product_folder, product['title'], '', order, template='chapter')
     paths = sorted(p for p in source.rglob('*.sh') if p.is_file() and not any(part in SKIP_DIRS for part in p.relative_to(source).parts))
     records = []
     for path in paths:
@@ -303,13 +373,13 @@ def collect(product, content: Path, order: int, counters: Counter):
     special_pages = {}
     for group_index, group in enumerate(groups, 1):
         group_folder = product_folder / slug(group)
-        group_body = [f'# {group}', '']
+        group_body = []
         write_index(group_folder, group, '\n'.join(group_body), group_index, template='group')
         group_records = [r for r in records if (r[1].get('group', '').strip() or 'Ungrouped') == group]
         subgroup_names = sorted({r[1].get('subgroup', '').strip() for r in group_records if r[1].get('subgroup', '').strip()}, key=str.casefold)
         for subgroup_index, subgroup in enumerate(subgroup_names, 1):
             subfolder = group_folder / slug(subgroup)
-            write_index(subfolder, subgroup, f'# {subgroup}\n', subgroup_index, template='group')
+            write_index(subfolder, subgroup, '', subgroup_index, template='group')
         for path, metadata, entries, loc in group_records:
             subgroup = metadata.get('subgroup', '').strip()
             parent = group_folder / slug(subgroup) if subgroup else group_folder
@@ -323,7 +393,7 @@ def collect(product, content: Path, order: int, counters: Counter):
                 counters['files'] += 1
                 counters['lines'] += loc
                 continue
-            # A source is a section with its own overview and declaration pages.
+            # Keep one source document per file, with anchored public declarations.
             basename = slug(path.stem)
             source_folder = parent / basename
             if source_folder in route_names:
@@ -333,49 +403,92 @@ def collect(product, content: Path, order: int, counters: Counter):
             route_names.add(source_folder)
             counters['files'] += 1
             counters['lines'] += loc
-            counters['functions'] += sum(e['kind'].startswith('fn') for e in entries)
-            counters['declarations'] += sum(e['kind'] not in ('section', 'narrative') for e in entries)
+            is_template = is_template_source(rel, metadata, path)
+            if is_template:
+                owner = template_owners.get(path.name.casefold())
+                if owner and owner != (product['id'], rel.as_posix()):
+                    continue
+            documented = [entry for entry in entries
+                          if not (entry['kind'] in ('fn$', 'doc$') and not is_template)]
+            # A source with no useful documentation belongs in statistics, not navigation.
+            # Section markers alone are not content, nor is the source pathname.
+            has_source_content = (bool(metadata.get('purpose', '').strip() or metadata.get('description', '').strip())
+                                  or any(entry['kind'] not in ('section', 'narrative') for entry in documented)
+                                  or any(entry['kind'] in ('section', 'narrative')
+                                         and any(text.strip() for text in markdown_documentation(entry['lines']))
+                                         for entry in documented))
+            if not has_source_content:
+                continue
+            counters['functions'] += sum(e['kind'].startswith('fn') for e in documented)
+            counters['declarations'] += sum(e['kind'] not in ('section', 'narrative') for e in documented)
             for key in ('version', 'build'):
                 if metadata.get(key) and not counters.get(key):
                     counters[key] = metadata[key]
             title = metadata.get('title') or path.stem.replace('-', ' ')
-            introduction = [f'# {title}', '', f'**Source:** `{rel.as_posix()}`', '']
+            body = [f'**Source:** `{rel.as_posix()}`', '']
             if metadata.get('purpose'):
-                introduction += [metadata['purpose'], '']
+                body += [metadata['purpose'], '']
             if metadata.get('description'):
-                introduction += [metadata['description'], '']
-            # Section headings belong to the source index; declarations get pages.
-            # Relative links target the WCM page route (not the Markdown filename).
-            used_names = set()
-            declaration_number = 0
-            for entry in entries:
+                body += [metadata['description'], '']
+            public = [e for e in documented if e['kind'].startswith('fn') and not e['name'].startswith('_')]
+            internal = [e for e in documented if e['kind'].startswith('fn') and e['name'].startswith('_')]
+            if public:
+                body += ['## Public functions', '']
+                for entry in public:
+                    page_slug = slug(entry['name'])
+                    body.append(f'- [{entry["title"]}]({page_slug}/)')
+                body.append('')
+            if internal:
+                body += ['## Internal functions', '', '| Function | Purpose | Arguments | Output |',
+                         '| --- | --- | --- | --- |']
+                for entry in internal:
+                    def field_value(label):
+                        lines = entry['lines']
+                        for ix, line in enumerate(lines):
+                            if re.match(r'^\s*###\s+' + label + r's?\s*$', line, re.I):
+                                for value in lines[ix + 1:]:
+                                    if value.strip().startswith('### '):
+                                        break
+                                    if value.strip():
+                                        return value.strip().replace('|', r'\|')
+                        return '—'
+                    purpose = field_value('Purpose')
+                    if purpose == '—' and entry['title'] != entry['name']:
+                        purpose = entry['title'].replace('|', r'\|')
+                    body.append(f'| `{entry["name"]}` | {purpose} | {field_value("Arguments")} | {field_value("Output")} |')
+                body.append('')
+            # Public functions receive full pages. All other documentation
+            # remains on the source overview; internal functions appear only in the table.
+            used_public_slugs = set()
+            for entry in documented:
                 kind = entry['kind']
                 if kind == 'narrative':
-                    introduction += markdown_documentation(entry['lines']) + ['']
+                    body += markdown_documentation(entry['lines']) + ['']
+                elif kind == 'section':
+                    body += ['#' * min(2 + entry['level'], 6) + ' ' + entry['title'], '']
+                    body += markdown_documentation(entry['lines']) + ['']
+                elif kind.startswith('fn') and entry['name'].startswith('_'):
                     continue
-                if kind == 'section':
-                    introduction += ['#' * min(2 + entry['level'], 6) + ' ' + entry['title'], '']
-                    introduction += markdown_documentation(entry['lines']) + ['']
-                    continue
-                declaration_number += 1
-                template = declaration_template(kind)
-                page_name = slug(entry['name'])
-                if page_name in used_names:
-                    page_name = f'{page_name}-{declaration_number}'
-                used_names.add(page_name)
-                declaration_path = source_folder / f'{page_name}_NL.md'
-                body = [f'# {entry["title"]}', '', f'`{kind}: {entry["name"]}`', '']
-                body += markdown_documentation(entry['lines'])
-                declaration_path.parent.mkdir(parents=True, exist_ok=True)
-                declaration_path.write_text(
-                    front(entry['title'], declaration_number, template=template, section=False)
-                    + '\n'.join(body).strip() + '\n', encoding='utf-8')
-                introduction.append(f'- [{entry["title"]}]({page_name}/)')
-            if not entries:
-                introduction += ['No documentation comments found in source.', '']
-            source_template = source_document_template(path.name)
-            write_index(source_folder, title, '\n'.join(introduction),
-                        summary=metadata.get('purpose', ''), template=source_template)
+                elif kind.startswith('fn'):
+                    page_slug = slug(entry['name'])
+                    if page_slug in used_public_slugs:
+                        raise ValueError(f'Duplicate public function route in {rel}: {entry["name"]}')
+                    used_public_slugs.add(page_slug)
+                    page_path = source_folder / f'{page_slug}_NL.md'
+                    page_path.parent.mkdir(parents=True, exist_ok=True)
+                    declaration_body = [f'`{kind}: {entry["name"]}`', '']
+                    declaration_body += markdown_documentation(entry['lines'])
+                    page_path.write_text(
+                        front(entry['title'], len(used_public_slugs), template='function', section=False, nav_title=entry['name'])
+                        + '\n'.join(declaration_body).strip() + '\n', encoding='utf-8')
+                else:
+                    body += [f'### {entry["title"]}', '', f'`{kind}: {entry["name"]}`', '']
+                    body += markdown_documentation(entry['lines']) + ['']
+            # Remove structural headings whose section contains no documentation.
+            # Apply this to the assembled overview (including header narrative).
+            body = prune_empty_headings(body)
+            write_index(source_folder, title, '\n'.join(body),
+                        summary=metadata.get('purpose', ''), template='source')
     for section_folder, specials in special_pages.items():
         index_files = list(section_folder.glob('*_Index_NL.md'))
         if len(index_files) != 1:
@@ -392,7 +505,133 @@ def collect(product, content: Path, order: int, counters: Counter):
         for entries in specials['epilogue']:
             append_preface(closing, entries)
         index_file.write_text(prefix + '\n' + '\n'.join(intro) + '\n' + body + '\n' + '\n'.join(closing), encoding='utf-8')
+    # WCM uses section indexes as navigation metadata. Keep those with children,
+    # but explicitly mark empty ones as navigation-only, not publishable pages.
+    # Remove empty leaf sections completely.
+    for folder in sorted([product_folder, *product_folder.rglob('*')], key=lambda path: len(path.parts), reverse=True):
+        if not folder.is_dir():
+            continue
+        indexes = list(folder.glob('*_Index_NL.md'))
+        if len(indexes) != 1:
+            continue
+        index_file = indexes[0]
+        existing = index_file.read_text(encoding='utf-8')
+        front_end = existing.find('\n---\n', 4)
+        if front_end < 0:
+            raise ValueError(f'Invalid index front matter: {index_file}')
+        body = existing[front_end + len('\n---\n'):]
+        if body.strip():
+            continue
+        # Child index-only sections previously removed will not count.
+        has_descendants = any(child.is_file() and child.suffix == '.md' and child != index_file
+                              for child in folder.rglob('*.md'))
+        if has_descendants:
+            index_file.write_text(existing[:front_end] + '\nnav_only: true' + existing[front_end:], encoding='utf-8')
+        else:
+            index_file.unlink()
+            if folder != product_folder:
+                folder.rmdir()
     return len(paths)
+
+
+
+
+def _product_reference_files(source: Path, name: str) -> list[Path]:
+    """Only authored repository documents; never generated caches or website output."""
+    candidates = [source / name, source / 'usr/local/share/doc-sources' / name,
+                  source / 'target-root/usr/local/share/doc-sources' / name]
+    if name == 'LICENSE':
+        candidates += [source / 'usr/local/share/testadura/solidgroundux/LICENSE',
+                       source / 'target-root/usr/local/share/testadura/solidgroundux/LICENSE']
+    return [candidate for candidate in candidates if candidate.is_file()]
+
+
+def build_appendices(products: list[dict], content: Path, root: Path) -> dict:
+    """Build one bundle-level reference index from the actually published pages."""
+    appendix = content / 'appendices'
+    entries = []
+    variables = []
+    for product in products:
+        product_dir = content / slug(product['id'])
+        for source_page in product_dir.rglob('*_Index_NL.md'):
+            if source_page.parent == product_dir:
+                continue
+            text = source_page.read_text(encoding='utf-8')
+            if not re.search(r'^template: "source"$', text, re.M):
+                continue
+            match = re.search(r'^\*\*Source:\*\* `([^`]+)`', text, re.M)
+            if not match:
+                continue
+            src = match.group(1)
+            source_path = Path(product['source_dir']).expanduser().resolve() / src
+            if not source_path.is_file():
+                continue
+            meta, declarations, _ = parse_source(source_path)
+            route = '/' + source_page.parent.relative_to(content).as_posix() + '/'
+            for item in declarations:
+                name = item['name']
+                if not name or name.startswith('_'):
+                    continue
+                if item['kind'].startswith('fn'):
+                    target = source_page.parent / f'{slug(name)}_NL.md'
+                    if not target.is_file():
+                        continue
+                    entries.append({'name': name, 'description': item['title'] if item['title'] != name else '',
+                                    'product': product['title'], 'source': src,
+                                    'url': route + slug(name) + '/'})
+                elif item['kind'] == 'var':
+                    variables.append({'name': name, 'description': item['title'] if item['title'] != name else '',
+                                      'product': product['title'], 'source': src, 'url': route})
+    entries.sort(key=lambda row: (row['name'].casefold(), row['product'].casefold(), row['source']))
+    variables.sort(key=lambda row: (row['name'].casefold(), row['product'].casefold(), row['source']))
+    write_index(appendix, 'Appendices', '', 9999, template='group')
+    index = appendix / 'api-index'
+    write_index(index, 'API Index & Search', f'Search {len(entries)} documented public functions across the bundle.', 1, template='api-index')
+    (root / 'assets' / 'sgnd-api-index.json').write_text(json.dumps(entries, ensure_ascii=False, separators=(',', ':')), encoding='utf-8')
+    if variables:
+        sections = ['The following documented public variables are declared in the bundle.', '', '| Variable | Description | Product | Source |', '| --- | --- | --- | --- |']
+        for row in variables:
+            description = row['description'].replace('|', r'\|')
+            sections.append(f'| [`{row["name"]}`]({row["url"]}) | {description} | {row["product"]} | `{row["source"]}` |')
+        write_index(appendix / 'global-variables', 'Global Variables', '\n'.join(sections), 2, template='page')
+    license_lines = []
+    changes_lines = []
+    attribution_lines = []
+    for product in products:
+        source = Path(product['source_dir']).expanduser().resolve()
+        for name, target in [('LICENSE', license_lines), ('CHANGELOG.md', changes_lines)]:
+            files = _product_reference_files(source, name)
+            if not files:
+                continue
+            document = files[0].read_text(encoding='utf-8', errors='replace').strip()
+            if not document:
+                continue
+            target.extend(['## ' + product['title'], '', f'**Source:** `{files[0].relative_to(source)}`', ''])
+            if name == 'LICENSE':
+                target.extend('> ' + line if line.strip() else '>' for line in document.splitlines())
+            else:
+                target.append(document)
+            target.append('')
+        identities = set()
+        for path in source.rglob('*.sh'):
+            if any(part in SKIP_DIRS for part in path.relative_to(source).parts):
+                continue
+            for line in path.read_text(encoding='utf-8', errors='replace').splitlines()[:100]:
+                match = re.match(r'^#\s*(Developers?|Company|Copyright)\s*:\s*(.*?)\s*$', line, re.I)
+                if match and match.group(2) and match.group(2) != '-':
+                    identities.add((match.group(1).casefold(), match.group(2)))
+        if identities:
+            attribution_lines += ['## ' + product['title'], '']
+            attribution_lines.extend(f'- **{field.title()}:** {value}' for field, value in sorted(identities))
+            attribution_lines.append('')
+    if license_lines:
+        write_index(appendix / 'licenses', 'Licenses', '\n'.join(license_lines), 3, template='page')
+    if changes_lines:
+        write_index(appendix / 'change-logs', 'Change Logs', '\n'.join(changes_lines), 4, template='page')
+    if attribution_lines:
+        write_index(appendix / 'attribution', 'Attribution', '\n'.join(attribution_lines), 5, template='page')
+    return {'api_functions': len(entries), 'global_variables': len(variables),
+            'licenses': bool(license_lines), 'change_logs': bool(changes_lines), 'attribution': bool(attribution_lines)}
 
 
 def generate(bundle: dict, docs_root: Path | None = None) -> dict:
@@ -429,8 +668,10 @@ def generate(bundle: dict, docs_root: Path | None = None) -> dict:
             '[paths]\ncontent = content\ntemplates = templates\ncss = css\nimages = images\n', encoding='utf-8')
         counts = Counter()
         counts['products'] = len(products)
+        template_owners = build_template_owners(products)
         for i, product in enumerate(products, 1):
-            collect(product, content, i, counts)
+            collect(product, content, i, counts, template_owners)
+        counts.update(build_appendices(products, content, root))
         # Images referenced by comments belong to each product source tree.
         # Keep /assets/... links valid without depending on an external website.
         for product in products:
@@ -444,8 +685,7 @@ def generate(bundle: dict, docs_root: Path | None = None) -> dict:
                 raise ValueError(f'Chapter 0 Markdown missing: {custom}')
             preface = custom.read_text(encoding='utf-8')
         else:
-            preface = ('# ' + bundle.get('title', bundle['id']) + '\n\n'
-                       + '\n'.join(f'- **{label}:** {counts.get(key, 0)}' for label, key in
+            preface = ('\n'.join(f'- **{label}:** {counts.get(key, 0)}' for label, key in
                                    [('Products', 'products'), ('Source files', 'files'),
                                     ('Functions', 'functions'), ('Declarations', 'declarations'),
                                     ('Lines of code and comments', 'lines')]))
@@ -457,12 +697,18 @@ def generate(bundle: dict, docs_root: Path | None = None) -> dict:
         # Product resources are scoped to their chapter; no product can overwrite
         # another chapter's templates or the bundle-wide defaults.
         if docs_root:
-            for resource in ('assets', 'css', 'templates', 'images'):
+            for resource in ('assets', 'css', 'templates', 'images', 'js'):
                 if (docs_root / resource).is_dir():
                     if resource in ('assets', 'images'):
                         copy_assets_checked(docs_root / resource, root / resource)
                     else:
                         shutil.copytree(docs_root / resource, root / resource, dirs_exist_ok=True)
+        # Publish the existing branding logos in WCM's configured images folder.
+        if docs_root:
+            for logo_name in ('doc-index-logo.png', 'doc-header-logo.png', 'favicon.png'):
+                logo_source = docs_root / 'assets' / logo_name
+                if logo_source.is_file():
+                    shutil.copy2(logo_source, root / 'images' / logo_name)
         for product in products:
             source_root = Path(product['source_dir']).expanduser().resolve()
             chapter = slug(product['id'])
