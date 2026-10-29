@@ -426,11 +426,7 @@ set -uo pipefail
 
     # fn: _workspace_convenience_template_dir - Resolve the installed shared template library
     _workspace_convenience_template_dir() {
-        if [[ "${SGND_FRAMEWORK_ROOT:-/}" == "/" ]]; then
-            printf '%s\n' "/usr/local/share/solidgroundux/convenience-templates"
-        else
-            printf '%s\n' "${SGND_FRAMEWORK_ROOT%/}/usr/local/share/solidgroundux/convenience-templates"
-        fi
+        printf '%s\n' "${SGND_SHARE_DIR%/}/convenience-templates"
     }
 
     # fn: _resolve_convenience_template_selection - Select convenience templates for the workspace
@@ -661,9 +657,12 @@ set -uo pipefail
     # fn: _workspace_layout_file - Resolve the SDK-owned workspace layout configuration
     _workspace_layout_file() {
         local candidate=""
+        local root_prefix="${SGND_FRAMEWORK_ROOT%/}"
+        local installed_share="${SGND_SHARE_DIR#"$root_prefix"}"
+        # Prefer the staged shared directory, then fall back to the installed copy.
         local -a candidates=(
-            "${SGND_FRAMEWORK_ROOT%/}/usr/local/share/solidgroundux/workspace-layout.cfg"
-            "/usr/local/share/solidgroundux/workspace-layout.cfg"
+            "${SGND_SHARE_DIR%/}/workspace-layout.cfg"
+            "${installed_share%/}/workspace-layout.cfg"
         )
         for candidate in "${candidates[@]}"; do
             [[ -r "$candidate" ]] && { printf '%s\n' "$candidate"; return 0; }
