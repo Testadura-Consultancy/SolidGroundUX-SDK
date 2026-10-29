@@ -4,6 +4,10 @@ All notable changes to SolidGroundUX SDK are documented in this file.
 
 ## Unreleased
 
+### Changed
+
+- Updated Create Workspace template and workspace-layout lookup to use the canonical `SGND_SHARE_DIR`, retaining the installed-layout fallback for development/staged roots.
+
 ### Removed
 
 - Removed obsolete SDK documentation launchers (`sgnd-doc-generator`, `sgnd-doc-bundles`) and unused `doc-processor.sh`/`doc-renderer.sh` libraries. MCM is the sole owner of documentation generation.
