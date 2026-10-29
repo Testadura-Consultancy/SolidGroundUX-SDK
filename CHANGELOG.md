@@ -2,12 +2,16 @@
 
 All notable changes to SolidGroundUX SDK are documented in this file.
 
+## Backlog
+- `receive-files.sh` can leave its temporary `sgnd-receive-files.*.tar` archive behind when invoked without state handling: the archive removal callback is registered through `SGND_ON_EXIT_HANDLERS`, but the required exit-handler dispatch is not guaranteed in that invocation path. The issue was observed during deployment and remains **unfixed**; cleanup must be made independent of state handling in a subsequent change.
+
 ## Unreleased
 
 ## Release 2.1.2627801
 
 ### Changed
 
+- Documentation bundle management and source-to-Markdown generation are now owned by Management Console Modules (MCM). Any legacy SDK copies of these tools are obsolete and are not authoritative or synchronized from MCM.
 - Reworked release preparation around a single product-package model: every selected product is now emitted as its own product release ZIP; multi-product bundled releases are no longer produced.
 - Removed the redundant primary-product selection from multi-product release preparation; selected products remain peers and are prepared in the operator-selected order.
 - First-install packages now replace the former bundled-release role and use the independent Version/Build identity of `sgnd-setup.sh` rather than borrowing a selected product's release identity.

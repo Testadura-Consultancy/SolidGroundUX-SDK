@@ -6,7 +6,7 @@
 </td>
 <td valign="middle">
   <h2>SolidGroundUX SDK</h2>
-  <h4>Version 2.1.2626414 · © 2026 Testadura</h4>
+  <h4>Version 2.1.2630202 · © 2026 Testadura</h4>
 </td>
 </tr>
 </table>
@@ -32,7 +32,7 @@
 
 ## About SolidGroundUX SDK
 
-The **SolidGroundUX SDK** contains the development, documentation, workspace, deployment and release tooling used to build and maintain SolidGroundUX-based products.
+The **SolidGroundUX SDK** contains development, workspace, deployment and release-preparation tooling used to build and maintain SolidGroundUX-based products.
 
 The SDK was separated from the SolidGroundUX Framework so the Framework can remain focused on runtime services and reusable APIs. SDK tools consume the installed Framework in the same way as other SolidGroundUX applications, while retaining development-root awareness when they operate on staged products.
 
@@ -41,19 +41,19 @@ The SDK was separated from the SolidGroundUX Framework so the Framework can rema
 The SDK owns tooling for:
 
 - creating and deploying SolidGroundUX workspaces;
-- generating and rendering product documentation;
-- normalizing canonical Framework structures;
-- preparing individual and multi-product releases;
-- managing release installation, rollback and removal;
+- working with development workspaces and canonical Framework structures;
+- preparing individual product releases and first-install transport packages;
 - creating public wrappers and other development/release artifacts.
+
+The maintained **documentation bundle manager and source-to-Markdown generator** belong to **Management Console Modules (MCM)**. The website HTML generator and publisher are MCM-owned as well. Legacy documentation commands may still be present in SDK distribution trees; they are not the maintained implementation of that workflow. Installation, update, rollback and removal are handled by the Framework's standalone `sgnd-setup`, using packages prepared by the SDK.
 
 The SDK does **not** own the SolidGroundUX runtime or Management Console application. Those belong to the SolidGroundUX Framework and SolidGroundUX Management Console Modules respectively.
 
 ## Product-aware tooling
 
-SDK tools are designed around product identity rather than repository identity. A workspace may contain or operate on more than one product, and a release or documentation collection may combine products while preserving their individual ownership, metadata and release history.
+SDK tools are designed around product identity rather than repository identity. A workspace can contain or operate on more than one product. Release preparation can process several products while preserving each product's identity, metadata and history. MCM, rather than SDK, owns multi-repository documentation bundles.
 
-`doc-generator` supports multi-product collections, product-specific ignore configuration, deterministic duplicate handling and merged product assets. `prepare-release` supports individual product releases and combined bundles with product-specific metadata, collision checks and removal baselines.
+`prepare-release` supports selecting multiple products while building **separate product release packages**, with product-specific metadata, collision checks and removal baselines. When applicable, it can also build a **first-install transport ZIP** containing `sgnd-setup.sh` and the selected product packages. This is transport packaging, not a merged product release. For multi-repository source documentation, use MCM Documentation Bundles rather than the SDK's legacy documentation scripts.
 
 ## Workspace creation
 
@@ -64,3 +64,8 @@ Project descriptions are stored in the project definitions and reused when rende
 ## Framework dependency
 
 The SDK depends on the SolidGroundUX Framework. During development, Framework-owned resources are resolved from a local Framework when one is actually present; otherwise SDK tools fall back to the installed Framework without changing the SDK's own development-root context.
+
+
+## Documentation and website publishing workflow
+
+A documentation website follows **Assemble Markdown (MCM) → Generate Website (MCM) → Publish Website (MCM)**. An ordinary Markdown website starts at **Generate Website**. These stages run independently; publishing uses generated HTML and its configured remote destination. The SDK can provide source development and deployment tools, but does not own or configure these MCM workflows.

@@ -9,24 +9,99 @@
 # =====================================================================================
 set -uo pipefail
 
-_framework_locator() {
-    local script_file="" framework_root="" exe_common=""
-    script_file="$(readlink -f "${BASH_SOURCE[0]}")" || return 126
-    if [[ "$script_file" == /usr/* ]]; then
-        framework_root="/"
-    elif [[ "$script_file" == */usr/* ]]; then
-        framework_root="${script_file%%/usr/*}"
-    else
-        printf 'FATAL: Cannot determine SolidGroundUX framework root: %s\n' "$script_file" >&2
-        return 126
-    fi
-    SGND_FRAMEWORK_ROOT="$framework_root"
-    exe_common="${framework_root%/}/usr/local/lib/solidgroundux/common/sgnd-exe-common.sh"
-    [[ "$framework_root" == '/' ]] && exe_common="/usr/local/lib/solidgroundux/common/sgnd-exe-common.sh"
-    [[ -r "$exe_common" ]] || exe_common="/usr/local/lib/solidgroundux/common/sgnd-exe-common.sh"
-    [[ -r "$exe_common" ]] || { printf 'FATAL: Missing %s\n' "$exe_common" >&2; return 126; }
-    source "$exe_common"
-}
+    # fn$ _framework_locator - Resolve and load the active SolidGroundUX framework
+        # . Purpose
+        #   Determine the filesystem root of the currently executing SolidGroundUX tree
+        #   from the script's physical path, then load the executable runtime library.
+        #
+        # . Behavior
+        #   - Resolves the physical path of the executing script.
+        #   - Treats usr, etc, and var as the canonical top-level SolidGroundUX tree roots.
+        #   - Uses the last occurrence of one of those path components to determine the
+        #     active filesystem root.
+        #   - Resolves production scripts beneath /usr, /etc, or /var to root (/).
+        #   - Resolves staged/development trees to the path prefix preceding the detected
+        #     usr, etc, or var component.
+        #   - Loads sgnd-exe-common.sh from the resolved framework root when available.
+        #   - For staged/development trees where the executable common library is not
+        #     present, falls back to the installed framework copy without changing
+        #     SGND_FRAMEWORK_ROOT.
+        #
+        # . Globals (write)
+        #   SGND_FRAMEWORK_ROOT
+        #
+        # . Output
+        #   Writes fatal bootstrap errors to stderr using printf because framework UI
+        #   helpers are not available until sgnd-exe-common.sh has been loaded.
+        #
+        # . Returns
+        #   0 when the framework root was resolved and executable common library loaded.
+        #   126 when the script path cannot be resolved, no canonical root component can
+        #   be found, or the executable common library is unreadable.
+        #
+        # . Usage
+        #   _framework_locator || return $?
+    _framework_locator() {
+        local script_file=""
+        local path_without_root=""
+        local component=""
+        local framework_root=""
+        local exe_common=""
+        local index=0
+        local root_index=-1
+        local -a path_parts=()
+
+        script_file="$(readlink -f "${BASH_SOURCE[0]}")" || {
+            printf 'FATAL: Cannot resolve executable path: %s\n' "${BASH_SOURCE[0]}" >&2
+            return 126
+        }
+
+        path_without_root="${script_file#/}"
+        IFS='/' read -r -a path_parts <<< "$path_without_root"
+
+        for index in "${!path_parts[@]}"; do
+            component="${path_parts[$index]}"
+            case "$component" in
+                usr|etc|var)
+                    root_index=$index
+                    ;;
+            esac
+        done
+
+        if (( root_index < 0 )); then
+            printf 'FATAL: Cannot determine SolidGroundUX framework root from: %s\n' "$script_file" >&2
+            return 126
+        fi
+
+        if (( root_index == 0 )); then
+            framework_root="/"
+        else
+            framework_root=""
+            for (( index=0; index<root_index; index++ )); do
+                framework_root+="/${path_parts[$index]}"
+            done
+        fi
+
+        SGND_FRAMEWORK_ROOT="$framework_root"
+
+        if [[ "$SGND_FRAMEWORK_ROOT" == "/" ]]; then
+            exe_common="/usr/local/lib/solidgroundux/common/sgnd-exe-common.sh"
+        else
+            exe_common="${SGND_FRAMEWORK_ROOT%/}/usr/local/lib/solidgroundux/common/sgnd-exe-common.sh"
+
+            if [[ ! -r "$exe_common" ]]; then
+                exe_common="/usr/local/lib/solidgroundux/common/sgnd-exe-common.sh"
+            fi
+        fi
+
+        [[ -r "$exe_common" ]] || {
+            printf 'FATAL: Cannot read executable common library: %s\n' "$exe_common" >&2
+            return 126
+        }
+
+        # shellcheck source=/dev/null
+        source "$exe_common"
+    }
 
 SGND_SCRIPT_FILE="$(readlink -f "${BASH_SOURCE[0]}")"
 SGND_SCRIPT_DIR="$(dirname "$SGND_SCRIPT_FILE")"
