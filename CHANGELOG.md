@@ -2,10 +2,17 @@
 
 All notable changes to SolidGroundUX SDK are documented in this file.
 
-## Backlog
-- `receive-files.sh` can leave its temporary `sgnd-receive-files.*.tar` archive behind when invoked without state handling: the archive removal callback is registered through `SGND_ON_EXIT_HANDLERS`, but the required exit-handler dispatch is not guaranteed in that invocation path. The issue was observed during deployment and remains **unfixed**; cleanup must be made independent of state handling in a subsequent change.
-
 ## Unreleased
+
+### Removed
+
+- Removed obsolete SDK documentation launchers (`sgnd-doc-generator`, `sgnd-doc-bundles`) and unused `doc-processor.sh`/`doc-renderer.sh` libraries. MCM is the sole owner of documentation generation.
+- Removed tracked parser/renderer cache snapshots; future generated cache contents are ignored by Git. Retained documentation source examples and Create Workspace templates.
+
+### Fixed
+
+- `receive-files.sh` now removes its temporary archive on success or failure without relying on state/exit-handler dispatch.
+- `deploy-workspace` treats valid selections matching no deployable files as successful no-ops rather than transfer failures.
 
 ## Release 2.1.2627801
 

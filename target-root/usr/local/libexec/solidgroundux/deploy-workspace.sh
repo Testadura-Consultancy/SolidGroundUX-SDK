@@ -225,6 +225,7 @@ set -uo pipefail
     DEPLOY_STARTED_AT=""
     DEPLOY_FINISHED_AT=""
     REMOTE_CONTROL_PATH=""
+    NO_DEPLOYABLE_FILES=0
 
 # --- Product discovery ---------------------------------------------------------------
     # fn$ _deploy_product_record - Read product metadata from one target-root
@@ -448,7 +449,8 @@ set -uo pipefail
         #
         # . Returns
         #   0 when at least one deployable file was selected.
-        #   1 when a filter is invalid or no files match.
+        #   1 when a filter is invalid or source selection cannot proceed.
+        #   2 when valid filters match no deployable files (not an error).
         #
         # . Usage
         #   _select_files || return $?
@@ -498,7 +500,7 @@ set -uo pipefail
 
         if (( ${#SELECTED_PATHS[@]} == 0 )); then
             saywarning "No deployable files matched the filters."
-            return 1
+            return 2
         fi
 
         mapfile -d '' -t SELECTED_PATHS < <(printf '%s\0' "${SELECTED_PATHS[@]}" | sort -zu)
@@ -1072,35 +1074,47 @@ set -uo pipefail
         # . Returns
         #   0 after a successful receive operation.
         #   Non-zero when selection, transport, or receiver processing fails.
+        #   A valid selection with no matching files returns 0 and raises
+        #   NO_DEPLOYABLE_FILES without attempting a transfer.
         #
         # . Usage
         #   _deploy || return $?
     _deploy() {
-        local i=0 product_name="" product_root=""
+        local i=0 product_name="" product_root="" selection_status=0
 
+        NO_DEPLOYABLE_FILES=0
         DEPLOY_STARTED_AT="$(date --iso-8601=seconds)"
         DEPLOY_FINISHED_AT=""
         DEST_ROOT="${DEST_ROOT%/}"
         [[ -n "$DEST_ROOT" ]] || DEST_ROOT="/"
         DEPLOYED_PATHS=()
 
-        if [[ "$DEPLOY_TRANSPORT" == "remote" ]]; then
-            _start_remote_session || return $?
-            _ensure_remote_receiver_sudo || {
-                _stop_remote_session
-                return 1
-            }
-        fi
-
+        # Resolve file selections before opening SSH. An empty selection must
+        # not authenticate to a remote host or configure its sudoers policy.
         for i in "${!SELECTED_PRODUCT_ROOTS[@]}"; do
             product_root="${SELECTED_PRODUCT_ROOTS[$i]%/}"
             product_name="${SELECTED_PRODUCT_NAMES[$i]}"
             SRC_ROOT="$product_root"
 
             saystart "Selecting files for $product_name"
-            if ! _select_files; then
-                saywarning "No files selected for $product_name; skipping product."
-                continue
+            if _select_files; then
+                :
+            else
+                selection_status=$?
+                if (( selection_status == 2 )); then
+                    saywarning "No files selected for $product_name; skipping product."
+                    continue
+                fi
+                _stop_remote_session
+                return "$selection_status"
+            fi
+
+            if [[ "$DEPLOY_TRANSPORT" == "remote" && -z "$REMOTE_CONTROL_PATH" ]]; then
+                _start_remote_session || return $?
+                _ensure_remote_receiver_sudo || {
+                    _stop_remote_session
+                    return 1
+                }
             fi
 
             saystart "Deploying ${#SELECTED_PATHS[@]} file(s) from $product_name"
@@ -1128,11 +1142,13 @@ set -uo pipefail
             done
         done
 
-        (( ${#DEPLOYED_PATHS[@]} > 0 )) || {
+        if (( ${#DEPLOYED_PATHS[@]} == 0 )); then
             _stop_remote_session
-            saywarning "No deployable files matched the selected products and filters."
-            return 1
-        }
+            DEPLOY_FINISHED_AT="$(date --iso-8601=seconds)"
+            NO_DEPLOYABLE_FILES=1
+            saywarning "No deployable files matched the selected products and filters; nothing changed."
+            return 0
+        fi
 
         if [[ "${FLAG_DRYRUN:-0}" -eq 0 ]]; then
             LAST_DEPLOY_SUCCESS="$DEPLOY_STARTED_AT"
@@ -1174,6 +1190,8 @@ set -uo pipefail
         sgnd_save_state || return $?
 
         _deploy || return $?
+        # A successful no-op is not a completed deployment and needs no follow-up prompt.
+        (( NO_DEPLOYABLE_FILES == 0 )) || return 0
 
         ask_dlg_autocontinue \
             --seconds 15 \

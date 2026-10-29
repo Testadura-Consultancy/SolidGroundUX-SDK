@@ -45,7 +45,7 @@ The SDK owns tooling for:
 - preparing individual product releases and first-install transport packages;
 - creating public wrappers and other development/release artifacts.
 
-The maintained **documentation bundle manager and source-to-Markdown generator** belong to **Management Console Modules (MCM)**. The website HTML generator and publisher are MCM-owned as well. Legacy documentation commands may still be present in SDK distribution trees; they are not the maintained implementation of that workflow. Installation, update, rollback and removal are handled by the Framework's standalone `sgnd-setup`, using packages prepared by the SDK.
+The maintained **documentation bundle manager and source-to-Markdown generator** belong to **Management Console Modules (MCM)**. The website HTML generator and publisher are MCM-owned as well. The obsolete SDK documentation commands and parser/renderer libraries have been removed; documentation authoring examples and workspace templates remain available. Installation, update, rollback and removal are handled by the Framework's standalone `sgnd-setup`, using packages prepared by the SDK.
 
 The SDK does **not** own the SolidGroundUX runtime or Management Console application. Those belong to the SolidGroundUX Framework and SolidGroundUX Management Console Modules respectively.
 
@@ -53,7 +53,7 @@ The SDK does **not** own the SolidGroundUX runtime or Management Console applica
 
 SDK tools are designed around product identity rather than repository identity. A workspace can contain or operate on more than one product. Release preparation can process several products while preserving each product's identity, metadata and history. MCM, rather than SDK, owns multi-repository documentation bundles.
 
-`prepare-release` supports selecting multiple products while building **separate product release packages**, with product-specific metadata, collision checks and removal baselines. When applicable, it can also build a **first-install transport ZIP** containing `sgnd-setup.sh` and the selected product packages. This is transport packaging, not a merged product release. For multi-repository source documentation, use MCM Documentation Bundles rather than the SDK's legacy documentation scripts.
+`prepare-release` supports selecting multiple products while building **separate product release packages**, with product-specific metadata, collision checks and removal baselines. When applicable, it can also build a **first-install transport ZIP** containing `sgnd-setup.sh` and the selected product packages. This is transport packaging, not a merged product release. For multi-repository source documentation, use MCM Documentation Bundles.
 
 ## Workspace creation
 

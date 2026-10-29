@@ -359,10 +359,14 @@ set -uo pipefail
         # . Returns
         #   0 after successful validation and extraction.
         #   Non-zero when startup, validation, receiving, or extraction fails.
+        # . Cleanup
+        #   Always removes the received temporary archive before returning,
+        #   independently of the Framework exit-handler mechanism.
         #
         # . Usage
         #   main "$@"
    main() {
+    local receive_status=0
 
     _framework_locator || exit $?
 
@@ -372,9 +376,10 @@ set -uo pipefail
 
     saystart "Receiving files for target root $DEST_ROOT"
    
-    _receive_stream || return $?
-    _validate_archive || return $?
-    _extract_archive || return $?
+    # Cleanup also runs on errors; the Framework exit hook remains a safety net.
+    _receive_stream && _validate_archive && _extract_archive || receive_status=$?
+    _cleanup_archive
+    (( receive_status == 0 )) || return "$receive_status"
 
     sayend "Received files were placed beneath $DEST_ROOT"
     return 0
