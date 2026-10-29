@@ -20,6 +20,7 @@
 #     - Creates a repository-shaped target-root structure
 #     - Lists installed convenience templates and lets the user choose which to copy
 #     - Copies the selected convenience templates into the new project workspace
+#     - Optionally creates editable documentation preface and epilogue samples
 #     - Creates project-namespaced definitions in the SolidGroundUX globals folder
 #     - Optionally creates a simple 95-<project> MOTD identity entry
 #     - Generates a VS Code workspace file and standard .gitignore and .release-ignore
@@ -299,6 +300,7 @@ set -uo pipefail
 # - Workspace template selection ----------------------------------------------------
     WORKSPACE_SELECTED_TEMPLATES=()
     FLAG_CREATE_STARTERS=0
+    FLAG_CREATE_DOC_SAMPLES=0
     STARTER_TEMPLATE_NAMES=()
     STARTER_SCRIPT_NAMES=()
     STARTER_GROUPS=()
@@ -547,6 +549,32 @@ set -uo pipefail
             STARTER_GROUPS+=("$group")
             STARTER_SUBGROUPS+=("$subgroup")
         done
+    }
+
+    # fn: _resolve_documentation_samples - Offer editable documentation samples
+        # . Purpose
+        #   Allow a new workspace to include an editable preface and epilogue.
+        # . Behavior
+        #   - Asks once, using the existing Yes/No decision primitive.
+        #   - Defaults to No; automatic mode retains the default.
+        # . Outputs (globals)
+        #   FLAG_CREATE_DOC_SAMPLES
+        # . Returns
+        #   0 when the choice has been recorded.
+        # . Usage
+        #   _resolve_documentation_samples
+    _resolve_documentation_samples() {
+        local decision="No"
+        FLAG_CREATE_DOC_SAMPLES=0
+        (( ${FLAG_AUTO:-0} )) && return 0
+
+        sgnd_print
+        sgnd_print_sectionheader "Documentation samples"
+        ask_decision --label "Create preface and epilogue samples" \
+            --choices "Yes|Y,No|N" --default "No" --var decision \
+            --displaychoices 1 --labelwidth 35
+        [[ "$decision" == "YES" ]] && FLAG_CREATE_DOC_SAMPLES=1
+        return 0
     }
 
     # fn: _starter_target_path - Resolve conventional target path for a starter template
@@ -924,6 +952,7 @@ set -uo pipefail
             # workspace settings, so the selection is visible before confirmation.
             _resolve_convenience_template_selection || return 1
             _resolve_starter_scripts || return 1
+            _resolve_documentation_samples || return 1
 
             saydebug "${slug}"
 
@@ -970,6 +999,7 @@ set -uo pipefail
             fi
             sgnd_print_labeledvalue --label "Templates"       --value "$template_text"
             sgnd_print_labeledvalue --label "Starter scripts" --value "$([[ ${FLAG_CREATE_STARTERS:-0} -eq 1 ]] && printf yes || printf no)"
+            sgnd_print_labeledvalue --label "Documentation samples" --value "$([[ ${FLAG_CREATE_DOC_SAMPLES:-0} -eq 1 ]] && printf Yes || printf No)"
             sgnd_print_labeledvalue --label "Initialize Git"  --value "$([[ ${FLAG_GIT_INIT:-0} -eq 1 ]] && printf yes || printf no)"
             sgnd_print_labeledvalue --label "Create GitHub"   --value "$([[ ${FLAG_GITHUB_INIT:-0} -eq 1 ]] && printf yes || printf no)"
             if (( ${FLAG_GITHUB_INIT:-0} )); then
@@ -1051,6 +1081,73 @@ set -uo pipefail
 
         _copy_workspace_templates || return 1
         _create_starter_scripts || return 1
+        _create_documentation_samples || return 1
+    }
+
+    # fn: _create_documentation_samples - Add editable preface and epilogue sources
+        # . Purpose
+        #   Seed the documentation sources for a newly created product workspace.
+        # . Behavior
+        #   - Writes <project>_preface.sh and <project>_epilogue.sh under
+        #     target-root/usr/local/share/doc-sources, where the MCM Markdown generator
+        #     discovers documentation-only source files.
+        #   - Uses the selected group (or product title) for documentation navigation.
+        #   - Does not overwrite existing samples; honors dry-run and the manifest.
+        # . Returns
+        #   0 when both samples were created or already exist; non-zero on write errors.
+        # . Usage
+        #   _create_documentation_samples || return $?
+    _create_documentation_samples() {
+        local slug="" title="" group="" directory="" kind="" filename="" path="" heading="" purpose="" description=""
+        (( ${FLAG_CREATE_DOC_SAMPLES:-0} )) || return 0
+
+        slug="$(_project_slug)"
+        title="${PRODUCT_NAME:-$PROJECT_NAME}"
+        group="${PROJECT_GROUP:-$title}"
+        directory="${PROJECT_FOLDER}/target-root/usr/local/share/doc-sources"
+
+        for kind in preface epilogue; do
+            filename="${slug}_${kind}.sh"
+            path="${directory}/${filename}"
+            if [[ -e "$path" ]]; then
+                saywarning "Documentation sample already exists; keeping it: $path"
+                continue
+            fi
+            if (( ${FLAG_DRYRUN:-0} )); then
+                sayinfo "Would have created documentation sample: $path"
+                continue
+            fi
+            mkdir -p -- "$directory" || return 1
+            if [[ "$kind" == preface ]]; then
+                heading="Introduction"
+                purpose="Group preface"
+                description="Replace this paragraph with a brief introduction to ${title}."
+            else
+                heading="Further reading"
+                purpose="Group epilogue"
+                description="Replace this paragraph with closing notes, references, or next steps for ${title}."
+            fi
+            {
+                printf '# ==================================================================================\n'
+                printf '# %s - %s\n' "$title" "$heading"
+                printf '# ----------------------------------------------------------------------------------\n'
+                printf '# Metadata:\n'
+                printf '#   Version     : 2.1\n'
+                printf '#   Build       : -\n'
+                printf '#   Source      : %s\n' "$filename"
+                printf '#   Type        : documentation\n'
+                printf '#   Group       : %s\n' "$group"
+                printf '#   Purpose     : %s\n' "$purpose"
+                printf '# ==================================================================================\n'
+                printf '\n'
+                printf '# - %s ---------------------------------------------------------\n' "$heading"
+                printf '# > %s\n' "$description"
+                printf '# > Edit this file to expand the generated Markdown documentation.\n'
+            } > "$path" || return 1
+            _manifest_record_file "$path"
+            sayinfo "Created documentation sample: $path"
+        done
+        return 0
     }
 
     # fn: _workspace_default_logo - Resolve the default logo copied into new workspaces
