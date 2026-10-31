@@ -32,17 +32,13 @@
 #
 # > The group contains four main templates:
 #
-# >     exe-template.sh
-# >         Template for executable command-line tools.
+# > - **`exe-template.sh`** — Template for executable command-line tools.
 #
-# >     lib-template.sh
-# >         Template for reusable source-only libraries.
+# > - **`lib-template.sh`** — Template for reusable source-only libraries.
 #
-# >     doc-template.sh
-# >         Template for documentation prefaces, epilogues, and authored source pages.
+# > - **`doc-template.sh`** — Template for documentation prefaces, epilogues, and authored source pages.
 #
-# >     wrapper-template
-# >         Template for lightweight launcher scripts.
+# > - **`wrapper-template`** — Template for lightweight launcher scripts.
 #
 # -- Executable Template ------------------------------------------------------------
 #
@@ -77,7 +73,7 @@
 # > The documentation template is used for authored documentation source files such as
 # > product, group, and subgroup prefaces or epilogues. It provides the canonical
 # > documentation markers, style hints, image blocks, tables, and alignment syntax
-# > understood by the documentation generator.
+# > consumed by the MCM documentation generator.
 #
 # > The Management Console module template is owned by the Management Console Modules
 # > product and is therefore documented with that product rather than in this SDK

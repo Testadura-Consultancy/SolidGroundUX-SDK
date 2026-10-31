@@ -21,7 +21,7 @@
 #
 # > The SolidGroundUX SDK is the development and release-engineering companion to the
 # > SolidGroundUX Framework. It contains the tools and templates used to create
-# > repository-shaped workspaces, maintain metadata, generate documentation, deploy
+# > repository-shaped workspaces, maintain metadata, author documentation, deploy
 # > development trees, and prepare distributable product releases.
 #
 # > The SDK is not part of the Framework runtime. Applications and servers do not need
@@ -32,34 +32,30 @@
 #
 # > Version 2.1 separates the suite into three sibling products with clear ownership:
 # >
-# >     SolidGroundUX Framework
-# >         Bootstrap, runtime, configuration/state, logging, UI primitives, common
-# >         libraries, and reusable application APIs.
+# > - **`SolidGroundUX Framework`** — Bootstrap, runtime, configuration/state, logging, UI primitives, common libraries, and reusable application APIs.
 # >
-# >     SolidGroundUX Management Console Modules
-# >         The management-console host plus the modules and role managers used for
-# >         guided server administration.
+# > - **`SolidGroundUX Management Console Modules`** — The management-console host plus the modules and role managers used for guided server administration.
 # >
-# >     SolidGroundUX SDK
-# >         Development workspaces, documentation generation, development deployment,
-# >         templates, release preparation, and related engineering tools.
+# > - **`SolidGroundUX SDK`** — Development workspaces, documentation sources, development deployment, templates, release preparation, and related engineering tools.
 #
-# > MCM and SDK both depend on the Framework. They do not depend on each other.
+# > MCM and SDK both depend on the Framework. MCM also consumes source documentation
+# > authored in SDK workspaces, but the SDK does not invoke MCM to perform its tasks.
 #
 # -- Typical Workflow ---------------------------------------------------------------
 #
 # > A normal SDK-assisted development cycle is:
 # >
-# >     create or open a workspace
-# >         -> edit and test source
-# >         -> deploy the workspace to a development target when needed
-# >         -> update metadata and documentation
-# >         -> prepare a release
-# >         -> install/test the resulting product ZIP with sgnd-setup
+# > ```text
+# > create or open a workspace
+# >     -> edit and test source
+# >     -> deploy the workspace to a development target when needed
+# >     -> update metadata and documentation
+# >     -> prepare a release
+# >     -> install/test the resulting product ZIP with sgnd-setup
+# > ```
 # >
-# > The exact path is intentionally flexible. Documentation can be regenerated without
-# > preparing a release, and a workspace can be deployed repeatedly while code is still
-# > changing.
+# > The exact path is intentionally flexible. MCM can regenerate documentation without
+# > preparing a release, and SDK workspaces can be deployed repeatedly while code changes.
 #
 # -- Repository-Shaped Workspaces ---------------------------------------------------
 #
@@ -73,10 +69,10 @@
 #
 # -- Documentation as Part of Development ------------------------------------------
 #
-# > Documentation generation is a first-class SDK workflow rather than a release-time
-# > afterthought. Source comments provide the generated reference material, while
-# > documentation-only sources provide introductions, architecture, examples, boundaries,
-# > and closing material where prose adds value.
+# > Documentation authoring is part of SDK development: source comments provide reference
+# > material, while documentation-only sources provide introductions, architecture,
+# > examples, boundaries and closing material. The documentation bundle manager and
+# > Markdown/HTML generation and publishing workflows belong to MCM, not the SDK.
 #
 # > Product, group, and subgroup prefaces are landing-page content. Epilogues are used
 # > only when a section genuinely benefits from closing or reference material after its
@@ -97,22 +93,14 @@
 #
 # > The main SDK documentation areas are:
 # >
-# >     SDK
-# >         Workspace creation, metadata, release preparation, deployment helpers, and
-# >         the general development workflow.
+# > - **`SDK`** — Workspace creation, metadata, release preparation, deployment helpers, and the general development workflow.
 # >
-# >     Documentation Generator
-# >         Documentation syntax, parsing, rendering, navigation, images, tables,
-# >         prefaces/epilogues, and generated output.
+# > - **`Documentation Authoring`** — Comment syntax, Markdown examples, templates, and preface/epilogue source files. MCM manages bundles and generates/publishes the output.
 # >
-# >     Deployment
-# >         Release packages, Setup, first installation, GitHub acquisition, development
-# >         deployment, rollback, and recovery boundaries.
+# > - **`Deployment`** — Release packages, Setup, first installation, GitHub acquisition, development deployment, rollback, and recovery boundaries.
 # >
-# >     Templates
-# >         Canonical executable, library, module, wrapper, and documentation structures
-# >         used when creating new SolidGroundUX components.
+# > - **`Templates`** — Canonical executable, library, module, wrapper, and documentation structures used when creating new SolidGroundUX components.
 #
-# > Start with the SDK workflow when building something new, the Documentation Generator
-# > when changing the documentation model, and Deployment when turning a tested workspace
-# > into an installable release.
+# > Start with the SDK workflow when building something new, use MCM Documentation
+# > Bundles to generate and publish source documentation, and consult Deployment when
+# > turning a tested workspace into an installable release.

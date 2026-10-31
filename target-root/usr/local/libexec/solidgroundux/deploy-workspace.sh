@@ -23,6 +23,28 @@
 #   - Confirmed deployment settings are always saved; the success timestamp changes only after a successful receive operation
 #   - Changed-after defaults to the last successful deployment timestamp when available
 #
+# Usage:
+#   Run the executable from its shell command (or installed wrapper):
+#   ```bash
+#   deploy-workspace --local --source /srv/solidgroundux/target-root --directory usr/local/lib/solidgroundux --match '*.sh'
+#   deploy-workspace --remote sysadmin@192.168.0.253 --match management-console.sh
+#   deploy-workspace --remote sysadmin@192.168.0.253 --since-last
+#   ```
+#
+#   Script-specific options:
+#   - `--auto`, `-a`: Deploy immediately using saved settings.
+#   - `--local`, `-l`: Deploy to the local system.
+#   - `--remote VALUE`, `-r`: Deploy through SSH to user@host.
+#   - `--product-root VALUE`: Development root containing product repositories.
+#   - `--products VALUE`: Product selection (A, comma list, or range).
+#   - `--source VALUE`, `-s`: Explicit single workspace source root (compatibility).
+#   - `--target VALUE`, `-t`: Destination filesystem root.
+#   - `--directory VALUE`, `-d`: Optional directory below the workspace root.
+#   - `--match VALUE`, `-m`: Comma-separated filenames or shell-style file masks.
+#   - `--changed-after VALUE`, `-c`: Only include files modified after this date, timestamp, or datetime shortcut.
+#   - `--since-last`: Only include files changed since the last successful deployment.
+#   - `--receiver VALUE`: Path to receive-files.sh on the destination.
+#
 # Attribution:
 #   Developers  : Mark Fieten
 #   Company     : Testadura Consultancy
@@ -64,7 +86,9 @@ set -uo pipefail
         #   be found, or the executable common library is unreadable.
         #
         # . Usage
+        #   ```bash
         #   _framework_locator || return $?
+        #   ```
     _framework_locator() {
         local script_file=""
         local path_without_root=""
@@ -229,6 +253,16 @@ set -uo pipefail
 
 # --- Product discovery ---------------------------------------------------------------
     # fn$ _deploy_product_record - Read product metadata from one target-root
+        # . Purpose
+        #   Read product name, version, build and definitions path from a target root.
+        # . Arguments
+        #   $1  Product target-root directory.
+        # . Returns
+        #   0 when definitions are available; nonzero if the product cannot be identified.
+        # . Usage
+        #   ```bash
+        #   _deploy_product_record
+        #   ```
     _deploy_product_record() {
         local root="${1:?missing target root}"
         local globals_dir="${root%/}/usr/local/lib/solidgroundux/globals" file="" record=""
@@ -250,6 +284,18 @@ set -uo pipefail
     }
 
     # fn$ _deploy_parse_product_selection - Parse A/comma/range product selection
+        # . Purpose
+        #   Parse an all/comma/range selection into distinct product indexes.
+        # . Arguments
+        #   $1  Selection expression (A, comma list or numeric range).
+        #   $2  Number of discovered products.
+        #   $3  Name of the output array.
+        # . Returns
+        #   0 for a valid nonempty selection; 1 for an invalid range or token.
+        # . Usage
+        #   ```bash
+        #   _deploy_parse_product_selection
+        #   ```
     _deploy_parse_product_selection() {
         local spec="${1:-}" max="${2:-0}" token="" begin="" finish="" i=0 idx=0
         local -n out_ref=$3
@@ -285,6 +331,14 @@ set -uo pipefail
     }
 
     # fn$ _select_products - Discover and select deployable product repositories
+        # . Purpose
+        #   Discover available product repositories and collect a deployment selection.
+        # . Returns
+        #   0 when at least one product is selected; nonzero if discovery, selection or state saving fails.
+        # . Usage
+        #   ```bash
+        #   _select_products
+        #   ```
     _select_products() {
         local repo="" root="" record="" product="" version="" build="" defs=""
         local selection="" i=0 index=0
@@ -366,6 +420,8 @@ set -uo pipefail
 
 # --- Selection helpers ---------------------------------------------------------------
     # fn: _is_deployable_path - Test whether a relative workspace path is deployable
+        # . Purpose
+        #   Identify paths that are eligible for development deployment.
         # . Arguments
         #   $1  Relative path beneath SRC_ROOT.
         #
@@ -374,7 +430,9 @@ set -uo pipefail
         #   1 when the path is top-level, hidden, private, or marked .old.
         #
         # . Usage
+        #   ```bash
         #   _is_deployable_path "usr/local/bin/sgnd-console"
+        #   ```
     _is_deployable_path() {
         local rel="$1"
         local name=""
@@ -392,6 +450,8 @@ set -uo pipefail
     }
 
     # fn: _normalize_relative_path - Normalize and validate a workspace-relative path
+        # . Purpose
+        #   Validate and normalize a workspace-relative deployment path.
         # . Arguments
         #   $1  User-provided path.
         #
@@ -403,7 +463,9 @@ set -uo pipefail
         #   1 for absolute paths, empty paths, or parent traversal.
         #
         # . Usage
+        #   ```bash
         #   rel="$(_normalize_relative_path "usr/local/bin")"
+        #   ```
     _normalize_relative_path() {
         local rel="${1#./}"
 
@@ -414,6 +476,8 @@ set -uo pipefail
     }
 
     # fn: _add_selected_file - Add one deployable file to the normalized selection
+        # . Purpose
+        #   Add one eligible file to the deployment selection without duplicates.
         # . Arguments
         #   $1  Absolute filename beneath SRC_ROOT.
         #
@@ -424,7 +488,9 @@ set -uo pipefail
         #   0 always.
         #
         # . Usage
+        #   ```bash
         #   _add_selected_file "$SRC_ROOT/usr/local/bin/sgnd-console"
+        #   ```
     _add_selected_file() {
         local file="$1"
         local rel=""
@@ -453,7 +519,9 @@ set -uo pipefail
         #   2 when valid filters match no deployable files (not an error).
         #
         # . Usage
+        #   ```bash
         #   _select_files || return $?
+        #   ```
     _select_files() {
         local search_root="$SRC_ROOT"
         local directory=""
@@ -526,7 +594,9 @@ set -uo pipefail
         #   0 always.
         #
         # . Usage
+        #   ```bash
         #   _capture_cli_parameters "$@"
+        #   ```
     _capture_cli_parameters() {
         local arg=""
 
@@ -613,12 +683,16 @@ set -uo pipefail
     }
 
     # fn: _validate_parameters - Validate the resolved deployment settings
+        # . Purpose
+        #   Validate the resolved local or remote deployment settings.
         # . Returns
         #   0 when all required settings are valid.
         #   1 when one or more settings are unusable.
         #
         # . Usage
+        #   ```bash
         #   _validate_parameters || return $?
+        #   ```
     _validate_parameters() {
         local directory=""
         local product_root=""
@@ -706,7 +780,9 @@ set -uo pipefail
         #   1 when validation fails or the user cancels.
         #
         # . Usage
+        #   ```bash
         #   _getparameters || return $?
+        #   ```
     _getparameters() {
         local reply=""
         local since_last="N"
@@ -896,7 +972,9 @@ set -uo pipefail
         #   0 after displaying the summary.
         #
         # . Usage
+        #   ```bash
         #   _print_deployment_summary
+        #   ```
     _print_deployment_summary() {
         local destination=""
         local result="Completed"
@@ -937,6 +1015,8 @@ set -uo pipefail
 
 # --- Transport ----------------------------------------------------------------------
     # fn: _quote_remote_arg - Shell-quote one argument for the remote receive command
+        # . Purpose
+        #   Quote one argument for safe inclusion in a remote shell command.
         # . Arguments
         #   $1  Argument value.
         #
@@ -947,17 +1027,23 @@ set -uo pipefail
         #   0 always.
         #
         # . Usage
+        #   ```bash
         #   quoted="$(_quote_remote_arg "$DEST_ROOT")"
+        #   ```
     _quote_remote_arg() {
         printf '%q' "$1"
     }
 
     # fn: _stream_local - Stream selected workspace files to the local receiver
+        # . Purpose
+        #   Stream the selected archive to the local receiver.
         # . Returns
         #   Status returned by tar or receive-files.sh through pipefail.
         #
         # . Usage
+        #   ```bash
         #   _stream_local
+        #   ```
     _stream_local() {
         local -a receiver_args=("$RECEIVER_PATH" --target "$DEST_ROOT")
 
@@ -1002,6 +1088,14 @@ set -uo pipefail
     }
 
     # fn: _stop_remote_session - Close the shared SSH deployment connection
+        # . Purpose
+        #   Close the shared remote SSH connection when it was opened.
+        # . Returns
+        #   Status of the SSH control operation, if a session was started.
+        # . Usage
+        #   ```bash
+        #   _stop_remote_session
+        #   ```
     _stop_remote_session() {
         [[ -n "${REMOTE_CONTROL_PATH:-}" ]] || return 0
 
@@ -1021,7 +1115,9 @@ set -uo pipefail
         #   Non-zero when SSH, sudo, or sudoers validation fails.
         #
         # . Usage
+        #   ```bash
         #   _ensure_remote_receiver_sudo
+        #   ```
     _ensure_remote_receiver_sudo() {
         local remote_user="${REMOTE_TARGET%@*}"
         local sudoers_file="/etc/sudoers.d/solidgroundux-receiver"
@@ -1052,11 +1148,15 @@ set -uo pipefail
     }
 
     # fn: _stream_remote - Stream selected workspace files to the remote receiver over SSH
+        # . Purpose
+        #   Stream the selected archive to the receiver over SSH.
         # . Returns
         #   Status returned by tar, SSH, or receive-files.sh through pipefail.
         #
         # . Usage
+        #   ```bash
         #   _stream_remote
+        #   ```
     _stream_remote() {
         local remote_command=""
 
@@ -1071,6 +1171,8 @@ set -uo pipefail
     }
 
     # fn: _deploy - Select files and stream them to the configured receiver
+        # . Purpose
+        #   Select and send workspace files, including a successful no-change outcome.
         # . Returns
         #   0 after a successful receive operation.
         #   Non-zero when selection, transport, or receiver processing fails.
@@ -1078,7 +1180,9 @@ set -uo pipefail
         #   NO_DEPLOYABLE_FILES without attempting a transfer.
         #
         # . Usage
+        #   ```bash
         #   _deploy || return $?
+        #   ```
     _deploy() {
         local i=0 product_name="" product_root="" selection_status=0
 
@@ -1170,7 +1274,9 @@ set -uo pipefail
         #   Exit status from parameter collection, selection, transport, or receiver processing.
         #
         # . Usage
+        #   ```bash
         #   main "$@"
+        #   ```
     main() {
         local reply=0
 

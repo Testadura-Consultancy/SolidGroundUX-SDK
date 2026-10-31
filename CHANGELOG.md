@@ -10,6 +10,7 @@ All notable changes to SolidGroundUX SDK are documented in this file.
 
 ### Removed
 
+- Relocated the three legacy documentation-generation diagrams to MCM under `mcm-documentation-*` filenames; image content is unchanged pending architectural review.
 - Removed obsolete SDK documentation launchers (`sgnd-doc-generator`, `sgnd-doc-bundles`) and unused `doc-processor.sh`/`doc-renderer.sh` libraries. MCM is the sole owner of documentation generation.
 - Removed tracked parser/renderer cache snapshots; future generated cache contents are ignored by Git. Retained documentation source examples and Create Workspace templates.
 

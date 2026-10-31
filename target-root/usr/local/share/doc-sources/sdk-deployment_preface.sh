@@ -21,13 +21,9 @@
 #
 # > SolidGroundUX uses two deliberately different deployment paths:
 # >
-# >     Development deployment
-# >         `deploy-workspace.sh` transfers a workspace or selected workspace content to
-# >         a target root for testing. It does not create installed-release history.
+# > - **`Development deployment`** — `deploy-workspace.sh` transfers a workspace or selected workspace content to a target root for testing. It does not create installed-release history.
 # >
-# >     Release deployment
-# >         `prepare-release.sh` creates product release ZIPs. `sgnd-setup` validates and
-# >         installs those packages and owns update, rollback, reinstall, and removal.
+# > - **`Release deployment`** — `prepare-release.sh` creates product release ZIPs. `sgnd-setup` validates and installs those packages and owns update, rollback, reinstall, and removal.
 #
 # > The distinction matters. Development deployment optimizes the edit/test loop; Setup
 # > manages complete, identifiable releases.
@@ -41,13 +37,15 @@
 #
 # > A product release ZIP contains, at minimum:
 # >
-# >     release-package.info
-# >     <product>-<version.build>.tar.gz
-# >     <product>-<version.build>.tar.gz.sha256
-# >     <product>-<version.build>.manifest
-# >     <product>-<version.build>.manifest.sha256
-# >     <product>-<version.build>.removed
-# >     <product>-<version.build>.removed.sha256
+# > ```text
+# > release-package.info
+# > <product>-<version.build>.tar.gz
+# > <product>-<version.build>.tar.gz.sha256
+# > <product>-<version.build>.manifest
+# > <product>-<version.build>.manifest.sha256
+# > <product>-<version.build>.removed
+# > <product>-<version.build>.removed.sha256
+# > ```
 #
 # > `release-package.info` identifies the owning product before the payload is extracted.
 # > The tar archive is complete rather than incremental; the `.removed` manifest records
@@ -64,10 +62,12 @@
 # > For a clean machine, the generated first-install bundle collects the bootstrap entry
 # > point and the product packages needed to establish the suite. Its shape is:
 # >
-# >     sgnd-setup.sh
-# >     SolidGroundUX-<release>-release.zip
-# >     SolidGroundUX-Management-Console-Modules-<release>-release.zip
-# >     SolidGroundUX-SDK-<release>-release.zip
+# > ```text
+# > sgnd-setup.sh
+# > SolidGroundUX-<release>-release.zip
+# > SolidGroundUX-Management-Console-Modules-<release>-release.zip
+# > SolidGroundUX-SDK-<release>-release.zip
+# > ```
 #
 # > The bundle is a convenience/bootstrap container, not a fourth installed product.
 #
@@ -84,20 +84,26 @@
 #
 # > After installation the public entry point is:
 # >
-# >     sgnd-setup
+# > ```bash
+# > sgnd-setup
+# > ```
 #
 # > Common non-interactive actions include:
 # >
-# >     sgnd-setup --check
-# >     sgnd-setup --download
-# >     sgnd-setup --update
-# >     sgnd-setup --install
-# >     sgnd-setup --rollback
-# >     sgnd-setup --remove
+# > ```bash
+# > sgnd-setup --check
+# > sgnd-setup --download
+# > sgnd-setup --update
+# > sgnd-setup --install
+# > sgnd-setup --rollback
+# > sgnd-setup --remove
+# > ```
 #
 # > A specific local product ZIP can be supplied as a transient source:
 # >
-# >     sgnd-setup --install --source /tmp/SolidGroundUX-2.1.<build>-release.zip
+# > ```bash
+# > sgnd-setup --install --source /tmp/SolidGroundUX-2.1.<build>-release.zip
+# > ```
 #
 # > Automation can combine an action with `--auto`; project selection can be made
 # > explicit with `--project <slug>`. `--dryrun` previews filesystem actions without
@@ -110,7 +116,9 @@
 #
 # > A clean installation begins by extracting the first-install bundle and running:
 # >
-# >     sudo ./sgnd-setup.sh
+# > ```bash
+# > sudo ./sgnd-setup.sh
+# > ```
 #
 # > Setup can discover the adjacent product ZIPs, validate them, and install the selected
 # > products. The bootstrap copy is then replaced by the canonical installed Setup copy
@@ -170,12 +178,14 @@
 #
 # > A useful development sequence is:
 # >
-# >     edit source
-# >         -> deploy-workspace.sh
-# >         -> exercise/test target
-# >         -> regenerate documentation as needed
-# >         -> prepare-release.sh
-# >         -> sgnd-setup --install/--update using the produced ZIP
+# > ```text
+# > edit source
+# >     -> deploy-workspace.sh
+# >     -> exercise/test target
+# >     -> regenerate documentation through MCM when needed
+# >     -> prepare-release.sh
+# >     -> sgnd-setup --install/--update using the produced ZIP
+# > ```
 #
 # . Images
 # sdk-deployment-model.png :: Deployment and release lifecycle model
@@ -189,6 +199,8 @@
 #
 # > The result is a simple ownership model:
 # >
-# >     deploy-workspace.sh   development copy/test loop
-# >     prepare-release.sh    release creation
-# >     sgnd-setup            installed product lifecycle
+# > ```text
+# > deploy-workspace.sh   development copy/test loop
+# > prepare-release.sh    release creation
+# > sgnd-setup            installed product lifecycle
+# > ```

@@ -39,6 +39,30 @@
 #   - Deployment or installation of runtime environments
 #   - Managing existing workspaces beyond initial scaffolding
 #
+# Usage:
+#   Run the executable from its shell command (or installed wrapper):
+#   ```bash
+#   create-workspace
+#   create-workspace --project Example --root /path/to/workspaces
+#   create-workspace --help
+#   create-workspace --dryrun
+#   ```
+#
+#   Script-specific options:
+#   - `--project VALUE`, `-p`: Project name.
+#   - `--prefix VALUE`: Project prefix.
+#   - `--description VALUE`: Project description.
+#   - `--product VALUE`: Product name.
+#   - `--group VALUE`: Generated script group.
+#   - `--subgroup VALUE`: Generated script subgroup.
+#   - `--root VALUE`: Project root folder.
+#   - `--folder VALUE`, `-f`: Set project folder.
+#   - `--gitinit`, `-g`: Initialize a local Git repository.
+#   - `--github`: Create and push a GitHub repository using gh.
+#   - `--github-repo VALUE`: GitHub repository name.
+#   - `--github-visibility NAME`: GitHub repository visibility.
+#   - `--uncreate`, `-u`: Remove items listed in workspace manifest.
+#
 # Attribution:
 #   Developers  : Mark Fieten
 #   Company     : Testadura Consultancy
@@ -79,7 +103,9 @@ set -uo pipefail
         #   be found, or the executable common library is unreadable.
         #
         # . Usage
+        #   ```bash
         #   _framework_locator || return $?
+        #   ```
     _framework_locator() {
         local script_file=""
         local path_without_root=""
@@ -327,7 +353,9 @@ set -uo pipefail
         #   1 on failure
         #
         # . Usage
-        #   _copy_template_file "/tmp/sgnd-example.txt" "/tmp/sgnd-example.txt" "/tmp/sgnd-example.txt"
+        #   ```bash
+        #   _copy_template_file "$source_template" "$destination_file"
+        #   ```
     _copy_template_file() {
         local src="$1"
         local dst="$2"
@@ -376,6 +404,17 @@ set -uo pipefail
     }
 
     # fn: _template_metadata_value - Read one Metadata field from a template
+        # . Purpose
+        #   Read the value of a named Metadata field from a template header.
+        # . Arguments
+        #   $1  Readable template file.
+        #   $2  Metadata field name.
+        # . Returns
+        #   0 after reading the template; an absent field produces no output.
+        # . Usage
+        #   ```bash
+        #   _template_metadata_value "$template_file" "Product"
+        #   ```
     _template_metadata_value() {
         local file="${1:?missing template file}" field="${2:?missing field}"
         awk -v field="$field" '
@@ -386,6 +425,16 @@ set -uo pipefail
     }
 
     # fn: _specialize_workspace_template - Make a copied canonical template product-aware
+        # . Purpose
+        #   Replace the copied template banner with the new product name.
+        # . Arguments
+        #   $1  Copied canonical template file.
+        # . Returns
+        #   0 after updating the banner or in dry-run mode; nonzero for missing files or write failures.
+        # . Usage
+        #   ```bash
+        #   _specialize_workspace_template "$copied_file"
+        #   ```
     _specialize_workspace_template() {
         local file="${1:?missing template file}" tmp=""
         [[ -f "$file" ]] || return 1
@@ -401,6 +450,19 @@ set -uo pipefail
     }
 
     # fn: _specialize_generated_file - Apply selected metadata to a generated starter file
+        # . Purpose
+        #   Set the source identity and selected metadata in a generated starter script.
+        # . Arguments
+        #   $1  Generated file path.
+        #   $2  Script name.
+        #   $3  Optional group.
+        #   $4  Optional subgroup.
+        # . Returns
+        #   0 after updating the metadata or in dry-run mode; nonzero on missing files or write failures.
+        # . Usage
+        #   ```bash
+        #   _specialize_generated_file "$target" "$name" "$group" "$subgroup"
+        #   ```
     _specialize_generated_file() {
         local file="${1:?missing generated file}"
         local script_name="${2:?missing script name}"
@@ -425,6 +487,14 @@ set -uo pipefail
     }
 
     # fn: _workspace_convenience_template_dir - Resolve the installed shared template library
+        # . Purpose
+        #   Print the shared SDK convenience-template directory.
+        # . Returns
+        #   0 after printing the path.
+        # . Usage
+        #   ```bash
+        #   _workspace_convenience_template_dir
+        #   ```
     _workspace_convenience_template_dir() {
         printf '%s\n' "${SGND_SHARE_DIR%/}/convenience-templates"
     }
@@ -508,6 +578,14 @@ set -uo pipefail
     }
 
     # fn: _resolve_starter_scripts - Configure optional starter files for selected templates
+        # . Purpose
+        #   Collect optional starter-script names and group metadata for selected templates.
+        # . Returns
+        #   0 after recording the selection; nonzero if interactive input fails.
+        # . Usage
+        #   ```bash
+        #   _resolve_starter_scripts
+        #   ```
     _resolve_starter_scripts() {
         local resp="N" template="" default_name="" name="" group="" subgroup="" slug=""
         STARTER_TEMPLATE_NAMES=()
@@ -558,7 +636,9 @@ set -uo pipefail
         # . Returns
         #   0 when the choice has been recorded.
         # . Usage
+        #   ```bash
         #   _resolve_documentation_samples
+        #   ```
     _resolve_documentation_samples() {
         local decision="No"
         FLAG_CREATE_DOC_SAMPLES=0
@@ -574,6 +654,17 @@ set -uo pipefail
     }
 
     # fn: _starter_target_path - Resolve conventional target path for a starter template
+        # . Purpose
+        #   Print the canonical destination for a starter file based on its template type.
+        # . Arguments
+        #   $1  Template filename.
+        #   $2  New starter filename.
+        # . Returns
+        #   0 after printing the resolved path.
+        # . Usage
+        #   ```bash
+        #   _starter_target_path "exe-template.sh" "hello.sh"
+        #   ```
     _starter_target_path() {
         local template="${1:?missing template}" name="${2:?missing script name}"
         case "$template" in
@@ -587,6 +678,14 @@ set -uo pipefail
     }
 
     # fn: _create_starter_scripts - Instantiate configured starter files from workspace templates
+        # . Purpose
+        #   Create selected starter files and specialize their metadata.
+        # . Returns
+        #   0 on successful creation or when no starters were requested; nonzero on file errors.
+        # . Usage
+        #   ```bash
+        #   _create_starter_scripts || return $?
+        #   ```
     _create_starter_scripts() {
         local i=0 template="" source="" target="" name=""
         (( ${FLAG_CREATE_STARTERS:-0} )) || return 0
@@ -620,7 +719,7 @@ set -uo pipefail
         #   - Records newly created template files in the workspace manifest.
         #   - Honors dry-run mode through _copy_template_file().
         #
-        # Inputs (globals):
+        # . Inputs (globals)
         #   SGND_COMMON_LIB
         #   PROJECT_FOLDER
         #
@@ -629,7 +728,9 @@ set -uo pipefail
         #   1 when a selected template is missing or a copy fails.
         #
         # . Usage
+        #   ```bash
         #   _copy_workspace_templates
+        #   ```
     _copy_workspace_templates() {
         local source_dir=""
         local target_dir="${PROJECT_FOLDER}/target-root/usr/local/lib/solidgroundux/templates"
@@ -655,6 +756,14 @@ set -uo pipefail
     }
 
     # fn: _workspace_layout_file - Resolve the SDK-owned workspace layout configuration
+        # . Purpose
+        #   Locate the readable workspace-layout configuration, preferring the staged copy.
+        # . Returns
+        #   0 and the resolved path on stdout; 1 if neither staged nor installed layout is readable.
+        # . Usage
+        #   ```bash
+        #   layout="$(_workspace_layout_file)"
+        #   ```
     _workspace_layout_file() {
         local candidate=""
         local root_prefix="${SGND_FRAMEWORK_ROOT%/}"
@@ -671,6 +780,16 @@ set -uo pipefail
     }
 
     # fn: _get_project_directories - Resolve the standard project directory layout
+        # . Purpose
+        #   Read and expand the workspace layout into a caller-supplied array.
+        # . Arguments
+        #   $1  Name of the output indexed array (nameref).
+        # . Returns
+        #   0 after populating the output array; 1 if the layout cannot be found.
+        # . Usage
+        #   ```bash
+        #   _get_project_directories project_dirs || return $?
+        #   ```
     _get_project_directories() {
         local -n out_ref=$1
         local layout_file="" line="" slug=""
@@ -694,12 +813,12 @@ set -uo pipefail
         #   - Writes a small manifest header with project name and timestamp.
         #   - Honors dry-run mode by reporting the intended action without writing the file.
         #
-        # Inputs (globals):
+        # . Inputs (globals)
         #   PROJECT_FOLDER
         #   PROJECT_NAME
         #   FLAG_DRYRUN
         #
-        # Outputs (globals):
+        # . Outputs (globals)
         #   WORKSPACE_MANIFEST
         #
         # . Returns
@@ -707,7 +826,9 @@ set -uo pipefail
         #   Non-zero on failure
         #
         # . Usage
-        #   _manifest_init "example"
+        #   ```bash
+        #   _manifest_init || return $?
+        #   ```
     _manifest_init() {
         WORKSPACE_MANIFEST="${PROJECT_FOLDER}/.create-workspace.manifest"
 
@@ -741,7 +862,9 @@ set -uo pipefail
         #   0 always
         #
         # . Usage
+        #   ```bash
         #   _manifest_record_file "/tmp/sgnd-example"
+        #   ```
     _manifest_record_file() {
         local path="$1"
 
@@ -767,7 +890,9 @@ set -uo pipefail
         #   0 always
         #
         # . Usage
+        #   ```bash
         #   _manifest_record_dir "/tmp/sgnd-example"
+        #   ```
     _manifest_record_dir() {
         local path="$1"
 
@@ -798,7 +923,9 @@ set -uo pipefail
         #   1 when the manifest does not exist
         #
         # . Usage
-        #   _uncreate_from_manifest "example"
+        #   ```bash
+        #   _uncreate_from_manifest "$WORKSPACE_MANIFEST"
+        #   ```
     _uncreate_from_manifest() {
         local manifest="$1"
         local line=""
@@ -862,40 +989,21 @@ set -uo pipefail
     }
 
  # -- Main sequence
-    # _resolve_project_settings
+    # fn: _resolve_project_settings - Collect and confirm workspace identity
         # . Purpose
-        #   Resolve and confirm the project name and target folder for a new workspace.
-        #
+        #   Gather project and product names, workspace folder and optional settings.
         # . Behavior
-        #   - Prompts for the project name.
-        #   - Prompts whether to include executable, library, and console-module components.
-                #   - Derives a filesystem-safe slug from the project name.
-        #   - Uses the selected components to determine a default project folder.
-        #   - Prompts for the project folder.
-        #   - Normalizes relative folder paths to absolute paths.
-        #   - Displays a summary and asks the user to confirm, redo, or abort.
-        #   - Repeats until the settings are confirmed or the user cancels.
-        #
-        # Outputs (globals):
-        #   PROJECT_NAME
-        #   PROJECT_FOLDER
-        #
+        #   - Prompt for product identity, project location and workspace options.
+        #   - Show the resolved configuration for confirmation or revision.
+        #   - Do not create files until settings have been confirmed.
+        # . Outputs (globals)
+        #   PROJECT_NAME, PRODUCT_NAME, PROJECT_PREFIX, PROJECT_FOLDER and other selections.
         # . Returns
-        #   0  settings confirmed
-        #   1  user aborted or an unexpected response occurred
-        #
+        #   0 when settings are confirmed; nonzero on cancellation or validation failure.
         # . Usage
-        #   _resolve_project_settings
-        # . Purpose
-        #   Resolve project creation settings.
-        #
-        # . Behavior
-        #
-        # . Returns
-        #   Returns the underlying command or workflow status.
-        #
-        # . Usage
-        #   _resolve_project_settings
+        #   ```bash
+        #   _resolve_project_settings || return $?
+        #   ```
     _resolve_project_settings(){
         local slug=""
         local default_folder=""
@@ -1034,7 +1142,7 @@ set -uo pipefail
         #   - Copies only the convenience templates selected for the workspace.
         #   - Honors dry-run mode by reporting intended actions without modifying the filesystem.
         #
-        # Inputs (globals):
+        # . Inputs (globals)
         #   PROJECT_FOLDER
         #   PROJECT_NAME
         #   SGND_COMMON_LIB
@@ -1045,7 +1153,9 @@ set -uo pipefail
         #   Non-zero if required filesystem operations fail
         #
         # . Usage
+        #   ```bash
         #   _create_repository
+        #   ```
     _create_repository(){
         local d=""
         local -a dirs=()
@@ -1095,7 +1205,9 @@ set -uo pipefail
         # . Returns
         #   0 when both samples were created or already exist; non-zero on write errors.
         # . Usage
+        #   ```bash
         #   _create_documentation_samples || return $?
+        #   ```
     _create_documentation_samples() {
         local slug="" title="" group="" directory="" kind="" filename="" path="" heading="" purpose="" description=""
         (( ${FLAG_CREATE_DOC_SAMPLES:-0} )) || return 0
@@ -1150,6 +1262,14 @@ set -uo pipefail
     }
 
     # fn: _workspace_default_logo - Resolve the default logo copied into new workspaces
+        # . Purpose
+        #   Find the first available default logo for a new workspace.
+        # . Returns
+        #   0 and the logo path on stdout; 1 when no candidate exists.
+        # . Usage
+        #   ```bash
+        #   _workspace_default_logo
+        #   ```
     _workspace_default_logo() {
         local candidate=""
         local -a candidates=(
@@ -1164,18 +1284,47 @@ set -uo pipefail
     }
 
     # fn: _definition_value - Read one generated project definition value
+        # . Purpose
+        #   Read a named global value from a generated project definitions file.
+        # . Arguments
+        #   $1  Definitions file.
+        #   $2  Global variable name.
+        # . Returns
+        #   Exit status of the subprocess reading the definitions file.
+        # . Usage
+        #   ```bash
+        #   _definition_value "$definitions_file" "SGND_PRODUCT_VERSION"
+        #   ```
     _definition_value() {
         local file="${1:?missing definitions file}" variable="${2:?missing variable}"
         bash -c 'source "$1"; printf "%s\n" "${!2-}"' _ "$file" "$variable"
     }
 
     # fn: _definition_description - Read the canonical Description section
+        # . Purpose
+        #   Extract the Description text from a project definitions header.
+        # . Arguments
+        #   $1  Definitions file.
+        # . Returns
+        #   0 after processing the header; prints nothing when Description is absent.
+        # . Usage
+        #   ```bash
+        #   _definition_description "$definitions_file"
+        #   ```
     _definition_description() {
         local file="${1:?missing definitions file}"
         awk '/^# Description:/{f=1;next} f && /^# ===/{exit} f && /^#   /{sub(/^#   /,""); if ($0!="-") print}' "$file"
     }
 
     # fn: _create_workspace_project_files - Create README, CHANGELOG, LICENSE, and project logo
+        # . Purpose
+        #   Create repository README, changelog, license and project logo.
+        # . Returns
+        #   0 on success; nonzero on definition or filesystem errors.
+        # . Usage
+        #   ```bash
+        #   _create_workspace_project_files
+        #   ```
     _create_workspace_project_files() {
         local readme_file="${PROJECT_FOLDER}/README.md" changelog_file="${PROJECT_FOLDER}/CHANGELOG.md" license_file="${PROJECT_FOLDER}/LICENSE"
         local asset_dir="${PROJECT_FOLDER}/target-root/usr/local/assets" slug="" key="" definitions_file="" logo_source="" logo_name="" logo_target=""
@@ -1242,10 +1391,12 @@ set -uo pipefail
         # . Behavior
         #
         # . Returns
-        #   Returns the underlying command or workflow status.
+        #   0 when workspace file is created (or dry-run completes); nonzero on write errors.
         #
         # . Usage
+        #   ```bash
         #   _create_workspace_file
+        #   ```
     _create_workspace_file(){
         local workspace_file="${PROJECT_FOLDER}/${PROJECT_NAME}.code-workspace"
         local existed=0
@@ -1316,10 +1467,12 @@ set -uo pipefail
         # . Behavior
         #
         # . Returns
-        #   Returns the underlying command or workflow status.
+        #   0 when ignore rules are written (or dry-run completes); nonzero on write errors.
         #
         # . Usage
+        #   ```bash
         #   _create_gitignore_file
+        #   ```
     _create_gitignore_file(){
         local gitignore_file="${PROJECT_FOLDER}/.gitignore"
         local existed=0
@@ -1400,6 +1553,14 @@ set -uo pipefail
     }
 
     # fn: _create_releaseignore_file - Create the workspace .release-ignore file
+        # . Purpose
+        #   Create the workspace release exclusion rules.
+        # . Returns
+        #   0 when the exclusion file is written or dry-run completes; nonzero on write errors.
+        # . Usage
+        #   ```bash
+        #   _create_releaseignore_file
+        #   ```
     _create_releaseignore_file(){
         local releaseignore_file="${PROJECT_FOLDER}/.release-ignore"
         local existed=0
@@ -1436,8 +1597,14 @@ set -uo pipefail
     }
 
     # fn: _project_slug - Return the filesystem-safe project slug
+        # . Purpose
+        #   Print the lowercase filesystem-safe slug of the project name.
         # . Usage
-        #   _project_slug
+        #   ```bash
+        #   slug="$(_project_slug)"
+        #   ```
+        # . Returns
+        #   0 after printing the slug.
     _project_slug() {
         local slug="${PROJECT_NAME// /-}"
         slug="${slug,,}"
@@ -1446,8 +1613,14 @@ set -uo pipefail
     }
 
     # fn: _project_key - Return the variable-safe project key
+        # . Purpose
+        #   Print the uppercase variable-safe key derived from the project name.
         # . Usage
-        #   _project_key
+        #   ```bash
+        #   key="$(_project_key)"
+        #   ```
+        # . Returns
+        #   0 after printing the key.
     _project_key() {
         local key="${PROJECT_NAME^^}"
         key="$(printf '%s' "$key" | sed -E 's/[^A-Z0-9]+/_/g; s/^_+//; s/_+$//')"
@@ -1458,7 +1631,11 @@ set -uo pipefail
         # . Purpose
         #   Create <project>-definitions.sh in the deployable SolidGroundUX globals folder.
         # . Usage
+        #   ```bash
         #   _create_project_definitions
+        #   ```
+        # . Returns
+        #   0 on creation or dry-run; nonzero on filesystem errors.
     _create_project_definitions() {
         local slug="" key="" definitions_file="" build="" existed=0
         slug="$(_project_slug)"
@@ -1506,8 +1683,14 @@ set -uo pipefail
     }
 
     # fn: _create_project_motd - Create a minimal project MOTD identity entry
+        # . Purpose
+        #   Optionally create the project identity entry in update-motd.d.
         # . Usage
+        #   ```bash
         #   _create_project_motd
+        #   ```
+        # . Returns
+        #   0 when disabled or created successfully; nonzero on write/permission errors.
     _create_project_motd() {
         local slug="" key="" motd_file="" definitions_installed=""
         (( ${FLAG_CREATE_MOTD:-1} )) || return 0
@@ -1537,6 +1720,14 @@ set -uo pipefail
     }
 
     # fn: _create_empty_directory_placeholders - Preserve the canonical workspace tree in Git
+        # . Purpose
+        #   Add .gitkeep files to empty workspace directories.
+        # . Returns
+        #   0 on success or dry-run; nonzero if a placeholder cannot be created.
+        # . Usage
+        #   ```bash
+        #   _create_empty_directory_placeholders
+        #   ```
     _create_empty_directory_placeholders() {
         local dir="" keep=""
         if (( ${FLAG_DRYRUN:-0} )); then sayinfo "Would have created .gitkeep files in empty workspace directories."; return 0; fi
@@ -1556,7 +1747,11 @@ set -uo pipefail
         #   - Reports missing Git identity as a failure rather than silently creating
         #     an uncommitted repository.
         # . Usage
+        #   ```bash
         #   _initialize_git_repository
+        #   ```
+        # . Returns
+        #   0 if disabled or Git setup/commit succeeds; nonzero on Git errors.
     _initialize_git_repository() {
         (( ${FLAG_GIT_INIT:-0} )) || return 0
 
@@ -1611,7 +1806,11 @@ set -uo pipefail
         #   - Creates origin for a new repository, then explicitly pushes main.
         #   - If origin already exists, does not recreate the remote and only pushes main.
         # . Usage
+        #   ```bash
         #   _initialize_github_repository
+        #   ```
+        # . Returns
+        #   0 if disabled or repository setup/push succeeds; nonzero on CLI, authentication or push errors.
     _initialize_github_repository() {
         local visibility_flag="--private"
         local github_account=""
@@ -1702,53 +1901,23 @@ set -uo pipefail
     }
 
 # - Main ----------------------------------------------------------------------------
-    # main
+    # fn: main - Run the workspace creation or removal workflow
         # . Purpose
-        #   Execute the workspace creation or uncreation workflow.
-        #
+        #   Initialize the SDK executable and run the selected workspace workflow.
         # . Behavior
-        #   - Loads the framework bootstrapper.
-        #   - Initializes the framework runtime via sgnd_bootstrap.
-        #   - Executes builtin framework argument handling.
-        #   - Normalizes project selection flags.
-        #   - Prepares the standard UI state and title bar.
-        #   - In uncreate mode:
-        #       - validates the workspace manifest
-        #       - confirms removal with the user
-        #       - removes files and directories listed in the manifest
-        #   - In normal mode:
-        #       - resolves project settings interactively
-        #       - initializes the workspace manifest
-        #       - creates the repository structure, workspace file, .gitignore, and .release-ignore
-        #       - creates project definitions and optionally a project MOTD entry
-#       - optionally initializes Git and creates/pushes a GitHub repository
-        #       - applies final ownership and permission fixes when not in dry-run mode.
-        #
+        #   - Bootstrap the Framework runtime and parse command-line options.
+        #   - In creation mode, gather settings and create the workspace structure,
+        #     project files, templates and optional Git/GitHub repositories.
+        #   - In removal mode, use the workspace manifest to remove generated files.
+        #   - Respect dry-run and state-saving settings.
         # . Arguments
-        #   $@  Framework and script-specific command-line arguments
-        #
+        #   $@  Framework and workspace creation options.
         # . Returns
-        #   Exits with the resulting status produced by bootstrap or script logic
-        #
+        #   Exits with the resulting bootstrap or workspace operation status.
         # . Usage
+        #   ```bash
         #   main "$@"
-        #
-        # Examples:
-        #   main "$@"
-        #
-        # Notes:
-        #   - sgnd_bootstrap splits framework arguments from script arguments automatically.
-    # fn: main - Run the executable main sequence
-        # . Purpose
-        #   Run the executable main sequence.
-        #
-        # . Behavior
-        #
-        # . Returns
-        #   Returns the underlying command or workflow status.
-        #
-        # . Usage
-        #   main
+        #   ```
     main() {
         # -- Startup
             _framework_locator || exit $?

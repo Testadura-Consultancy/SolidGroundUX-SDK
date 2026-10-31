@@ -73,7 +73,9 @@ set -uo pipefail
         #   be found, or the executable common library is unreadable.
         #
         # . Usage
+        #   ```bash
         #   _framework_locator || return $?
+        #   ```
     _framework_locator() {
         local script_file=""
         local path_without_root=""
@@ -320,7 +322,9 @@ set -uo pipefail
         #   Exits with the resulting status code from startup or script logic.
         #
         # . Usage
+        #   ```bash
         #   main "$@"
+        #   ```
     main() {     
         _framework_locator || exit $?
         sgnd_exe_start "$@"

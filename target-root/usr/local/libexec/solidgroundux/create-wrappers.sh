@@ -33,6 +33,21 @@
 #   - Existing wrappers are not overwritten without confirmation.
 #   - A filename or mask may select one or multiple source scripts.
 #
+# Usage:
+#   Run the executable from its shell command (or installed wrapper):
+#   ```bash
+#   create-wrappers
+#   create-wrappers --source /path/to/scripts --mask '*.sh' --target bin
+#   create-wrappers --source /path/to/scripts --mask prepare-release.sh
+#   ```
+#
+#   Script-specific options:
+#   - `--auto`, `-a`: Repeat with last settings.
+#   - `--source VALUE`, `-s`: Source directory containing scripts.
+#   - `--mask VALUE`, `-m`: Filename or shell mask to select scripts.
+#   - `--target NAME`, `-t`: Wrapper target directory: bin or sbin.
+#   - `--overwrite`, `-o`: Overwrite existing wrappers without confirmation.
+#
 # Attribution:
 #   Developers  : Mark Fieten
 #   Company     : Testadura Consultancy
@@ -75,7 +90,9 @@ set -uo pipefail
         #   be found, or the executable common library is unreadable.
         #
         # . Usage
+        #   ```bash
         #   _framework_locator || return $?
+        #   ```
     _framework_locator() {
         local script_file=""
         local path_without_root=""
@@ -192,7 +209,9 @@ set -uo pipefail
         # . Returns
         #   0 always.
         # . Usage
+        #   ```bash
         #   path="$(_framework_path "usr/local/bin" "$root")"
+        #   ```
     _framework_path() {
         local relative="${1#/}"
         local root="${2:-$SGND_FRAMEWORK_ROOT}"
@@ -211,7 +230,9 @@ set -uo pipefail
         # . Returns
         #   0 with the resolved root on stdout; 1 when the path cannot be resolved.
         # . Usage
-        #   _framework_root_from_path "<path>" "<framework_root>"
+        #   ```bash
+        #   _framework_root_from_path "$source_path"
+        #   ```
     _framework_root_from_path() {
         local path="${1:-}"
         local absolute=""
@@ -253,7 +274,9 @@ set -uo pipefail
         # . Returns
         #   0 with the template path on stdout.
         # . Usage
+        #   ```bash
         #   template="$(_wrapper_template_path)"
+        #   ```
     _wrapper_template_path() {
         local relative="usr/local/lib/solidgroundux/templates/wrapper-template"
 
@@ -271,7 +294,9 @@ set -uo pipefail
         # . Returns
         #   0 when source is beneath the framework root; 1 otherwise.
         # . Usage
+        #   ```bash
         #   rel="$(_relative_to_framework_root "$file")"
+        #   ```
     _relative_to_framework_root() {
         local file="${1:-}"
         local framework_root="${2:-$SGND_FRAMEWORK_ROOT}"
@@ -306,7 +331,9 @@ set -uo pipefail
         #   0 with the wrapper name on stdout.
         #
         # . Usage
+        #   ```bash
         #   name="$(_wrapper_name_for_script "$file")"
+        #   ```
     _wrapper_name_for_script() {
         local file="${1:-}"
         local base=""
@@ -341,7 +368,9 @@ set -uo pipefail
         # . Returns
         #   0 on success; 1 on failure or declined overwrite.
         # . Usage
+        #   ```bash
         #   _write_wrapper "$source" "$wrapper"
+        #   ```
     _write_wrapper() {
         local source="${1:-}"
         local wrapper="${2:-}"
@@ -391,7 +420,9 @@ set -uo pipefail
         # . Returns
         #   0 on success; 1 on cancellation/invalid input.
         # . Usage
+        #   ```bash
         #   _get_parameters
+        #   ```
     _get_parameters() {
         local lw=22
         local lp=4
@@ -467,7 +498,9 @@ set -uo pipefail
         # . Returns
         #   0 when all matching wrappers are handled successfully; 1 otherwise.
         # . Usage
+        #   ```bash
         #   _create_wrappers
+        #   ```
     _create_wrappers() {
         local target_root=""
         local selected_framework_root=""
@@ -530,7 +563,9 @@ set -uo pipefail
         # . Purpose
         #   Initialize SolidGroundUX and create selected command wrappers.
         # . Usage
+        #   ```bash
         #   main "$@"
+        #   ```
     main() {
         _framework_locator || exit $?
         sgnd_exe_start --state -- "$@"

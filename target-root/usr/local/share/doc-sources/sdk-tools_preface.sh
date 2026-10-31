@@ -20,8 +20,8 @@
 
 # - SDK -----------------------------------------------------------------------
 #
-# > The SDK group contains the utilities used to create, maintain, deploy,
-# > document, package, and release SolidGroundUX-based projects.
+# > The SDK group contains tools to create and deploy development workspaces,
+# > maintain source documentation, package, and release SolidGroundUX-based projects.
 #
 # > While the framework itself provides the runtime foundation for applications,
 # > the SDK tools support the development lifecycle around that runtime. Together
@@ -94,19 +94,15 @@
 # > Keeping this work in release preparation avoids a separate metadata-maintenance tool
 # > and ensures the release artifacts and source headers are synchronized together.
 #
-# -- Documentation Generation -------------------------------------------------------
+# -- Documentation Authoring --------------------------------------------------------
 #
-# > Documentation is generated directly from source code comments.
+# > SDK workspaces keep function descriptions, variables, examples and architecture
+# > comments alongside the implementation. Product/group prefaces and epilogues are
+# > authored as separate documentation source files when useful.
 #
-# > Rather than maintaining a completely separate documentation tree, developers
-# > document modules, functions, variables, and concepts alongside the
-# > implementation.
-#
-# > The documentation generator extracts this information and transforms it into a
-# > navigable HTML documentation set.
-#
-# > This approach helps keep implementation and documentation synchronized while
-# > reducing duplication of effort.
+# > MCM owns documentation bundles, extraction of source comments into Markdown,
+# > HTML website generation and publishing. The SDK supplies the source and templates;
+# > it does not run a documentation generator.
 #
 # -- Workspace Deployment -----------------------------------------------------------
 #

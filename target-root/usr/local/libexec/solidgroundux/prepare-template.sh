@@ -14,6 +14,13 @@
 # Description:
 #   Prepares a VM for cloning by clearing transient state, resetting network configuration, and removing machine-specific identifiers.
 #
+# Usage:
+#   Run the executable from its shell command (or installed wrapper):
+#   ```bash
+#   prepare-template --dryrun
+#   prepare-template --verbose
+#   ```
+#
 # Attribution:
 #   Developers  : Mark Fieten
 #   Company     : Testadura Consultancy
@@ -54,7 +61,9 @@ set -uo pipefail
         #   be found, or the executable common library is unreadable.
         #
         # . Usage
+        #   ```bash
         #   _framework_locator || return $?
+        #   ```
     _framework_locator() {
         local script_file=""
         local path_without_root=""
@@ -302,10 +311,12 @@ set -uo pipefail
         #   Detect primary iface.
         #
         # . Returns
-        #   Returns the underlying command or workflow status.
+        #   0 after printing an interface; 1 when no eligible interface is found.
         #
         # . Usage
+        #   ```bash
         #   _detect_primary_iface
+        #   ```
     _detect_primary_iface() {
         local primary_iface
 
@@ -327,10 +338,12 @@ set -uo pipefail
         #   Reset network for template.
         #
         # . Returns
-        #   Returns the underlying command or workflow status.
+        #   0 when netplan generation succeeds; nonzero on filesystem or netplan failures.
         #
         # . Usage
+        #   ```bash
         #   _reset_network_for_template
+        #   ```
     _reset_network_for_template() {
         local primary_iface
         local netplan_file='/etc/netplan/00-installer-config.yaml'
@@ -359,10 +372,12 @@ set -uo pipefail
         #   Prepare template.
         #
         # . Returns
-        #   Returns the underlying command or workflow status.
+        #   Status of the preparation step or shutdown invocation; dry-run does not shut down.
         #
         # . Usage
+        #   ```bash
         #   _prepare_template
+        #   ```
     _prepare_template() {
         sayinfo "Preparing VM for template conversion..."
 
@@ -432,7 +447,9 @@ set -uo pipefail
         #   Exits with the resulting status code from startup or script logic.
         #
         # . Usage
+        #   ```bash
         #   main "$@"
+        #   ```
     main() {     
         _framework_locator || exit $?
         sgnd_exe_start --needroot "$@"

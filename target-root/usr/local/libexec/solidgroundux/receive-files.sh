@@ -22,6 +22,16 @@
 #   - Unsafe absolute paths and parent traversal are rejected before extraction
 #   - The received stream is processed as one deployment operation
 #
+# Usage:
+#   Run the executable from its shell command (or installed wrapper):
+#   ```bash
+#   tar -cf - usr/local/bin/example | sudo receive-files --target /
+#   tar -cf - usr/local/bin/example | sudo receive-files --target / --dryrun
+#   ```
+#
+#   Script-specific options:
+#   - `--target VALUE`, `-t`: Filesystem root beneath which received paths are extracted.
+#
 # Attribution:
 #   Developers  : Mark Fieten
 #   Company     : Testadura Consultancy
@@ -63,7 +73,9 @@ set -uo pipefail
         #   be found, or the executable common library is unreadable.
         #
         # . Usage
+        #   ```bash
         #   _framework_locator || return $?
+        #   ```
     _framework_locator() {
         local script_file=""
         local path_without_root=""
@@ -168,11 +180,15 @@ set -uo pipefail
 
 # - Receive helpers -----------------------------------------------------------------
     # fn: _cleanup_archive - Remove the temporary received archive
+        # . Purpose
+        #   Remove the temporary archive file retained during stream reception.
         # . Returns
         #   0 always.
         #
         # . Usage
+        #   ```bash
         #   _cleanup_archive
+        #   ```
     _cleanup_archive() {
         if [[ -n "${RECEIVED_ARCHIVE:-}" && -f "$RECEIVED_ARCHIVE" ]]; then
             rm -f -- "$RECEIVED_ARCHIVE"
@@ -189,7 +205,9 @@ set -uo pipefail
         #   1 when the target is invalid or cannot be created.
         #
         # . Usage
+        #   ```bash
         #   _validate_target || return $?
+        #   ```
     _validate_target() {
         : "${DEST_ROOT:=/}"
 
@@ -232,7 +250,9 @@ set -uo pipefail
         #   1 when the temporary file cannot be created or no data was received.
         #
         # . Usage
+        #   ```bash
         #   _receive_stream || return $?
+        #   ```
     _receive_stream() {
         RECEIVED_ARCHIVE="$(mktemp "${TMPDIR:-/tmp}/sgnd-receive-files.XXXXXX.tar")" || {
             sayfail "Cannot create temporary receive archive."
@@ -266,7 +286,9 @@ set -uo pipefail
         #   1 when the archive is unreadable, empty, or contains an unsafe entry.
         #
         # . Usage
+        #   ```bash
         #   _validate_archive || return $?
+        #   ```
     _validate_archive() {
         local entry=""
         local listing=""
@@ -320,12 +342,16 @@ set -uo pipefail
     }
 
     # fn: _extract_archive - Extract the validated archive beneath DEST_ROOT
+        # . Purpose
+        #   Extract the validated archive into the destination root, or report dry-run actions.
         # . Returns
         #   0 when extraction succeeds or dry-run reporting completes.
         #   1 when tar extraction fails.
         #
         # . Usage
+        #   ```bash
         #   _extract_archive || return $?
+        #   ```
     _extract_archive() {
         if [[ "${FLAG_DRYRUN:-0}" -eq 1 ]]; then
             sayinfo "Would extract $RECEIVED_COUNT archive entr$( (( RECEIVED_COUNT == 1 )) && printf 'y' || printf 'ies' ) beneath $DEST_ROOT"
@@ -364,7 +390,9 @@ set -uo pipefail
         #   independently of the Framework exit-handler mechanism.
         #
         # . Usage
+        #   ```bash
         #   main "$@"
+        #   ```
    main() {
     local receive_status=0
 

@@ -43,6 +43,26 @@
 #   - Deploying files to target environments
 #   - Managing version control, tagging, or publication workflows
 #
+# Usage:
+#   Run the executable from its shell command (or installed wrapper):
+#   ```bash
+#   prepare-release
+#   prepare-release --dryrun
+#   prepare-release --verbose
+#   ```
+#
+#   Script-specific options:
+#   - `--auto`, `-a`: Repeat with last settings.
+#   - `--cleanup`, `-c`: Cleanup staging files after run.
+#   - `--useexisting`, `-u`: Use existing staging files.
+#   - `--bumpmajor`: Bump major version in source headers before packaging.
+#   - `--bumpminor`: Bump minor version in source headers before packaging.
+#   - `--updatebuild NAME`: Build metadata policy: A=all, C=changed, N=none.
+#   - `--updateversion NAME`: Version metadata policy: A=all, C=changed, N=none.
+#   - `--createwrappers`, `-w`: Create missing /usr/local/bin wrappers for top-level libexec scripts.
+#   - `--normalizecanon`: Normalize canonical framework/guard structures before metadata processing.
+#   - `--previous-manifest VALUE`: Removal baseline manifest path.
+#
 # Attribution:
 #   Developers  : Mark Fieten
 #   Company     : Testadura Consultancy
@@ -84,7 +104,9 @@ set -uo pipefail
         #   be found, or the executable common library is unreadable.
         #
         # . Usage
+        #   ```bash
         #   _framework_locator || return $?
+        #   ```
     _framework_locator() {
         local script_file=""
         local path_without_root=""
@@ -320,8 +342,14 @@ set -uo pipefail
 
 # - Local script functions ----------------------------------------------------------
     # fn$ _release_resolve_project_identity - Resolve the authoritative project definitions
+        # . Purpose
+        #   Resolve the selected product identity from its definitions file.
         # . Usage
-        #   _release_resolve_project_identity "<script>"
+        #   ```bash
+        #   _release_resolve_project_identity "$project_root"
+        #   ```
+        # . Returns
+        #   0 when project identity is resolved; nonzero when required definitions cannot be read.
     _release_resolve_project_identity() {
         local globals_dir="${SOURCE_DIR%/}/usr/local/lib/solidgroundux/globals"
         local file="" base="" slug="" key="" product_var="" version_var=""
@@ -373,6 +401,16 @@ set -uo pipefail
     }
 
     # fn$ _release_product_record - Read product metadata from one target-root
+        # . Purpose
+        #   Read product identity and metadata from one release target root.
+        # . Arguments
+        #   $1  Product target-root directory.
+        # . Returns
+        #   0 when product metadata is available; nonzero for missing or invalid definitions.
+        # . Usage
+        #   ```bash
+        #   _release_product_record
+        #   ```
     _release_product_record() {
         local root="${1:?missing target root}"
         local globals_dir="${root%/}/usr/local/lib/solidgroundux/globals" file="" record=""
@@ -393,6 +431,14 @@ set -uo pipefail
     }
 
     # fn$ _release_product_excludes - Return the complete release exclusion policy for a product root
+        # . Purpose
+        #   Collect the release exclusion patterns applicable to one product.
+        # . Returns
+        #   0 after collecting applicable exclusion patterns.
+        # . Usage
+        #   ```bash
+        #   _release_product_excludes
+        #   ```
     _release_product_excludes() {
         local root="${1:?missing target root}"
         local repo_root="" ignore_file="" line=""
@@ -440,6 +486,18 @@ set -uo pipefail
     }
 
     # fn$ _release_parse_product_selection - Parse A/comma/range product selection
+        # . Purpose
+        #   Parse the selected product indexes, ranges or all-products option.
+        # . Arguments
+        #   $1  Selection expression.
+        #   $2  Maximum product index.
+        #   $3  Name of the output array.
+        # . Returns
+        #   0 for valid nonempty selection; 1 for invalid tokens or ranges.
+        # . Usage
+        #   ```bash
+        #   _release_parse_product_selection
+        #   ```
     _release_parse_product_selection() {
         local spec="${1:-}" max="${2:-0}" token="" begin="" finish="" i=0 idx=0
         local -n out_ref=$3
@@ -471,6 +529,14 @@ set -uo pipefail
     }
 
     # fn$ _release_select_products - Select the product(s) that participate in this release
+        # . Purpose
+        #   Discover and select the products to package independently.
+        # . Returns
+        #   0 after a valid selection; nonzero if no products can be selected.
+        # . Usage
+        #   ```bash
+        #   _release_select_products
+        #   ```
     _release_select_products() {
         local repo="" root="" record="" product="" version="" build="" defs=""
         local selection="" answer="N" i=0 index=0
@@ -568,8 +634,14 @@ set -uo pipefail
     }
 
     # fn$ _release_update_project_identity - Update version/build in the correct definitions file
+        # . Purpose
+        #   Update the selected product definitions with the requested version/build.
         # . Usage
+        #   ```bash
         #   _release_update_project_identity
+        #   ```
+        # . Returns
+        #   0 on successful metadata update; nonzero on header or filesystem errors.
     _release_update_project_identity() {
         local file="${PROJECT_DEFINITIONS_FILE:-}" key="${PROJECT_DEFINITIONS_KEY:-}"
         local version_var="" build_var="" checksum=""
@@ -624,8 +696,14 @@ set -uo pipefail
     }
 
     # fn$ _release_wrapper_name_for_script - Resolve wrapper metadata or conventional name
+        # . Purpose
+        #   Resolve a public wrapper name from source metadata or the default naming rule.
         # . Usage
-        #   _release_wrapper_name_for_script "<script>"
+        #   ```bash
+        #   _release_wrapper_name_for_script "$script_file"
+        #   ```
+        # . Returns
+        #   0 after printing the wrapper name.
     _release_wrapper_name_for_script() {
         local script="${1:-}" wrapper_name="" base=""
         if sgnd_header_get_field "$script" "Metadata" "Wrapper" wrapper_name 2>/dev/null; then
@@ -653,7 +731,9 @@ set -uo pipefail
         #   0 on success; 1 when either directory cannot be resolved.
         #
         # . Usage
+        #   ```bash
         #   _release_resolve_locations
+        #   ```
     _release_resolve_locations() {
         [[ -n "${STAGING_ROOT:-}" ]] || {
             sayfail "Staging directory must not be empty."
@@ -691,7 +771,9 @@ set -uo pipefail
         #   0 on successful confirmation; non-zero on cancellation or state-save failure.
         #
         # . Usage
+        #   ```bash
         #   _get_parameters || return 1
+        #   ```
         #
         # . Notes
         #   Uses ask(), ask_decision(), and ask_dlg_autocontinue().
@@ -958,7 +1040,9 @@ set -uo pipefail
         #   0 always.
         #
         # . Usage
+        #   ```bash
         #   _sgnd_release_list_manifest_history "SolidGroundUX"
+        #   ```
     _sgnd_release_list_manifest_history() {
         local artifact_product="${1:?missing artifact product}"
         local file="" base="" remainder="" version="" build=""
@@ -1012,7 +1096,9 @@ set -uo pipefail
         #   0 on success; 1 on invalid/cancelled selection.
         #
         # . Usage
+        #   ```bash
         #   _sgnd_release_select_baseline_for_artifact "SolidGroundUX" "SolidGroundUX" baseline
+        #   ```
     _sgnd_release_select_baseline_for_artifact() {
         local display_label="${1:?missing display label}"
         local artifact_product="${2:?missing artifact product}"
@@ -1072,10 +1158,14 @@ set -uo pipefail
     }
 
     # fn: _sgnd_release_select_product_baseline - Select baseline for one product release
+        # . Purpose
+        #   Choose the prior manifest used for a product removal delta.
         # . Returns
         #   0 on success; non-zero on cancelled/invalid selection.
         # . Usage
-        #   _sgnd_release_select_product_baseline 0
+        #   ```bash
+        #   _sgnd_release_select_product_baseline "$product_index"
+        #   ```
     _sgnd_release_select_product_baseline() {
         local product_index="${1:?missing product index}"
         local product="${RELEASE_PRODUCT_NAMES[$product_index]:?missing product name}"
@@ -1087,43 +1177,21 @@ set -uo pipefail
         RELEASE_PRODUCT_BASELINES[$product_index]="$selected"
     }
 
-    # _sgnd_release_write_checksum
+    # fn: _sgnd_release_write_checksum - Write a release SHA256SUMS entry
         # . Purpose
-        #   Add or update a SHA256SUMS entry for a release artifact.
-        #
+        #   Calculate one file checksum and update the staging SHA256SUMS file.
         # . Behavior
-        #   - Ensures SHA256SUMS contains exactly one entry for the specified filename.
-        #   - Removes any existing line for the same filename before appending a new one.
-        #   - Stores only the basename in the checksum file.
-        #
+        #   - Remove an existing entry for the same filename before writing the new hash.
         # . Arguments
-        #   $1  TAR_PATH
-        #       Path to the file to hash.
-        #   $2  TAR_FILE
-        #       Filename to write into SHA256SUMS.
-        #   $3  STAGING_ROOT
-        #       Directory containing SHA256SUMS.
-        #
-        # . Side effects
-        #   - Creates or updates:
-        #       <staging_root>/SHA256SUMS
-        #
+        #   $1  TAR_PATH: File to hash.
+        #   $2  TAR_FILE: Filename recorded in SHA256SUMS.
+        #   $3  STAGING_ROOT: Directory containing SHA256SUMS.
         # . Returns
-        #   0 on success
-        #   1 if required arguments are missing or file operations fail
-        #
+        #   0 on success; 1 for missing arguments or file/hash failures.
         # . Usage
-        #   _sgnd_release_write_checksum "/tmp/sgnd-example" "/tmp/sgnd-example.txt" "/tmp/sgnd-example"
-        # . Purpose
-        #   Write release checksum metadata for a file.
-        #
-        # . Behavior
-        #
-        # . Returns
-        #   Returns the underlying command or workflow status.
-        #
-        # . Usage
-        #   _sgnd_release_write_checksum
+        #   ```bash
+        #   _sgnd_release_write_checksum "$tar_path" "$tar_file" "$staging_root"
+        #   ```
     _sgnd_release_write_checksum() {
         local tar_path="${1:-}"
         local tar_file="${2:-}"
@@ -1170,7 +1238,9 @@ set -uo pipefail
         #   0 on success; 1 when validation, comparison, or output creation fails.
         #
         # . Usage
+        #   ```bash
         #   _sgnd_release_write_removed_manifest "$manifest_path" "$removed_path"
+        #   ```
     _sgnd_release_write_removed_manifest() {
         local current_manifest="${1:-}"
         local removed_manifest="${2:-}"
@@ -1284,10 +1354,12 @@ set -uo pipefail
         # . Behavior
         #
         # . Returns
-        #   Returns the underlying command or workflow status.
+        #   0 when the release tar and manifest are prepared; nonzero on staging or archive errors.
         #
         # . Usage
+        #   ```bash
         #   _create_tar
+        #   ```
     _create_tar() {
         saystart "Creating release: $RELEASE"
 
@@ -1423,10 +1495,18 @@ set -uo pipefail
 
 
     # fn: _release_has_framework_product - Report whether SolidGroundUX is selected
+        # . Purpose
+        #   Report whether the current product selection includes the Framework.
         # Returns:
         #   0 when the SolidGroundUX framework product is selected; 1 otherwise.
         # Usage:
         #   _release_has_framework_product
+        # . Returns
+        #   0 when Framework is selected; 1 otherwise.
+        # . Usage
+        #   ```bash
+        #   _release_has_framework_product
+        #   ```
     _release_has_framework_product() {
         local product=""
         for product in "${RELEASE_PRODUCT_NAMES[@]}"; do
@@ -1436,10 +1516,18 @@ set -uo pipefail
     }
 
     # fn: _release_framework_source_root - Resolve the selected SolidGroundUX source root
+        # . Purpose
+        #   Print the root of the selected Framework product, if any.
         # Returns:
         #   0 with the selected framework target-root on stdout; 1 when not selected.
         # Usage:
         #   root="$(_release_framework_source_root)"
+        # . Returns
+        #   0 when a Framework root is selected; 1 otherwise.
+        # . Usage
+        #   ```bash
+        #   _release_framework_source_root
+        #   ```
     _release_framework_source_root() {
         local index=0
         for index in "${!RELEASE_PRODUCT_NAMES[@]}"; do
@@ -1451,6 +1539,8 @@ set -uo pipefail
     }
 
     # fn: _setup_metadata_value - Read one canonical metadata value from sgnd-setup.sh
+        # . Purpose
+        #   Read one Metadata value from a standalone sgnd-setup source.
         # Arguments:
         #   $1  Setup script path.
         #   $2  Metadata field name, for example Version or Build.
@@ -1458,6 +1548,15 @@ set -uo pipefail
         #   0 with the value on stdout; 1 when absent.
         # Usage:
         #   version="$(_setup_metadata_value "$setup" Version)"
+        # . Arguments
+        #   $1  Setup source file.
+        #   $2  Metadata field name.
+        # . Returns
+        #   0 after looking up the header field; prints nothing if absent.
+        # . Usage
+        #   ```bash
+        #   _setup_metadata_value "$setup_file" "Version"
+        #   ```
     _setup_metadata_value() {
         local setup="${1:?missing setup path}"
         local field="${2:?missing metadata field}"
@@ -1468,12 +1567,20 @@ set -uo pipefail
     }
 
     # fn: _find_setup_source - Resolve the standalone sgnd-setup source file
+        # . Purpose
+        #   Locate the standalone sgnd-setup source used for first installation.
         # Purpose:
         #   Locate the canonical sgnd-setup.sh source in the selected framework product.
         # Returns:
         #   0 with the path on stdout when found; 1 otherwise.
         # Usage:
         #   setup="$(_find_setup_source)"
+        # . Returns
+        #   0 and the source path on stdout when found; nonzero otherwise.
+        # . Usage
+        #   ```bash
+        #   _find_setup_source
+        #   ```
     _find_setup_source() {
         local framework_root="" direct=""
         framework_root="$(_release_framework_source_root)" || return 1
@@ -1497,7 +1604,9 @@ set -uo pipefail
         # . Returns
         #   0 on success; non-zero on write failure.
         # . Usage
+        #   ```bash
         #   _write_release_package_info "<destination>"
+        #   ```
     _write_release_package_info() {
         local destination="${1:?missing destination}"
 
@@ -1513,6 +1622,8 @@ set -uo pipefail
     }
 
     # fn: _create_release_package - Create one distributable product release ZIP
+        # . Purpose
+        #   Build one independently installable product release ZIP.
         # Purpose:
         #   Package one product's canonical tar/release artifacts into the release unit
         #   consumed by sgnd-setup.
@@ -1524,6 +1635,12 @@ set -uo pipefail
         #   0 on success; 1 on missing artifacts or packaging failure.
         # Usage:
         #   _create_release_package
+        # . Returns
+        #   0 when the product ZIP is created or dry-run succeeds; nonzero on packaging errors.
+        # . Usage
+        #   ```bash
+        #   _create_release_package
+        #   ```
     _create_release_package() {
         local package_dir=""
         local package_info=""
@@ -1584,6 +1701,8 @@ set -uo pipefail
     }
 
     # fn: _create_first_install_package - Create the bootstrap transport ZIP
+        # . Purpose
+        #   Bundle standalone setup and prepared product ZIPs for first installation.
         # Purpose:
         #   Create a first-install ZIP containing sgnd-setup.sh and the already-created
         #   product release ZIPs for the selected products.
@@ -1600,6 +1719,12 @@ set -uo pipefail
         #   non-zero on missing package/setup files, invalid build metadata, or ZIP creation failure.
         # Usage:
         #   _create_first_install_package
+        # . Returns
+        #   0 when the bootstrap ZIP is created or skipped; nonzero on packaging errors.
+        # . Usage
+        #   ```bash
+        #   _create_first_install_package
+        #   ```
     _create_first_install_package() {
         local setup="" setup_version="" setup_build="" first_install_build="" package_dir="" output_zip=""
         local index=0 product="" version="" build="" product_zip=""
@@ -1689,7 +1814,9 @@ set -uo pipefail
         #   0 when output is usable/planned; 1 on unsafe location or directory failure.
         #
         # . Usage
+        #   ```bash
         #   _prepare_release_output || return 1
+        #   ```
     _prepare_release_output() {
         local root="" stage="" artifact_product="" error="" index=0
         local -a stages=()
@@ -1736,6 +1863,8 @@ set -uo pipefail
     }
 
     # fn: _cleanup_packaged_release_artifacts - Remove loose packaged release internals
+        # . Purpose
+        #   Remove loose release package internals after packaging, when configured.
         # Purpose:
         #   Remove loose product-release internals after the distributable ZIP has been
         #   exported and the manifest has been preserved in manifest history. The ZIP is
@@ -1748,6 +1877,12 @@ set -uo pipefail
         #   0 on success; non-zero when cleanup fails.
         # Usage:
         #   _cleanup_packaged_release_artifacts
+        # . Returns
+        #   0 when cleanup succeeds or is skipped; nonzero on deletion errors.
+        # . Usage
+        #   ```bash
+        #   _cleanup_packaged_release_artifacts
+        #   ```
     _cleanup_packaged_release_artifacts() {
         local artifact="" dir=""
         local -a artifacts=(
@@ -1804,7 +1939,9 @@ set -uo pipefail
         #   0 on success; 1 on missing artifacts or copy failure. Staged originals are retained.
         #
         # . Usage
+        #   ```bash
         #   _copy_release_output || return 1
+        #   ```
     _copy_release_output() {
         local source="${STAGING_ROOT%/}/${RELEASE}-release.zip"
         local destination="${OUTPUT_DIR%/}/${RELEASE}-release.zip"
@@ -1837,11 +1974,15 @@ set -uo pipefail
     }
 
     # fn: _report_release_output - Show final package paths for this run
+        # . Purpose
+        #   Display the resulting release package paths.
         # . Returns
         #   0 after reporting completed or explicitly planned ZIP paths.
         #
         # . Usage
+        #   ```bash
         #   _report_release_output
+        #   ```
     _report_release_output() {
         local archive="" label=""
         sgnd_print
@@ -1866,7 +2007,9 @@ set -uo pipefail
         #   0 on success; 1 on copy failure.
         #
         # . Usage
+        #   ```bash
         #   _archive_release_manifest
+        #   ```
     _archive_release_manifest() {
         local manifest_path="${STAGING_ROOT%/}/${RELEASE}.manifest"
         local destination="${MANIFEST_HISTORY_DIR%/}/${RELEASE}.manifest"
@@ -1897,7 +2040,7 @@ set -uo pipefail
         #   - If FLAG_CLEANUP is 0, logs that cleanup is skipped.
         #   - In dry-run mode, reports planned cleanup without deleting anything.
         #
-        # Inputs (globals):
+        # . Inputs (globals)
         #   STAGING_ROOT
         #   RELEASE
         #   FLAG_CLEANUP
@@ -1910,7 +2053,9 @@ set -uo pipefail
         #   Logs a warning when deletion fails; returns the logging command status.
         #
         # . Usage
+        #   ```bash
         #   _cleanup_staging
+        #   ```
     _cleanup_staging() {
         if [[ "$FLAG_CLEANUP" -eq 1 ]]; then
             if (( ${FLAG_DRYRUN:-0} )); then
@@ -1928,9 +2073,18 @@ set -uo pipefail
 
 
     # fn: _set_script_header_version - Set an explicit version in a managed script header
+        # . Purpose
+        #   Update the Version field in a managed script header.
         #
         # . Usage
-        #   _set_script_header_version "/tmp/sgnd-example.txt" "1.8.0"
+        #   ```bash
+        #   _set_script_header_version "$script_file" "$version"
+        #   ```
+        # . Arguments
+        #   $1  Managed source file.
+        #   $2  Version string.
+        # . Returns
+        #   Status of the canonical header update operation.
     _set_script_header_version() {
         local file="${1:-}"
         local version="${2:-}"
@@ -1962,7 +2116,9 @@ set -uo pipefail
         #   0 when normalization is disabled or completes successfully; non-zero otherwise.
         #
         # . Usage
+        #   ```bash
         #   _normalize_canonical_sources
+        #   ```
     _normalize_canonical_sources() {
         local normalizer=""
         local development_normalizer=""
@@ -2070,7 +2226,9 @@ set -uo pipefail
         #   0 on success; 1 when one or more managed files could not be updated.
         #
         # . Usage
+        #   ```bash
         #   _apply_version_bump
+        #   ```
     _apply_version_bump() {
         local file=""
         local stored_checksum=""
@@ -2183,7 +2341,7 @@ set -uo pipefail
         #   - Reports intended changes without modifying files in dry-run mode.
         #   - Succeeds quietly when the directory does not exist or contains no files.
         #
-        # Inputs (globals):
+        # . Inputs (globals)
         #   SOURCE_DIR
         #   FLAG_DRYRUN
         #
@@ -2192,7 +2350,9 @@ set -uo pipefail
         #   1 when one or more permission updates fail.
         #
         # . Usage
+        #   ```bash
         #   _ensure_libexec_executables
+        #   ```
     _ensure_libexec_executables() {
         local libexec_root="${SOURCE_DIR%/}/usr/local/libexec/solidgroundux"
         local file=""
@@ -2235,12 +2395,12 @@ set -uo pipefail
         #   - Reports missing wrappers without creating them when the option is disabled.
         #   - Honors dry-run mode.
         #
-        # Inputs (globals):
+        # . Inputs (globals)
         #   SOURCE_DIR
         #   FLAG_CREATEWRAPPERS
         #   FLAG_DRYRUN
         #
-        # Side effects:
+        # . Side effects
         #   May create executable files beneath SOURCE_DIR/usr/local/bin.
         #
         # . Returns
@@ -2248,7 +2408,9 @@ set -uo pipefail
         #   1 when one or more wrapper creations fail.
         #
         # . Usage
+        #   ```bash
         #   _ensure_public_command_wrappers
+        #   ```
     _ensure_public_command_wrappers() {
         local libexec_root="${SOURCE_DIR%/}/usr/local/libexec/solidgroundux"
         local bin_root="${SOURCE_DIR%/}/usr/local/bin"
@@ -2324,10 +2486,16 @@ set -uo pipefail
 
 # - Release artifact identity --------------------------------------------------------
     # fn$ _release_product_artifact_name - Convert a display product name to its file-safe release identity
+        # . Purpose
+        #   Print the filename-safe release identity for a product.
         # . Returns
         #   Product name with whitespace runs replaced by hyphens.
         # . Usage
-        #   artifact_product="$(_release_product_artifact_name "$PRODUCT")"
+        #   ```bash
+        #   _release_product_artifact_name "$PRODUCT"
+        #   ```
+        # . Arguments
+        #   $1  Product display name.
     _release_product_artifact_name() {
         local product_name="${1:-}"
         printf '%s\n' "$product_name" | sed -E 's/[[:space:]]+/-/g'
@@ -2335,6 +2503,14 @@ set -uo pipefail
 
 # - Individual product release helpers ---------------------------------------------
     # fn$ _release_create_lead_product_release - Create the lead selected product as a standalone release
+        # . Purpose
+        #   Prepare the first selected product release and establish its output context.
+        # . Returns
+        #   0 after the first product is packaged; nonzero on source or packaging failures.
+        # . Usage
+        #   ```bash
+        #   _release_create_lead_product_release
+        #   ```
     _release_create_lead_product_release() {
         (( ${#RELEASE_SOURCE_DIRS[@]} > 1 )) || return 0
 
@@ -2368,6 +2544,14 @@ set -uo pipefail
 
 # - Main Sequence -------------------------------------------------------------------
     # fn$ _release_create_remaining_product_releases - Create releases for the remaining selected products
+        # . Purpose
+        #   Package the other selected products as independent releases.
+        # . Returns
+        #   0 when remaining products are packaged; nonzero on packaging failures.
+        # . Usage
+        #   ```bash
+        #   _release_create_remaining_product_releases
+        #   ```
     _release_create_remaining_product_releases() {
         (( ${#RELEASE_SOURCE_DIRS[@]} > 1 )) || return 0
 
@@ -2421,7 +2605,7 @@ set -uo pipefail
         return 0
     }
 
-    # fn: main - Run the executable main sequence - Run the executable main sequence
+    # fn: main - Run the executable main sequence
         # . Purpose
         #   Execute the release preparation workflow.
         #
@@ -2443,10 +2627,14 @@ set -uo pipefail
         #   Exits with the resulting status from bootstrap or release operations
         #
         # . Usage
+        #   ```bash
         #   main "$@"
+        #   ```
         #
-        # Examples:
+        # . Examples
+        #   ```bash
         #   main "$@"
+        #   ```
     main() {
         # -- Startup
             _framework_locator || exit $?
