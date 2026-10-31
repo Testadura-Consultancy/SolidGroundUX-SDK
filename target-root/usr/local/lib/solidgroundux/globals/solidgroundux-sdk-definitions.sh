@@ -8,8 +8,7 @@
 #   Checksum    : f4c7515b93cac4e94f9c29e4921e7bed042d7f2d06434bc1f22f81a20d7075c0
 #   Source      : solidgroundux-sdk-definitions.sh
 #   Type        : library
-#   Group       : SDK
-#   Subgroup    : Definitions
+#   Group       : Globals
 #   Purpose     : Define SolidGroundUX SDK product identity and release globals
 #
 # Description:
@@ -72,6 +71,7 @@ set -uo pipefail
         sgnd_module_init_metadata "${BASH_SOURCE[0]}"
     fi
 # - SDK identity --------------------------------------------------------------------
+    # def: Framework identity
     SGND_SOLIDGROUNDUX_SDK_PRODUCT="SolidGroundUX SDK"
     SGND_SOLIDGROUNDUX_SDK_VERSION=2.1
     SGND_SOLIDGROUNDUX_SDK_BUILD=2630202
@@ -82,4 +82,5 @@ set -uo pipefail
     SGND_SOLIDGROUNDUX_SDK_RELEASE_URL=""
     SGND_SOLIDGROUNDUX_SDK_APPENDICES="attribution,license,changelog"
     SGND_SOLIDGROUNDUX_SDK_RELEASE_EXCLUDES="usr/local/lib/solidgroundux/templates"
+    # def$
 
