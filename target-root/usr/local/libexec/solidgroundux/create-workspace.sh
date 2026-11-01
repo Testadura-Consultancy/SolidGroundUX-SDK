@@ -40,12 +40,19 @@
 #   - Managing existing workspaces beyond initial scaffolding
 #
 # Usage:
-#   Run the executable from its shell command (or installed wrapper):
+#   Use the installed `sgnd-` command wrapper (or run the libexec script directly):
 #   ```bash
-#   create-workspace
-#   create-workspace --project Example --root /path/to/workspaces
-#   create-workspace --help
-#   create-workspace --dryrun
+#   # Start the interactive workspace wizard.
+#   sgnd-create-workspace
+#
+#   # Create a project beneath a chosen root, initializing Git locally.
+#   sgnd-create-workspace --project Example --root /srv/projects --gitinit
+#
+#   # Preview the creation steps without writing files.
+#   sgnd-create-workspace --project Example --dryrun
+#
+#   # List all supported CLI arguments.
+#   sgnd-create-workspace --help
 #   ```
 #
 #   Script-specific options:
@@ -98,9 +105,9 @@ set -uo pipefail
         #   helpers are not available until sgnd-exe-common.sh has been loaded.
         #
         # . Returns
-        #   0 when the framework root was resolved and executable common library loaded.
-        #   126 when the script path cannot be resolved, no canonical root component can
-        #   be found, or the executable common library is unreadable.
+        #   - 0 when the framework root was resolved and executable common library loaded.
+        #   - 126 when the script path cannot be resolved, no canonical root component can
+        #     be found, or the executable common library is unreadable.
         #
         # . Usage
         #   ```bash
@@ -345,12 +352,12 @@ set -uo pipefail
         #   - Records the destination file in the manifest only when it did not exist before.
         #
         # . Arguments
-        #   $1  Source template file
-        #   $2  Destination file
+        #   - $1  Source template file
+        #   - $2  Destination file
         #
         # . Returns
-        #   0 on success
-        #   1 on failure
+        #   - 0 on success
+        #   - 1 on failure
         #
         # . Usage
         #   ```bash
@@ -407,8 +414,8 @@ set -uo pipefail
         # . Purpose
         #   Read the value of a named Metadata field from a template header.
         # . Arguments
-        #   $1  Readable template file.
-        #   $2  Metadata field name.
+        #   - $1  Readable template file.
+        #   - $2  Metadata field name.
         # . Returns
         #   0 after reading the template; an absent field produces no output.
         # . Usage
@@ -453,10 +460,10 @@ set -uo pipefail
         # . Purpose
         #   Set the source identity and selected metadata in a generated starter script.
         # . Arguments
-        #   $1  Generated file path.
-        #   $2  Script name.
-        #   $3  Optional group.
-        #   $4  Optional subgroup.
+        #   - $1  Generated file path.
+        #   - $2  Script name.
+        #   - $3  Optional group.
+        #   - $4  Optional subgroup.
         # . Returns
         #   0 after updating the metadata or in dry-run mode; nonzero on missing files or write failures.
         # . Usage
@@ -501,8 +508,7 @@ set -uo pipefail
 
     # fn: _resolve_convenience_template_selection - Select convenience templates for the workspace
         # . Purpose
-        #   Discover installed convenience templates and let the user choose which copies
-        #   should be placed in the new workspace.
+        #   Select which installed convenience templates to copy into a new workspace.
         #
         # . Behavior
         #   - Lists all top-level convenience-template files except templates_preface.sh.
@@ -514,8 +520,13 @@ set -uo pipefail
         #   WORKSPACE_SELECTED_TEMPLATES
         #
         # . Returns
-        #   0 on success, including when no convenience templates are installed.
-        #   1 on invalid interactive selection.
+        #   - 0 on success, including when no convenience templates are installed.
+        #   - 1 on invalid interactive selection.
+        #
+        # . Usage
+        #   ```bash
+        #   _resolve_convenience_template_selection
+        #   ```
     _resolve_convenience_template_selection() {
         local source_dir="" template="" answer="all" item="" index=0
         local -a available=() selected=()
@@ -657,8 +668,8 @@ set -uo pipefail
         # . Purpose
         #   Print the canonical destination for a starter file based on its template type.
         # . Arguments
-        #   $1  Template filename.
-        #   $2  New starter filename.
+        #   - $1  Template filename.
+        #   - $2  New starter filename.
         # . Returns
         #   0 after printing the resolved path.
         # . Usage
@@ -724,8 +735,8 @@ set -uo pipefail
         #   PROJECT_FOLDER
         #
         # . Returns
-        #   0 on success.
-        #   1 when a selected template is missing or a copy fails.
+        #   - 0 on success.
+        #   - 1 when a selected template is missing or a copy fails.
         #
         # . Usage
         #   ```bash
@@ -822,8 +833,8 @@ set -uo pipefail
         #   WORKSPACE_MANIFEST
         #
         # . Returns
-        #   0 on success
-        #   Non-zero on failure
+        #   - 0 on success
+        #   - Non-zero on failure
         #
         # . Usage
         #   ```bash
@@ -919,8 +930,8 @@ set -uo pipefail
         #   $1  Manifest file path
         #
         # . Returns
-        #   0 on success
-        #   1 when the manifest does not exist
+        #   - 0 on success
+        #   - 1 when the manifest does not exist
         #
         # . Usage
         #   ```bash
@@ -1149,8 +1160,8 @@ set -uo pipefail
         #   FLAG_DRYRUN
         #
         # . Returns
-        #   0 on success
-        #   Non-zero if required filesystem operations fail
+        #   - 0 on success
+        #   - Non-zero if required filesystem operations fail
         #
         # . Usage
         #   ```bash
@@ -1287,8 +1298,8 @@ set -uo pipefail
         # . Purpose
         #   Read a named global value from a generated project definitions file.
         # . Arguments
-        #   $1  Definitions file.
-        #   $2  Global variable name.
+        #   - $1  Definitions file.
+        #   - $2  Global variable name.
         # . Returns
         #   Exit status of the subprocess reading the definitions file.
         # . Usage

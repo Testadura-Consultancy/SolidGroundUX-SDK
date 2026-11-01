@@ -34,11 +34,16 @@
 #   - A filename or mask may select one or multiple source scripts.
 #
 # Usage:
-#   Run the executable from its shell command (or installed wrapper):
+#   Use the installed `sgnd-` command wrapper (or run the libexec script directly):
 #   ```bash
-#   create-wrappers
-#   create-wrappers --source /path/to/scripts --mask '*.sh' --target bin
-#   create-wrappers --source /path/to/scripts --mask prepare-release.sh
+#   # Select scripts and wrapper targets interactively.
+#   sgnd-create-wrappers
+#
+#   # Generate wrappers for selected source scripts.
+#   sgnd-create-wrappers --source /srv/projects/example/target-root/usr/local/libexec/solidgroundux --mask "*.sh" --target bin
+#
+#   # Regenerate a specific wrapper, confirming any overwrite.
+#   sgnd-create-wrappers --source /srv/projects/example/target-root/usr/local/libexec/solidgroundux --mask prepare-release.sh
 #   ```
 #
 #   Script-specific options:
@@ -85,9 +90,9 @@ set -uo pipefail
         #   helpers are not available until sgnd-exe-common.sh has been loaded.
         #
         # . Returns
-        #   0 when the framework root was resolved and executable common library loaded.
-        #   126 when the script path cannot be resolved, no canonical root component can
-        #   be found, or the executable common library is unreadable.
+        #   - 0 when the framework root was resolved and executable common library loaded.
+        #   - 126 when the script path cannot be resolved, no canonical root component can
+        #     be found, or the executable common library is unreadable.
         #
         # . Usage
         #   ```bash
@@ -201,11 +206,11 @@ set -uo pipefail
 # - Helpers --------------------------------------------------------------------------
     # fn: _framework_path - Resolve a path beneath a framework root
         # . Purpose
-        #   Convert a framework-relative path to an absolute path beneath the supplied
-        #   framework root. Defaults to the active SGND_FRAMEWORK_ROOT.
+        #   Resolve a relative path against the chosen framework root.
+        #   Defaults to the active SGND_FRAMEWORK_ROOT.
         # . Arguments
-        #   $1 Relative path.
-        #   $2 Framework root (optional).
+        #   - $1 Relative path.
+        #   - $2 Framework root (optional).
         # . Returns
         #   0 always.
         # . Usage
@@ -225,8 +230,8 @@ set -uo pipefail
 
     # fn: _framework_root_from_path - Resolve the framework root owning a selected path
         # . Purpose
-        #   Derive the canonical SolidGroundUX framework root from an absolute source path,
-        #   using the same last usr/etc/var component rule as _framework_locator().
+        #   Derive the active framework root from an absolute path.
+        #   Uses the last usr, etc, or var component, as _framework_locator does.
         # . Returns
         #   0 with the resolved root on stdout; 1 when the path cannot be resolved.
         # . Usage
@@ -289,8 +294,7 @@ set -uo pipefail
 
     # fn: _relative_to_framework_root - Convert an absolute source path to framework-relative
         # . Purpose
-        #   Ensure a selected source belongs to the supplied framework root and return its
-        #   normalized path relative to that root.
+        #   Validate a source path and return its framework-root-relative form.
         # . Returns
         #   0 when source is beneath the framework root; 1 otherwise.
         # . Usage
@@ -324,8 +328,8 @@ set -uo pipefail
 
     # fn: _wrapper_name_for_script - Return the public wrapper command name
         # . Purpose
-        #   Resolve an optional Metadata/Wrapper override, falling back to the current
-        #   sgnd-<script> naming convention when no override is present.
+        #   Resolve the public wrapper name from metadata or the script basename.
+        #   Uses sgnd-<script> when no Metadata/Wrapper override exists.
         #
         # . Returns
         #   0 with the wrapper name on stdout.

@@ -23,7 +23,7 @@
 # >    # var:                   Variable
 # >    # cls:                   Class
 # >    # doc:                   General documentation
-# >    # fn$ / var$ / cls$ / doc$
+# >    # fn: / var$ / cls$ / doc$
 #                              Template documentation variants
 #
 #   Documentation and style hints:

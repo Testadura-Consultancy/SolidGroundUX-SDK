@@ -23,29 +23,32 @@
 # ==================================================================================
 set -uo pipefail
 # - Library guard ------------------------------------------------------------------
-    # fn$ _sgnd_lib_guard - Enforce source-only, single-load library initialization
+    # fn: _sgnd_lib_guard - Check source-only loading and record the loaded marker
         # . Purpose
-        #   Ensure the file is sourced as a library and initialized only once.
+        #   Reject direct execution and mark this library as loaded when sourced.
         #
         # . Behavior
         #   - Derives a unique guard variable name from the current filename.
         #   - Aborts execution when the file is run directly instead of sourced.
         #   - Sets the guard variable on first load.
-        #   - Returns immediately when the library was already loaded.
+        #   - Returns from the guard when the library was already loaded; the rest
+        #     of the sourced file continues to execute unless separately guarded.
         #
-        # Inputs
+        # . Inputs (globals)
         #   BASH_SOURCE[0]
         #   $0
         #
-        # Outputs (globals)
+        # . Outputs (globals)
         #   SGND_<MODULE>_LOADED
         #
         # . Returns
-        #   0 when already loaded or successfully initialized.
-        #   Exits with code 2 when executed instead of sourced.
+        #   - 0 when already loaded or successfully initialized.
+        #   - Exits with code 2 when executed instead of sourced.
         #
         # . Usage
+        #   ```bash
         #   _sgnd_lib_guard
+        #   ```
     _sgnd_lib_guard() {
         local lib_base=""
         local guard=""

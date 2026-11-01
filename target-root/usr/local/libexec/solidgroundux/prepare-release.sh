@@ -44,11 +44,19 @@
 #   - Managing version control, tagging, or publication workflows
 #
 # Usage:
-#   Run the executable from its shell command (or installed wrapper):
+#   Use the installed `sgnd-` command wrapper (or run the libexec script directly):
 #   ```bash
-#   prepare-release
-#   prepare-release --dryrun
-#   prepare-release --verbose
+#   # Collect product selection and release settings interactively.
+#   sgnd-prepare-release
+#
+#   # Preview the release process.
+#   sgnd-prepare-release --dryrun
+#
+#   # Repeat the last confirmed release settings.
+#   sgnd-prepare-release --auto
+#
+#   # Check or create public libexec wrappers during release preparation.
+#   sgnd-prepare-release --createwrappers
 #   ```
 #
 #   Script-specific options:
@@ -99,9 +107,9 @@ set -uo pipefail
         #   helpers are not available until sgnd-exe-common.sh has been loaded.
         #
         # . Returns
-        #   0 when the framework root was resolved and executable common library loaded.
-        #   126 when the script path cannot be resolved, no canonical root component can
-        #   be found, or the executable common library is unreadable.
+        #   - 0 when the framework root was resolved and executable common library loaded.
+        #   - 126 when the script path cannot be resolved, no canonical root component can
+        #     be found, or the executable common library is unreadable.
         #
         # . Usage
         #   ```bash
@@ -341,7 +349,7 @@ set -uo pipefail
     RELEASE_OUTPUT_ARCHIVES=()
 
 # - Local script functions ----------------------------------------------------------
-    # fn$ _release_resolve_project_identity - Resolve the authoritative project definitions
+    # fn: _release_resolve_project_identity - Resolve the authoritative project definitions
         # . Purpose
         #   Resolve the selected product identity from its definitions file.
         # . Usage
@@ -400,7 +408,7 @@ set -uo pipefail
         [[ -n "$VERSION" ]] || { sayfail "Project version global missing: $version_var"; return 1; }
     }
 
-    # fn$ _release_product_record - Read product metadata from one target-root
+    # fn: _release_product_record - Read product metadata from one target-root
         # . Purpose
         #   Read product identity and metadata from one release target root.
         # . Arguments
@@ -430,7 +438,7 @@ set -uo pipefail
         return 1
     }
 
-    # fn$ _release_product_excludes - Return the complete release exclusion policy for a product root
+    # fn: _release_product_excludes - Return the complete release exclusion policy for a product root
         # . Purpose
         #   Collect the release exclusion patterns applicable to one product.
         # . Returns
@@ -485,13 +493,13 @@ set -uo pipefail
         done < <(find "$globals_dir" -maxdepth 1 -type f \( -name 'sgnd-definitions.sh' -o -name '*-definitions.sh' \) -print0 2>/dev/null | sort -z)
     }
 
-    # fn$ _release_parse_product_selection - Parse A/comma/range product selection
+    # fn: _release_parse_product_selection - Parse A/comma/range product selection
         # . Purpose
         #   Parse the selected product indexes, ranges or all-products option.
         # . Arguments
-        #   $1  Selection expression.
-        #   $2  Maximum product index.
-        #   $3  Name of the output array.
+        #   - $1  Selection expression.
+        #   - $2  Maximum product index.
+        #   - $3  Name of the output array.
         # . Returns
         #   0 for valid nonempty selection; 1 for invalid tokens or ranges.
         # . Usage
@@ -528,7 +536,7 @@ set -uo pipefail
         (( ${#out_ref[@]} > 0 ))
     }
 
-    # fn$ _release_select_products - Select the product(s) that participate in this release
+    # fn: _release_select_products - Select the product(s) that participate in this release
         # . Purpose
         #   Discover and select the products to package independently.
         # . Returns
@@ -633,7 +641,7 @@ set -uo pipefail
         _release_resolve_project_identity || return 1
     }
 
-    # fn$ _release_update_project_identity - Update version/build in the correct definitions file
+    # fn: _release_update_project_identity - Update version/build in the correct definitions file
         # . Purpose
         #   Update the selected product definitions with the requested version/build.
         # . Usage
@@ -695,7 +703,7 @@ set -uo pipefail
         }
     }
 
-    # fn$ _release_wrapper_name_for_script - Resolve wrapper metadata or conventional name
+    # fn: _release_wrapper_name_for_script - Resolve wrapper metadata or conventional name
         # . Purpose
         #   Resolve a public wrapper name from source metadata or the default naming rule.
         # . Usage
@@ -1025,8 +1033,7 @@ set -uo pipefail
 
     # fn: _sgnd_release_list_manifest_history - List removal-baseline manifests for an artifact
         # . Purpose
-        #   List persistent manifest-history files for one explicit release artifact identity,
-        #   newest build first.
+        #   List a product artifact's manifest history, newest build first.
         #
         # . Arguments
         #   $1  Artifact product name. Legacy bundled identities are still recognized as historical baselines.
@@ -1079,13 +1086,13 @@ set -uo pipefail
 
     # fn: _sgnd_release_select_baseline_for_artifact - Select one artifact removal baseline
         # . Purpose
-        #   Resolve the manifest against which removed paths are calculated for one release
-        #   artifact rather than for the prepare-release run as a whole.
+        #   Select the removal-baseline manifest for one release artifact.
+        #   Baselines are artifact-specific, not shared across the whole release run.
         #
         # . Arguments
-        #   $1  Display label.
-        #   $2  Artifact product name used to filter manifest history.
-        #   $3  Name of the variable that receives the selected absolute manifest path.
+        #   - $1  Display label.
+        #   - $2  Artifact product name used to filter manifest history.
+        #   - $3  Name of the variable that receives the selected absolute manifest path.
         #
         # . Behavior
         #   - Defaults to the matching manifest with the highest numeric build number.
@@ -1183,9 +1190,9 @@ set -uo pipefail
         # . Behavior
         #   - Remove an existing entry for the same filename before writing the new hash.
         # . Arguments
-        #   $1  TAR_PATH: File to hash.
-        #   $2  TAR_FILE: Filename recorded in SHA256SUMS.
-        #   $3  STAGING_ROOT: Directory containing SHA256SUMS.
+        #   - $1  TAR_PATH: File to hash.
+        #   - $2  TAR_FILE: Filename recorded in SHA256SUMS.
+        #   - $3  STAGING_ROOT: Directory containing SHA256SUMS.
         # . Returns
         #   0 on success; 1 for missing arguments or file/hash failures.
         # . Usage
@@ -1220,8 +1227,7 @@ set -uo pipefail
 
     # fn: _sgnd_release_write_removed_manifest - Write removed-path delta
         # . Purpose
-        #   Create the release removal manifest by comparing the selected baseline and
-        #   current package manifests.
+        #   Compare current and baseline manifests to identify removed paths.
         #
         # . Behavior
         #   - Uses PREVIOUS_MANIFEST as the explicit removal baseline.
@@ -1231,8 +1237,8 @@ set -uo pipefail
         #   - Creates an empty removal manifest when no baseline was selected.
         #
         # . Arguments
-        #   $1  CURRENT_MANIFEST - Newly generated release manifest.
-        #   $2  REMOVED_MANIFEST - Output path for the removal manifest.
+        #   - $1  CURRENT_MANIFEST - Newly generated release manifest.
+        #   - $2  REMOVED_MANIFEST - Output path for the removal manifest.
         #
         # . Returns
         #   0 on success; 1 when validation, comparison, or output creation fails.
@@ -1549,8 +1555,8 @@ set -uo pipefail
         # Usage:
         #   version="$(_setup_metadata_value "$setup" Version)"
         # . Arguments
-        #   $1  Setup source file.
-        #   $2  Metadata field name.
+        #   - $1  Setup source file.
+        #   - $2  Metadata field name.
         # . Returns
         #   0 after looking up the header field; prints nothing if absent.
         # . Usage
@@ -1589,7 +1595,7 @@ set -uo pipefail
         printf '%s\n' "$direct"
     }
 
-    # fn$ _write_release_package_info - Write ZIP-root package identity metadata
+    # fn: _write_release_package_info - Write ZIP-root package identity metadata
         # . Purpose
         #   Write a small machine-readable shipping label for the release package.
         #
@@ -1919,9 +1925,8 @@ set -uo pipefail
 
     # fn: _copy_release_output - Copy one completed product ZIP into the output directory
         # . Purpose
-        #   Export only the distributable product ZIP. Loose tar, manifest, removal, and
-        #   checksum files remain in staging until manifest-history processing completes,
-        #   then are removed by _cleanup_packaged_release_artifacts.
+        #   Export only the distributable product release ZIP.
+        #   Loose artifacts remain staged until manifest history is processed.
         #
         # . Behavior
         #   - Copies only the distributable product ZIP into the selected output directory.
@@ -2081,8 +2086,8 @@ set -uo pipefail
         #   _set_script_header_version "$script_file" "$version"
         #   ```
         # . Arguments
-        #   $1  Managed source file.
-        #   $2  Version string.
+        #   - $1  Managed source file.
+        #   - $2  Version string.
         # . Returns
         #   Status of the canonical header update operation.
     _set_script_header_version() {
@@ -2097,10 +2102,9 @@ set -uo pipefail
             "$file"
     }
 
-    # fn$ _normalize_canonical_sources - Normalize canonical structures before metadata processing
+    # fn: _normalize_canonical_sources - Normalize canonical structures before metadata processing
         # . Purpose
-        #   Apply the canonical framework locator and library guard to managed shell files
-        #   before version/build/checksum metadata is evaluated.
+        #   Normalize framework locator and library guards before metadata updates.
         #
         # . Behavior
         #   - Honors FLAG_NORMALIZE_CANON; disabled runs are skipped.
@@ -2169,13 +2173,12 @@ set -uo pipefail
 
     # fn: _release_sync_module_metadata_field - Synchronize module runtime release metadata
         # . Purpose
-        #   Keep conventional SGND_*_MODULE_VERSION / SGND_*_MODULE_BUILD assignments
-        #   synchronized with the canonical header value when prepare-release updates it.
+        #   Synchronize a module's runtime Version or Build assignment with its header.
         #
         # . Arguments
-        #   $1  File to update.
-        #   $2  Field name: Version or Build.
-        #   $3  Value to write.
+        #   - $1  File to update.
+        #   - $2  Field name: Version or Build.
+        #   - $3  Value to write.
         #
         # . Behavior
         #   - Updates every matching conventional module assignment in the file.
@@ -2184,6 +2187,13 @@ set -uo pipefail
         #
         # . Returns
         #   0 on success (including no matching assignment); non-zero on update failure.
+        #
+        # . Usage
+        #   ```bash
+        #   _release_sync_module_metadata_field "$file" Version "$version" || return $?
+        #   _release_sync_module_metadata_field "$file" Build "$build" || return $?
+        #   ```
+        #
     _release_sync_module_metadata_field() {
         local file="${1:-}"
         local field="${2:-}"
@@ -2210,8 +2220,8 @@ set -uo pipefail
 
     # fn: _apply_version_bump - Apply release metadata policy to managed source files
         # . Purpose
-        #   Apply Version and Build according to A/C/N policy and always refresh Checksum
-        #   for files whose source or metadata changed.
+        #   Apply release metadata policy to changed and selected source files.
+        #   Refresh checksums after source or metadata changes.
         #
         # . Behavior
         #   - Detects source changes by comparing the stored checksum with the current
@@ -2330,7 +2340,7 @@ set -uo pipefail
     }
 
 
-    # fn$ _ensure_libexec_executables
+    # fn: _ensure_libexec_executables
         # . Purpose
         #   Ensure top-level SolidGroundUX libexec files are executable before packaging.
         #
@@ -2346,8 +2356,8 @@ set -uo pipefail
         #   FLAG_DRYRUN
         #
         # . Returns
-        #   0 when all applicable files are executable or the directory is absent.
-        #   1 when one or more permission updates fail.
+        #   - 0 when all applicable files are executable or the directory is absent.
+        #   - 1 when one or more permission updates fail.
         #
         # . Usage
         #   ```bash
@@ -2384,8 +2394,7 @@ set -uo pipefail
 
     # fn: _ensure_public_command_wrappers - Ensure public wrappers exist for top-level libexec scripts
         # . Purpose
-        #   Ensure every executable top-level shell script under the SolidGroundUX
-        #   libexec directory has a matching public command wrapper in /usr/local/bin.
+        #   Create missing public command wrappers for top-level libexec scripts.
         #
         # . Behavior
         #   - Inspects executable *.sh files directly beneath usr/local/libexec/solidgroundux.
@@ -2404,8 +2413,8 @@ set -uo pipefail
         #   May create executable files beneath SOURCE_DIR/usr/local/bin.
         #
         # . Returns
-        #   0 when all wrappers exist or missing wrappers were created successfully.
-        #   1 when one or more wrapper creations fail.
+        #   - 0 when all wrappers exist or missing wrappers were created successfully.
+        #   - 1 when one or more wrapper creations fail.
         #
         # . Usage
         #   ```bash
@@ -2485,7 +2494,7 @@ set -uo pipefail
     }
 
 # - Release artifact identity --------------------------------------------------------
-    # fn$ _release_product_artifact_name - Convert a display product name to its file-safe release identity
+    # fn: _release_product_artifact_name - Convert a display product name to its file-safe release identity
         # . Purpose
         #   Print the filename-safe release identity for a product.
         # . Returns
@@ -2502,7 +2511,7 @@ set -uo pipefail
     }
 
 # - Individual product release helpers ---------------------------------------------
-    # fn$ _release_create_lead_product_release - Create the lead selected product as a standalone release
+    # fn: _release_create_lead_product_release - Create the lead selected product as a standalone release
         # . Purpose
         #   Prepare the first selected product release and establish its output context.
         # . Returns
@@ -2543,7 +2552,7 @@ set -uo pipefail
     }
 
 # - Main Sequence -------------------------------------------------------------------
-    # fn$ _release_create_remaining_product_releases - Create releases for the remaining selected products
+    # fn: _release_create_remaining_product_releases - Create releases for the remaining selected products
         # . Purpose
         #   Package the other selected products as independent releases.
         # . Returns

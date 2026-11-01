@@ -23,10 +23,16 @@
 #   - The received stream is processed as one deployment operation
 #
 # Usage:
-#   Run the executable from its shell command (or installed wrapper):
+#   Use the installed `sgnd-` command wrapper (or run the libexec script directly):
 #   ```bash
-#   tar -cf - usr/local/bin/example | sudo receive-files --target /
-#   tar -cf - usr/local/bin/example | sudo receive-files --target / --dryrun
+#   # Extract an archive stream below the root directory.
+#   tar -cf - usr/local/bin/example | sudo sgnd-receive-files --target /
+#
+#   # Preview the same operation without extracting files.
+#   tar -cf - usr/local/bin/example | sudo sgnd-receive-files --target / --dryrun
+#
+#   # Populate an isolated staging tree.
+#   tar -cf - usr/local/lib/solidgroundux | sudo sgnd-receive-files --target /tmp/staged
 #   ```
 #
 #   Script-specific options:
@@ -68,9 +74,9 @@ set -uo pipefail
         #   helpers are not available until sgnd-exe-common.sh has been loaded.
         #
         # . Returns
-        #   0 when the framework root was resolved and executable common library loaded.
-        #   126 when the script path cannot be resolved, no canonical root component can
-        #   be found, or the executable common library is unreadable.
+        #   - 0 when the framework root was resolved and executable common library loaded.
+        #   - 126 when the script path cannot be resolved, no canonical root component can
+        #     be found, or the executable common library is unreadable.
         #
         # . Usage
         #   ```bash
@@ -201,8 +207,8 @@ set -uo pipefail
         #   Ensure the destination is an absolute directory path suitable for extraction.
         #
         # . Returns
-        #   0 when the target is valid or can be created.
-        #   1 when the target is invalid or cannot be created.
+        #   - 0 when the target is valid or can be created.
+        #   - 1 when the target is invalid or cannot be created.
         #
         # . Usage
         #   ```bash
@@ -246,8 +252,8 @@ set -uo pipefail
         #   Capture standard input so the archive can be validated before extraction.
         #
         # . Returns
-        #   0 when a non-empty archive stream was received.
-        #   1 when the temporary file cannot be created or no data was received.
+        #   - 0 when a non-empty archive stream was received.
+        #   - 1 when the temporary file cannot be created or no data was received.
         #
         # . Usage
         #   ```bash
@@ -282,8 +288,8 @@ set -uo pipefail
         #   - Counts the entries that will be processed.
         #
         # . Returns
-        #   0 when every archive entry is safe.
-        #   1 when the archive is unreadable, empty, or contains an unsafe entry.
+        #   - 0 when every archive entry is safe.
+        #   - 1 when the archive is unreadable, empty, or contains an unsafe entry.
         #
         # . Usage
         #   ```bash
@@ -345,8 +351,8 @@ set -uo pipefail
         # . Purpose
         #   Extract the validated archive into the destination root, or report dry-run actions.
         # . Returns
-        #   0 when extraction succeeds or dry-run reporting completes.
-        #   1 when tar extraction fails.
+        #   - 0 when extraction succeeds or dry-run reporting completes.
+        #   - 1 when tar extraction fails.
         #
         # . Usage
         #   ```bash
@@ -379,12 +385,15 @@ set -uo pipefail
 
 # - Main ----------------------------------------------------------------------------
     # fn: main - Receive, validate, and extract a streamed workspace archive
+        # . Purpose
+        #   Initialize the receiver, validate the destination and tar stream, then extract the selected files and clean up the temporary archive.
+        #
         # . Arguments
         #   $@  Framework and script-specific arguments.
         #
         # . Returns
-        #   0 after successful validation and extraction.
-        #   Non-zero when startup, validation, receiving, or extraction fails.
+        #   - 0 after successful validation and extraction.
+        #   - Non-zero when startup, validation, receiving, or extraction fails.
         # . Cleanup
         #   Always removes the received temporary archive before returning,
         #   independently of the Framework exit-handler mechanism.

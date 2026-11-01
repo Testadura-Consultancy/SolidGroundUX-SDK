@@ -59,10 +59,10 @@
 # > The library template is used for reusable Bash libraries that are meant to be
 # > sourced, not executed directly.
 #
-# > It contains the standard library guard pattern. The guard prevents accidental
-# > direct execution, avoids repeated initialization when the same library is sourced
-# > more than once, and marks the library as loaded before normal initialization
-# > continues.
+# > Its guard rejects direct execution and records the library as loaded. The guard
+# > function itself returns on subsequent sourcing; the surrounding script is not
+# > automatically skipped, so any load-time initialization must be separately guarded
+# > if it must execute only once.
 #
 # > Libraries created from this template should expose reusable functionality
 # > through public functions and keep implementation helpers internal where

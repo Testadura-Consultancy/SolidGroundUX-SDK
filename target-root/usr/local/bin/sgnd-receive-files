@@ -10,12 +10,18 @@
 #   Type        : wrapper
 #   Group       : SDK
 #   Subgroup    : Templates
-#   Purpose     : Launch a configured SolidGroundUX target beneath the active framework root.
+#   Purpose     : Launch receive-files.sh in the active SolidGroundUX target root.
 #
 # Description:
 #   Resolves the active SolidGroundUX framework from this wrapper's physical path,
 #   loads the executable runtime context, then launches SGND_WRAPPER_TARGET beneath
 #   SGND_FRAMEWORK_ROOT.
+#
+# Usage:
+#   Pass command-line arguments through to the SDK implementation:
+#   ```bash
+#   sgnd-receive-files --help
+#   ```
 #
 # Attribution:
 #   Developers  : Mark Fieten
@@ -51,12 +57,14 @@ set -uo pipefail
         #   helpers are not available until sgnd-exe-common.sh has been loaded.
         #
         # . Returns
-        #   0 when the framework root was resolved and executable common library loaded.
-        #   126 when the script path cannot be resolved, no canonical root component can
-        #   be found, or the executable common library is unreadable.
+        #   - 0 when the framework root was resolved and executable common library loaded.
+        #   - 126 when the script path cannot be resolved, no canonical root component can
+        #     be found, or the executable common library is unreadable.
         #
         # . Usage
+        #   ```bash
         #   _framework_locator || return $?
+        #   ```
     _framework_locator() {
         local script_file=""
         local path_without_root=""

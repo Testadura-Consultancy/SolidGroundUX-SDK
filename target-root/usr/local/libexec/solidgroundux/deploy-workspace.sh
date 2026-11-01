@@ -24,11 +24,19 @@
 #   - Changed-after defaults to the last successful deployment timestamp when available
 #
 # Usage:
-#   Run the executable from its shell command (or installed wrapper):
+#   Use the installed `sgnd-` command wrapper (or run the libexec script directly):
 #   ```bash
-#   deploy-workspace --local --source /srv/solidgroundux/target-root --directory usr/local/lib/solidgroundux --match '*.sh'
-#   deploy-workspace --remote sysadmin@192.168.0.253 --match management-console.sh
-#   deploy-workspace --remote sysadmin@192.168.0.253 --since-last
+#   # Deploy a selected subtree locally.
+#   sgnd-deploy-workspace --local --source /srv/projects/example/target-root --directory usr/local/lib/solidgroundux --match "*.sh"
+#
+#   # Deploy selected files over SSH.
+#   sgnd-deploy-workspace --remote admin@example-host --match management-console.sh
+#
+#   # Select only files changed since the last successful deployment.
+#   sgnd-deploy-workspace --remote admin@example-host --since-last
+#
+#   # Preview a local deployment without sending files.
+#   sgnd-deploy-workspace --local --source /srv/projects/example/target-root --dryrun
 #   ```
 #
 #   Script-specific options:
@@ -81,9 +89,9 @@ set -uo pipefail
         #   helpers are not available until sgnd-exe-common.sh has been loaded.
         #
         # . Returns
-        #   0 when the framework root was resolved and executable common library loaded.
-        #   126 when the script path cannot be resolved, no canonical root component can
-        #   be found, or the executable common library is unreadable.
+        #   - 0 when the framework root was resolved and executable common library loaded.
+        #   - 126 when the script path cannot be resolved, no canonical root component can
+        #     be found, or the executable common library is unreadable.
         #
         # . Usage
         #   ```bash
@@ -252,7 +260,7 @@ set -uo pipefail
     NO_DEPLOYABLE_FILES=0
 
 # --- Product discovery ---------------------------------------------------------------
-    # fn$ _deploy_product_record - Read product metadata from one target-root
+    # fn: _deploy_product_record - Read product metadata from one target-root
         # . Purpose
         #   Read product name, version, build and definitions path from a target root.
         # . Arguments
@@ -283,13 +291,13 @@ set -uo pipefail
         return 1
     }
 
-    # fn$ _deploy_parse_product_selection - Parse A/comma/range product selection
+    # fn: _deploy_parse_product_selection - Parse A/comma/range product selection
         # . Purpose
         #   Parse an all/comma/range selection into distinct product indexes.
         # . Arguments
-        #   $1  Selection expression (A, comma list or numeric range).
-        #   $2  Number of discovered products.
-        #   $3  Name of the output array.
+        #   - $1  Selection expression (A, comma list or numeric range).
+        #   - $2  Number of discovered products.
+        #   - $3  Name of the output array.
         # . Returns
         #   0 for a valid nonempty selection; 1 for an invalid range or token.
         # . Usage
@@ -330,7 +338,7 @@ set -uo pipefail
         (( ${#out_ref[@]} > 0 ))
     }
 
-    # fn$ _select_products - Discover and select deployable product repositories
+    # fn: _select_products - Discover and select deployable product repositories
         # . Purpose
         #   Discover available product repositories and collect a deployment selection.
         # . Returns
@@ -426,8 +434,8 @@ set -uo pipefail
         #   $1  Relative path beneath SRC_ROOT.
         #
         # . Returns
-        #   0 when the path is deployable.
-        #   1 when the path is top-level, hidden, private, or marked .old.
+        #   - 0 when the path is deployable.
+        #   - 1 when the path is top-level, hidden, private, or marked .old.
         #
         # . Usage
         #   ```bash
@@ -459,8 +467,8 @@ set -uo pipefail
         #   Writes the normalized relative path to stdout.
         #
         # . Returns
-        #   0 when the path is safe and remains beneath SRC_ROOT.
-        #   1 for absolute paths, empty paths, or parent traversal.
+        #   - 0 when the path is safe and remains beneath SRC_ROOT.
+        #   - 1 for absolute paths, empty paths, or parent traversal.
         #
         # . Usage
         #   ```bash
@@ -514,9 +522,9 @@ set -uo pipefail
         #   SELECTED_PATHS
         #
         # . Returns
-        #   0 when at least one deployable file was selected.
-        #   1 when a filter is invalid or source selection cannot proceed.
-        #   2 when valid filters match no deployable files (not an error).
+        #   - 0 when at least one deployable file was selected.
+        #   - 1 when a filter is invalid or source selection cannot proceed.
+        #   - 2 when valid filters match no deployable files (not an error).
         #
         # . Usage
         #   ```bash
@@ -579,16 +587,15 @@ set -uo pipefail
 # --- Parameter collection ------------------------------------------------------------
     # fn: _capture_cli_parameters - Record which deployment settings were supplied explicitly
         # . Purpose
-        #   Distinguish command-line values from state/default values so explicit settings
-        #   are not prompted again.
+        #   Identify explicit CLI values so they are not prompted again.
         #
         # . Arguments
-        #   $@  Original executable arguments.
+        #   - $@  Original executable arguments.
         #
-        # Outputs (globals)
-        #   CLI_DEPLOY_TRANSPORT, CLI_REMOTE_TARGET, CLI_SRC_ROOT, CLI_DEST_ROOT,
-        #   CLI_SELECT_DIRECTORY, CLI_SELECT_MATCH, CLI_CHANGED_AFTER,
-        #   CLI_SINCE_LAST, CLI_RECEIVER_PATH
+        # . Outputs (globals)
+        #   - CLI_DEPLOY_TRANSPORT, CLI_REMOTE_TARGET, CLI_SRC_ROOT, CLI_DEST_ROOT,
+        #   - CLI_SELECT_DIRECTORY, CLI_SELECT_MATCH, CLI_CHANGED_AFTER,
+        #   - CLI_SINCE_LAST, CLI_RECEIVER_PATH
         #
         # . Returns
         #   0 always.
@@ -686,8 +693,8 @@ set -uo pipefail
         # . Purpose
         #   Validate the resolved local or remote deployment settings.
         # . Returns
-        #   0 when all required settings are valid.
-        #   1 when one or more settings are unusable.
+        #   - 0 when all required settings are valid.
+        #   - 1 when one or more settings are unusable.
         #
         # . Usage
         #   ```bash
@@ -768,16 +775,16 @@ set -uo pipefail
 
     # fn: _getparameters - Collect deployment parameters from CLI values, state, and ask
         # . Purpose
-        #   Resolve command-line overrides first, use saved state as prompt defaults,
-        #   and combine directory, filename/mask, and changed-after filters.
+        #   Resolve deployment settings and file selection filters.
+        #   CLI overrides take priority over saved state defaults.
         #
         # . Outputs (globals)
         #   DEPLOY_TRANSPORT, REMOTE_TARGET, PRODUCT_ROOT, PRODUCT_SELECTION, DEST_ROOT, SELECT_DIRECTORY,
         #   SELECT_MATCH, CHANGED_AFTER, RECEIVER_PATH
         #
         # . Returns
-        #   0 after confirmation or when auto mode has valid resolved settings.
-        #   1 when validation fails or the user cancels.
+        #   - 0 after confirmation or when auto mode has valid resolved settings.
+        #   - 1 when validation fails or the user cancels.
         #
         # . Usage
         #   ```bash
@@ -1064,12 +1071,17 @@ set -uo pipefail
 
     # fn: _start_remote_session - Open one shared SSH connection for the deployment
         # . Purpose
-        #   Authenticate to the remote destination once and keep a ControlMaster connection
-        #   available for receiver setup and all selected product transfers.
+        #   Open a reusable SSH ControlMaster connection to the deployment target.
+        #   The connection is shared by receiver setup and file transfers.
         #
         # . Returns
-        #   0 when the shared SSH session is available.
-        #   Non-zero when SSH authentication or session creation fails.
+        #   - 0 when the shared SSH session is available.
+        #   - Non-zero when SSH authentication or session creation fails.
+        #
+        # . Usage
+        #   ```bash
+        #   _start_remote_session
+        #   ```
     _start_remote_session() {
         [[ -n "${REMOTE_CONTROL_PATH:-}" ]] && return 0
 
@@ -1107,12 +1119,11 @@ set -uo pipefail
 
     # fn: _ensure_remote_receiver_sudo - Ensure the remote receiver may run without a sudo password
         # . Purpose
-        #   Create and validate a narrowly scoped sudoers rule for receive-files.sh
-        #   on the remote destination when the rule does not already exist.
+        #   Install or verify the remote receiver sudoers authorization rule.
         #
         # . Returns
-        #   0 when the sudoers rule already exists or was created successfully.
-        #   Non-zero when SSH, sudo, or sudoers validation fails.
+        #   - 0 when the sudoers rule already exists or was created successfully.
+        #   - Non-zero when SSH, sudo, or sudoers validation fails.
         #
         # . Usage
         #   ```bash
@@ -1174,10 +1185,10 @@ set -uo pipefail
         # . Purpose
         #   Select and send workspace files, including a successful no-change outcome.
         # . Returns
-        #   0 after a successful receive operation.
-        #   Non-zero when selection, transport, or receiver processing fails.
-        #   A valid selection with no matching files returns 0 and raises
-        #   NO_DEPLOYABLE_FILES without attempting a transfer.
+        #   - 0 after a successful receive operation.
+        #   - Non-zero when selection, transport, or receiver processing fails.
+        #     A valid selection with no matching files returns 0 and raises
+        #     NO_DEPLOYABLE_FILES without attempting a transfer.
         #
         # . Usage
         #   ```bash
@@ -1267,6 +1278,8 @@ set -uo pipefail
 
 # --- Main ----------------------------------------------------------------------------
     # fn: main - Run the workspace deployment workflow
+        # . Purpose
+        #   Initialize the deployment workflow, collect settings and transfer the selected workspace files.
         # . Arguments
         #   $@  Framework and script-specific arguments.
         #

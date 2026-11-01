@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =====================================================================================
-# SolidGroundUX SDK - Executable Script Template
+# SolidGroundUX SDK - Prepare VM Template
 # ------------------------------------------------------------------------------------
 # Metadata:
 #   Version     : 2.1
@@ -15,10 +15,16 @@
 #   Prepares a VM for cloning by clearing transient state, resetting network configuration, and removing machine-specific identifiers.
 #
 # Usage:
-#   Run the executable from its shell command (or installed wrapper):
+#   Use the installed `sgnd-` command wrapper (or run the libexec script directly):
 #   ```bash
-#   prepare-template --dryrun
-#   prepare-template --verbose
+#   # Preview the changes without cleaning or shutting down the VM.
+#   sgnd-prepare-template --dryrun
+#
+#   # Prepare this VM and request shutdown afterward.
+#   sudo sgnd-prepare-template
+#
+#   # Enable verbose framework logging during preparation.
+#   sudo sgnd-prepare-template --verbose
 #   ```
 #
 # Attribution:
@@ -56,9 +62,9 @@ set -uo pipefail
         #   helpers are not available until sgnd-exe-common.sh has been loaded.
         #
         # . Returns
-        #   0 when the framework root was resolved and executable common library loaded.
-        #   126 when the script path cannot be resolved, no canonical root component can
-        #   be found, or the executable common library is unreadable.
+        #   - 0 when the framework root was resolved and executable common library loaded.
+        #   - 126 when the script path cannot be resolved, no canonical root component can
+        #     be found, or the executable common library is unreadable.
         #
         # . Usage
         #   ```bash
@@ -126,16 +132,12 @@ set -uo pipefail
         source "$exe_common"
     }
 # - Script identity ------------------------------------------------------------------
-    # var: SGND_SCRIPT_FILE - Absolute path to the currently executing script
     SGND_SCRIPT_FILE="$(readlink -f "${BASH_SOURCE[0]}")"
 
-    # var: SGND_SCRIPT_DIR - Directory containing the currently executing script
     SGND_SCRIPT_DIR="$(cd -- "$(dirname -- "$SGND_SCRIPT_FILE")" && pwd)"
 
-    # var: SGND_SCRIPT_BASE - Filename of the currently executing script
     SGND_SCRIPT_BASE="$(basename -- "$SGND_SCRIPT_FILE")"
 
-    # var: SGND_SCRIPT_NAME - Script basename without the .sh extension
     SGND_SCRIPT_NAME="${SGND_SCRIPT_BASE%.sh}"
     # var$ SGND_SCRIPT_FILE
         # Absolute path to the currently executing script.
@@ -205,7 +207,7 @@ set -uo pipefail
         "  $SGND_SCRIPT_NAME --verbose"
     ) 
 
-    # var: SGND_SCRIPT_GLOBALS - Script globals participating in configuration loading# var: SGND_SCRIPT_GLOBALS - Script globals participating in configuration loading
+    # var: SGND_SCRIPT_GLOBALS - Script globals participating in configuration loading
         # Explicit declaration of global variables intentionally used by this script.
         #
         # . Purpose
@@ -306,9 +308,9 @@ set -uo pipefail
         #   - Reporting
         #   - Cleanup
 
-    # fn: _detect_primary_iface - Detect primary iface
+    # fn: _detect_primary_iface - Find the interface that will receive DHCP configuration
         # . Purpose
-        #   Detect primary iface.
+        #   Print the IPv4 default-route interface, falling back to the first non-loopback interface.
         #
         # . Returns
         #   0 after printing an interface; 1 when no eligible interface is found.
@@ -333,9 +335,14 @@ set -uo pipefail
         printf '%s\n' "$primary_iface"
     }
 
-    # fn: _reset_network_for_template - Reset network for template
+    # fn: _reset_network_for_template - Replace netplan configuration with DHCP
+        # . Side effects
+        #   Deletes existing /etc/netplan/*.yaml files and writes
+        #   /etc/netplan/00-installer-config.yaml with DHCP enabled.
+        #
         # . Purpose
-        #   Reset network for template.
+        #   Replace existing netplan YAML files with a DHCP configuration.
+        #   Uses the detected interface and creates a root-owned YAML file.
         #
         # . Returns
         #   0 when netplan generation succeeds; nonzero on filesystem or netplan failures.
@@ -367,12 +374,21 @@ set -uo pipefail
         netplan generate || return $?
     }
 
-    # fn: _prepare_template - Prepare template
+    # fn: _prepare_template - Clear machine-specific state before cloning a VM
+        # . Side effects
+        #   - Normal mode runs apt clean/autoremove and overwrites netplan configuration.
+        #   - Deletes SSH host keys, systemd journal history and temporary files.
+        #   - Clears /etc/machine-id and links the D-Bus machine-id to it.
+        #   - Invokes an auto-continue dialog, then requests shutdown.
+        #   - Dry-run reports the cleanup actions without performing them or shutting down.
+        #
         # . Purpose
-        #   Prepare template.
+        #   Clear machine-specific state before cloning or imaging the VM.
+        #   Normal mode resets network, clears SSH keys and machine ID, then shuts down.
         #
         # . Returns
-        #   Status of the preparation step or shutdown invocation; dry-run does not shut down.
+        #   Status of the first failed command, or 0 when the preparation completes;
+        #   dry-run skips cleanup and shutdown.
         #
         # . Usage
         #   ```bash
@@ -429,10 +445,9 @@ set -uo pipefail
     }
 
 # - Main ----------------------------------------------------------------------------
-    # fn: main - Run the executable main sequence
+    # fn: main - Bootstrap and run the VM-template preparation workflow
         # . Purpose
-        #   Run the standard executable startup sequence and then execute
-        #   script-specific logic.
+        #   Initialize the Framework as root and prepare the VM for cloning.
         #
         # . Arguments
         #   $@  Command-line arguments.
@@ -441,7 +456,7 @@ set -uo pipefail
         #   - Locates the SolidGroundUX framework.
         #   - Loads executable runtime support.
         #   - Starts the framework runtime through sgnd_exe_start.
-        #   - Continues with script-specific logic.
+        #   - Calls _prepare_template; normal mode requests shutdown after cleanup.
         #
         # . Returns
         #   Exits with the resulting status code from startup or script logic.
