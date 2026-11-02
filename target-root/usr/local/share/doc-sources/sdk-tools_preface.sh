@@ -2,9 +2,9 @@
 # SolidGroundUX SDK - SDK Overview
 # ----------------------------------------------------------------------------------
 # Metadata:
-#   Version     : 2.1
-#   Build       : 2627700
-#   Checksum    : 140395038874a52b8059c25a7904388800fae7751e9d39341a6814165acd5fa2
+#   Version     : 2.2
+#   Build       : 2630620
+#   Checksum    : bb2c30283426f0f14b620064bbaf8888b82c5b13f4312694e65fd89a2d53efac
 #   Source      : sdk-tools_preface.sh
 #   Type        : documentation
 #   Group       : SDK

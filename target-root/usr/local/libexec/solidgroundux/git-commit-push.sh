@@ -3,9 +3,9 @@
 # SolidGroundUX SDK - Git Commit and Push
 # -------------------------------------------------------------------------------------
 # Metadata:
-#   Version     : 2.1
-#   Build       : -
-#   Checksum    : -
+#   Version     : 2.2
+#   Build       : 2630620
+#   Checksum    : 03b26cb04b0c37ab1a0c51d811cd459620da4a9c06fcedfdeb4667eb7942ad25
 #   Source      : git-commit-push.sh
 #   Type        : script
 #   Group       : SDK

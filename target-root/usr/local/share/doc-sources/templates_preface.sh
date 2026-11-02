@@ -2,9 +2,9 @@
 # SolidGroundUX - Script templates 
 # ----------------------------------------------------------------------------------
 # Metadata:
-#   Version     : 2.1
-#   Build       : 2627808
-#   Checksum    : 19ae2baa1cd59d90b78b81eef65b037d5fa386f84a2efbd56a03f04c542a4bd0
+#   Version     : 2.2
+#   Build       : 2630620
+#   Checksum    : 7a13e95f63951b9bf301d9e7a98ce8b5c380b59fbf89dd9ab0c725e4fcd70b9d
 #   Source      : templates_preface.sh
 #   Type        : documentation
 #   Group       : SDK

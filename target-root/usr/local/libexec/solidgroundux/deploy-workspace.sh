@@ -3,9 +3,9 @@
 # SolidGroundUX SDK - Deploy Workspace
 # -------------------------------------------------------------------------------------
 # Metadata:
-#   Version     : 2.1
-#   Build       : 2627501
-#   Checksum    : e5717cb96fee6aa0ba713448455833b322076631d436b65ab64348f312d6f299
+#   Version     : 2.2
+#   Build       : 2630620
+#   Checksum    : a436bafc3bdeaffacd31629986c4cf9506e8314fbfd35a870063385e70f10c17
 #   Source      : deploy-workspace.sh
 #   Type        : script
 #   Group       : SDK
@@ -89,9 +89,9 @@ set -uo pipefail
         #   helpers are not available until sgnd-exe-common.sh has been loaded.
         #
         # . Returns
-        #   - 0 when the framework root was resolved and executable common library loaded.
-        #   - 126 when the script path cannot be resolved, no canonical root component can
-        #     be found, or the executable common library is unreadable.
+        #   0 when the framework root was resolved and executable common library loaded.
+        #   126 when the script path cannot be resolved, no canonical root component can
+        #   be found, or the executable common library is unreadable.
         #
         # . Usage
         #   ```bash

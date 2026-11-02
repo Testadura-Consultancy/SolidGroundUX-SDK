@@ -3,9 +3,9 @@
 # SolidGroundUX SDK - Create Wrappers
 # -------------------------------------------------------------------------------------
 # Metadata:
-#   Version     : 2.1
-#   Build       : 2627501
-#   Checksum    : 528a6c64c08ba8cac6d5fb949ea330579e7d362cb1c588c54139d2843150ec3d
+#   Version     : 2.2
+#   Build       : 2630620
+#   Checksum    : d850b0dc08818bd9ad4d654f331628fa1875e2befbb29c9aa31b1fb354fe822a
 #   Source      : create-wrappers.sh
 #   Type        : script
 #   Group       : SDK
@@ -90,9 +90,9 @@ set -uo pipefail
         #   helpers are not available until sgnd-exe-common.sh has been loaded.
         #
         # . Returns
-        #   - 0 when the framework root was resolved and executable common library loaded.
-        #   - 126 when the script path cannot be resolved, no canonical root component can
-        #     be found, or the executable common library is unreadable.
+        #   0 when the framework root was resolved and executable common library loaded.
+        #   126 when the script path cannot be resolved, no canonical root component can
+        #   be found, or the executable common library is unreadable.
         #
         # . Usage
         #   ```bash

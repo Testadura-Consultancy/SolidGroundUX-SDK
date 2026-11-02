@@ -3,9 +3,9 @@
 # SolidGroundUX SDK - Project Definitions
 # ----------------------------------------------------------------------------------
 # Metadata:
-#   Version     : 2.1
-#   Build       : 2630202
-#   Checksum    : f4c7515b93cac4e94f9c29e4921e7bed042d7f2d06434bc1f22f81a20d7075c0
+#   Version     : 2.2
+#   Build       : 2630621
+#   Checksum    : 2bebdde6222b6dadd7e3e9be2a4c8280da7377b9200cd4f5d0081aa540dbd52b
 #   Source      : solidgroundux-sdk-definitions.sh
 #   Type        : library
 #   Group       : Globals
@@ -23,27 +23,26 @@
 # ==================================================================================
 set -uo pipefail
 # - Library guard ------------------------------------------------------------------
-    # fn: _sgnd_lib_guard - Check source-only loading and record the loaded marker
+    # fn$ _sgnd_lib_guard - Enforce source-only, single-load library initialization
         # . Purpose
-        #   Reject direct execution and mark this library as loaded when sourced.
+        #   Ensure the file is sourced as a library and initialized only once.
         #
         # . Behavior
         #   - Derives a unique guard variable name from the current filename.
         #   - Aborts execution when the file is run directly instead of sourced.
         #   - Sets the guard variable on first load.
-        #   - Returns from the guard when the library was already loaded; the rest
-        #     of the sourced file continues to execute unless separately guarded.
+        #   - Returns immediately when the library was already loaded.
         #
-        # . Inputs (globals)
+        # Inputs
         #   BASH_SOURCE[0]
         #   $0
         #
-        # . Outputs (globals)
+        # Outputs (globals)
         #   SGND_<MODULE>_LOADED
         #
         # . Returns
-        #   - 0 when already loaded or successfully initialized.
-        #   - Exits with code 2 when executed instead of sourced.
+        #   0 when already loaded or successfully initialized.
+        #   Exits with code 2 when executed instead of sourced.
         #
         # . Usage
         #   ```bash
@@ -76,8 +75,8 @@ set -uo pipefail
 # - SDK identity --------------------------------------------------------------------
     # def: Framework identity
     SGND_SOLIDGROUNDUX_SDK_PRODUCT="SolidGroundUX SDK"
-    SGND_SOLIDGROUNDUX_SDK_VERSION=2.1
-    SGND_SOLIDGROUNDUX_SDK_BUILD=2630202
+    SGND_SOLIDGROUNDUX_SDK_VERSION=2.2
+    SGND_SOLIDGROUNDUX_SDK_BUILD=2630621
     SGND_SOLIDGROUNDUX_SDK_COMPANY="Testadura Consultancy"
     SGND_SOLIDGROUNDUX_SDK_COPYRIGHT="© 2025 - 2026 Testadura Consultancy"
     SGND_SOLIDGROUNDUX_SDK_LICENSE="Testadura Non-Commercial License (TD-NC) v1.1."

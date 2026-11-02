@@ -4,8 +4,17 @@ All notable changes to SolidGroundUX SDK are documented in this file.
 
 ## Unreleased
 
+## Release 2.2.2630620
+
+### Added (2026-11-02)
+
+- Added `sgnd-git-commit-push` as an SDK developer utility: discover and select multiple local repositories from a source directory, persist the directory and selections, preview and confirm `git add .` / `git commit -m` / `git push`, support dry-run, and finish with Repeat, End or automatic return. The utility does not force-push or rewrite history.
+- Added an optional Create Workspace choice to generate editable `<project>_preface.sh` and `<project>_epilogue.sh` samples in the new workspace’s `target-root/usr/local/share/doc-sources`. Existing files are preserved and dry-run is supported.
+
 ### Changed
 
+- Completed SDK source-documentation review for executables, deployment/release tooling and templates, including function usage examples and generated documentation grouping.
+- Updated SDK documentation illustrations for the developer lifecycle, deployment model, product release lifecycle and project structure; removed the obsolete overview image.
 - Updated Create Workspace template and workspace-layout lookup to use the canonical `SGND_SHARE_DIR`, retaining the installed-layout fallback for development/staged roots.
 
 ### Removed

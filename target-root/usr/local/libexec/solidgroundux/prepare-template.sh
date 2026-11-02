@@ -3,9 +3,9 @@
 # SolidGroundUX SDK - Prepare VM Template
 # ------------------------------------------------------------------------------------
 # Metadata:
-#   Version     : 2.1
-#   Build       : 2627501
-#   Checksum    : 7d12831b09d9934da243fb790e8a3115b70184377e6118e63ea9a8d22fbb1f24
+#   Version     : 2.2
+#   Build       : 2630620
+#   Checksum    : c697fba95bdd87415c91107753f6d0898c0b1cb2e7fddf3928c85e57e5f80353
 #   Source      : prepare-template.sh
 #   Type        : script
 #   Group       : SDK
@@ -62,9 +62,9 @@ set -uo pipefail
         #   helpers are not available until sgnd-exe-common.sh has been loaded.
         #
         # . Returns
-        #   - 0 when the framework root was resolved and executable common library loaded.
-        #   - 126 when the script path cannot be resolved, no canonical root component can
-        #     be found, or the executable common library is unreadable.
+        #   0 when the framework root was resolved and executable common library loaded.
+        #   126 when the script path cannot be resolved, no canonical root component can
+        #   be found, or the executable common library is unreadable.
         #
         # . Usage
         #   ```bash

@@ -2,9 +2,9 @@
 # SolidGroundUX SDK - Library Template
 # ----------------------------------------------------------------------------------
 # Metadata:
-#   Version     : 2.1
-#   Build       : 2627700
-#   Checksum    : 6105378c42db59eeb90bf258d3d7cb73c483c891f6556e295971d2531edcf91e
+#   Version     : 2.2
+#   Build       : 2630620
+#   Checksum    : fa32485abd682b3f16bbe684b414e07cb8484aea96ea99351511ee126f583630
 #   Source      : lib-template.sh
 #   Type        : library
 #   Group       : SDK
@@ -43,27 +43,26 @@
 # ==================================================================================
 set -uo pipefail
 # - Library guard ------------------------------------------------------------------
-    # fn: _sgnd_lib_guard - Check source-only loading and record the loaded marker
+    # fn$ _sgnd_lib_guard - Enforce source-only, single-load library initialization
         # . Purpose
-        #   Reject direct execution and mark this library as loaded when sourced.
+        #   Ensure the file is sourced as a library and initialized only once.
         #
         # . Behavior
         #   - Derives a unique guard variable name from the current filename.
         #   - Aborts execution when the file is run directly instead of sourced.
         #   - Sets the guard variable on first load.
-        #   - Returns from the guard when the library was already loaded; the rest
-        #     of the sourced file continues to execute unless separately guarded.
+        #   - Returns immediately when the library was already loaded.
         #
-        # . Inputs (globals)
+        # Inputs
         #   BASH_SOURCE[0]
         #   $0
         #
-        # . Outputs (globals)
+        # Outputs (globals)
         #   SGND_<MODULE>_LOADED
         #
         # . Returns
-        #   - 0 when already loaded or successfully initialized.
-        #   - Exits with code 2 when executed instead of sourced.
+        #   0 when already loaded or successfully initialized.
+        #   Exits with code 2 when executed instead of sourced.
         #
         # . Usage
         #   ```bash

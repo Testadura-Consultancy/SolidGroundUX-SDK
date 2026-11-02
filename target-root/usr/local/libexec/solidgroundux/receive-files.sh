@@ -3,9 +3,9 @@
 # SolidGroundUX SDK - Receive Files
 # -------------------------------------------------------------------------------------
 # Metadata:
-#   Version     : 2.1
-#   Build       : 2627501
-#   Checksum    : 325cbf4dfe2aff5495f5ff5a486c8c7a1ef0ae4d64695679d9f1485ab242a6fa
+#   Version     : 2.2
+#   Build       : 2630620
+#   Checksum    : 8dcbe1848243d6dbd52eb4bf7d1225e8c3f0f20bae5f0fabeb8dd3d9235be03f
 #   Source      : receive-files.sh
 #   Type        : script
 #   Group       : SDK
@@ -74,9 +74,9 @@ set -uo pipefail
         #   helpers are not available until sgnd-exe-common.sh has been loaded.
         #
         # . Returns
-        #   - 0 when the framework root was resolved and executable common library loaded.
-        #   - 126 when the script path cannot be resolved, no canonical root component can
-        #     be found, or the executable common library is unreadable.
+        #   0 when the framework root was resolved and executable common library loaded.
+        #   126 when the script path cannot be resolved, no canonical root component can
+        #   be found, or the executable common library is unreadable.
         #
         # . Usage
         #   ```bash

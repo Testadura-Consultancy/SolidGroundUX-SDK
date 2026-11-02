@@ -2,9 +2,9 @@
 # SolidGroundUX SDK - Deployment and Release Lifecycle
 # ----------------------------------------------------------------------------------
 # Metadata:
-#   Version     : 2.1
-#   Build       : 2627700
-#   Checksum    : 38018e1c7547cc147864a3b04ca82e5184f569915718af19fa858f63df393ae3
+#   Version     : 2.2
+#   Build       : 2630620
+#   Checksum    : 965b846c490df9b5d86cef5b1381ae92b3e7aac5dd393ab5cf2df1d658249942
 #   Source      : sdk-deployment_preface.sh
 #   Type        : documentation
 #   Group       : Deployment

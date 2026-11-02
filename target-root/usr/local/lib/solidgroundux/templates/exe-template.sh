@@ -4,9 +4,9 @@
 # SolidGroundUX - Executable Script Template
 # ------------------------------------------------------------------------------------
 # Metadata:
-#   Version     : 2.1
-#   Build       : 2627700
-#   Checksum    : a37127a10182b3e4194449d9b3bb1dbe6a8454b8a04ec3eb3b87544af63bd60a
+#   Version     : 2.2
+#   Build       : 2630620
+#   Checksum    : 0737d207b7c937f6bb1128a6e6e506694db4e5c4817b0a868d25e7624c0daed7
 #   Source      : exe-template.sh
 #   Type        : template
 #   Group       : SDK
@@ -70,9 +70,9 @@ set -uo pipefail
         #   helpers are not available until sgnd-exe-common.sh has been loaded.
         #
         # . Returns
-        #   - 0 when the framework root was resolved and executable common library loaded.
-        #   - 126 when the script path cannot be resolved, no canonical root component can
-        #     be found, or the executable common library is unreadable.
+        #   0 when the framework root was resolved and executable common library loaded.
+        #   126 when the script path cannot be resolved, no canonical root component can
+        #   be found, or the executable common library is unreadable.
         #
         # . Usage
         #   ```bash
