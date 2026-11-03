@@ -4,7 +4,7 @@ All notable changes to SolidGroundUX SDK are documented in this file.
 
 ## Unreleased
 
-## Release 2.2.2630620
+## Release 2.2.2630700
 
 ### Added (2026-11-02)
 

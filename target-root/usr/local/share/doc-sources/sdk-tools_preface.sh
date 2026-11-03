@@ -3,7 +3,7 @@
 # ----------------------------------------------------------------------------------
 # Metadata:
 #   Version     : 2.2
-#   Build       : 2630620
+#   Build       : 2630700
 #   Checksum    : bb2c30283426f0f14b620064bbaf8888b82c5b13f4312694e65fd89a2d53efac
 #   Source      : sdk-tools_preface.sh
 #   Type        : documentation

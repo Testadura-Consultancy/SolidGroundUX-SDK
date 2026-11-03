@@ -3,9 +3,9 @@
 # SolidGroundUX SDK - Create Workspace
 # -------------------------------------------------------------------------------------
 # Metadata:
-#   Version     : 2.1
-#   Build       : 2627501
-#   Checksum    : ddf78268928b795fa45051d32b603dfb6c831cc8b9ceeb0a2327b699579d9462
+#   Version     : 2.2
+#   Build       : 2630700
+#   Checksum    : c00b6a1606f5308ebd989cb66987a9aa2c429610b561be5cb619c12849f8352f
 #   Source      : create-workspace.sh
 #   Type        : script
 #   Group       : SDK
@@ -107,9 +107,9 @@ set -uo pipefail
         #   helpers are not available until sgnd-exe-common.sh has been loaded.
         #
         # . Returns
-        #   - 0 when the framework root was resolved and executable common library loaded.
-        #   - 126 when the script path cannot be resolved, no canonical root component can
-        #     be found, or the executable common library is unreadable.
+        #   0 when the framework root was resolved and executable common library loaded.
+        #   126 when the script path cannot be resolved, no canonical root component can
+        #   be found, or the executable common library is unreadable.
         #
         # . Usage
         #   ```bash
