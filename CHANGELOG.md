@@ -1,104 +1,10 @@
 # Changelog
 
-All notable changes to SolidGroundUX SDK are documented in this file.
+All notable changes to SolidGroundUX Management Console Modules are documented in this file.
+
+The format is inspired by *Keep a Changelog* while remaining focused on practical framework development.
 
 ## Unreleased
 
-## Release 2.2.2630700
-
-### Added (2026-11-02)
-
-- Added `sgnd-git-commit-push` as an SDK developer utility: discover and select multiple local repositories from a source directory, persist the directory and selections, preview and confirm `git add .` / `git commit -m` / `git push`, support dry-run, and finish with Repeat, End or automatic return. The utility does not force-push or rewrite history.
-- Added an optional Create Workspace choice to generate editable `<project>_preface.sh` and `<project>_epilogue.sh` samples in the new workspace’s `target-root/usr/local/share/doc-sources`. Existing files are preserved and dry-run is supported.
-
-### Changed
-
-- Completed SDK source-documentation review for executables, deployment/release tooling and templates, including function usage examples and generated documentation grouping.
-- Updated SDK documentation illustrations for the developer lifecycle, deployment model, product release lifecycle and project structure; removed the obsolete overview image.
-- Updated Create Workspace template and workspace-layout lookup to use the canonical `SGND_SHARE_DIR`, retaining the installed-layout fallback for development/staged roots.
-
-### Removed
-
-- Relocated the three legacy documentation-generation diagrams to MCM under `mcm-documentation-*` filenames; image content is unchanged pending architectural review.
-- Removed obsolete SDK documentation launchers (`sgnd-doc-generator`, `sgnd-doc-bundles`) and unused `doc-processor.sh`/`doc-renderer.sh` libraries. MCM is the sole owner of documentation generation.
-- Removed tracked parser/renderer cache snapshots; future generated cache contents are ignored by Git. Retained documentation source examples and Create Workspace templates.
-
-### Fixed
-
-- `receive-files.sh` now removes its temporary archive on success or failure without relying on state/exit-handler dispatch.
-- `deploy-workspace` treats valid selections matching no deployable files as successful no-ops rather than transfer failures.
-
-## Release 2.1.2627801
-
-### Changed
-
-- Documentation bundle management and source-to-Markdown generation are now owned by Management Console Modules (MCM). Any legacy SDK copies of these tools are obsolete and are not authoritative or synchronized from MCM.
-- Reworked release preparation around a single product-package model: every selected product is now emitted as its own product release ZIP; multi-product bundled releases are no longer produced.
-- Removed the redundant primary-product selection from multi-product release preparation; selected products remain peers and are prepared in the operator-selected order.
-- First-install packages now replace the former bundled-release role and use the independent Version/Build identity of `sgnd-setup.sh` rather than borrowing a selected product's release identity.
-- Product `tar.gz` payloads and their checksum sidecars are now treated as ZIP-internal staging artifacts and are removed after successful product packaging/export instead of being retained as standalone release outputs.
-- Added a separate first-install transport ZIP containing `sgnd-setup.sh` plus the selected product release ZIPs, keeping bootstrap transport distinct from installable product packages.
-- Updated release package metadata to format 3 with `SGND_PACKAGE_TYPE=product`.
-- Added a configurable release output-directory prompt to `prepare-release`, persisted as state for reuse on subsequent runs.
-- Release preparation now reports the final destination path of the generated release artifacts explicitly.
-- Changed documentation generation modes so **Full**, **Selected**, and **Changed** control source parsing only; after parsing, the renderer always rebuilds the complete generated site.
-- Moved persistent documentation parser and renderer caches out of the generated website tree to `usr/local/share/doc-sources/.cache/<site-slug>/parser` and `usr/local/share/doc-sources/.cache/<site-slug>/renderer` beneath the active framework root.
-- Changed local documentation publication to render into a fresh `<site>.new` staging tree and replace the previous generated site only after a successful complete render.
-- Changed Git documentation publication to stage a complete fresh copy and replace the previous published tree only after staging succeeds, with restoration of the previous tree if final replacement fails.
-- Clarified the documentation-generator UI that generation mode applies to source parsing, renamed the remaining behavior group to **Parser options**, and removed the redundant always-on “Fresh full site render” status line.
-- Corrected SDK convenience-template metadata so the SDK documentation, executable and library templates are grouped under **SDK -> Templates** rather than the former Deployment grouping.
-
-### Fixed
-
-- Fixed non-interactive `receive-files.sh` execution hanging during workspace deployment by suppressing title rendering for the receiver path, avoiding terminal/titlebar probing when no controlling TTY is available.
-- Restored normal `deploy-workspace` completion after the receiver/confirmation handling regression; development-to-production streaming again returns cleanly after transfer.
-- Fixed release output cleanup so intermediate `tar.gz`, manifest, removal-manifest, and checksum artifacts remain staging-only and are removed after successful packaging; the release output directory now contains only the final product release ZIPs and first-install ZIP.
-- Fixed release preparation cleanup so packaging metadata and checksum sidecars are retained inside their owning product ZIPs without leaking duplicate loose artifacts into the final release directory.
-- Fixed incremental documentation runs leaving stale generated pages behind after source pages were renamed or removed by making every render a fresh complete-site rebuild.
-- Fixed parser/renderer cache data being coupled to the generated website output tree; cache state is now kept separately from publishable documentation content.
-
-## Release 2.1.2626712
-
-### Changed
-
-- `prepare-release` now synchronizes existing literal `SGND_*_MODULE_VERSION` and `SGND_*_MODULE_BUILD` assignments when the corresponding canonical header Version or Build is updated, without creating metadata variables that are not already present.
-- Remote multi-product deployment now establishes one shared SSH connection for the deployment session and prepares remote receiver sudo access once before streaming products, limiting interactive authentication to at most one SSH password and one remote sudo password regardless of the number of selected products.
-- Standardized public executable wrappers on the current canonical wrapper template, including framework-root discovery and target resolution instead of fixed installed or development paths.
-
-### Fixed
-
-- Removed a stale development-machine path from the Release Manager public wrapper by resolving the installed Release Manager through the canonical wrapper target mechanism.
-
-## Release 2.1.2626612
-
-### Added
-
-- Established SolidGroundUX SDK as the owner of development, workspace, deployment, documentation and release tooling separated from the SolidGroundUX Framework.
-- Added multi-product documentation collections with product discovery/selection, a primary product, product-specific `.docignore` configuration, deterministic duplicate-module handling and merged product assets.
-- Added explicit documentation collection/output handling and documentation table syntax support.
-- Added multi-product release preparation with per-product Version/Build policy, primary-product bundle identity, product ownership collision detection and per-product removal-baseline selection.
-- Added release-package discovery and product-aware release/removal handling, including manifest-based removal and ownership-based removal paths.
-- Added a declarative `workspace-layout.cfg` used by `create-workspace` to instantiate the complete canonical target-root tree, including system/user configuration and state locations, MOTD, runtime, share and var directories.
-- Added optional project Description input to `create-workspace`; the description is stored in project definitions and reused by generated repository material.
-- Added generated project README, changelog, license placeholder, default SolidGroundUX icon and Git placeholders for otherwise-empty canonical workspace directories.
-
-### Changed
-
-- Made `deploy-workspace` product-aware: product repositories can now be discovered beneath a product root and deployed individually or together.
-- Added product selection, including an `All products` option, while retaining explicit single-source deployment compatibility.
-- Deployment filtering and reporting now operate per selected product.
-- Moved `create-workspace`, `deploy-workspace`, `prepare-release`, release management, documentation generation/rendering/processing, wrapper generation and canonical normalization into the SDK product boundary.
-- `create-workspace` now derives generated README identity from project definitions: Title, Version.Build, Copyright, project name and Description. Generated README navigation points to installed documentation, changelog and license and no longer embeds Framework-specific marketing captions.
-- `create-workspace` now creates the full canonical workspace tree even when individual directories are not initially used; empty directories are retained in Git with placeholders that are excluded from release content.
-- Convenience templates are discovered by product ownership and copied into workspace-local templates for project use. Starter scripts receive the new project identity and canonical Version/Build defaults.
-- `doc-generator` now treats duplicate module basenames across products as deterministic first-wins collisions: the duplicate is warned about and skipped rather than overwriting or aborting the collection.
-- `prepare-release` now treats product identity independently from repository identity and keeps release metadata/baseline state with each selected product. Bundles inherit Version/Build from the primary product.
-- SDK executables running from a non-root SDK development tree now resolve Framework-owned resources through the Framework resolver while preserving their own SDK development context.
-
-### Fixed
-
-- Fixed `create-workspace` prematurely aborting after starter-script generation when the final selected template was non-executable; subsequent definitions, MOTD, README, changelog, license and placeholder generation now runs normally.
-- Fixed `normalize-canon` assuming canonical Framework fragments existed beneath the SDK development root; canonical fragments now resolve from the actual local or installed Framework.
-- Fixed `prepare-release` product identity updates for canonically indented `*_VERSION` and `*_BUILD` assignments and improved failure reporting for identity/header/checksum update failures.
-- Fixed release baseline discovery so the Framework product-name prefix does not absorb similarly named companion products such as Management Console Modules.
-- Fixed documentation output behavior so duplicate modules and assets are reported without silently replacing previously collected product content.
+## Pre Release 2.2.2630700
+[CHANGELOG-History](CHANGELOG-History.md)
