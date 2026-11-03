@@ -3,9 +3,9 @@
 # SolidGroundUX SDK - Create Workspace
 # -------------------------------------------------------------------------------------
 # Metadata:
-#   Version     : 2.2
-#   Build       : 2630620
-#   Checksum    : a61f7189b0353a3c7a77f14375da2810a06922e78b5eee8c40a69537f03eb23d
+#   Version     : 2.1
+#   Build       : 2627501
+#   Checksum    : ddf78268928b795fa45051d32b603dfb6c831cc8b9ceeb0a2327b699579d9462
 #   Source      : create-workspace.sh
 #   Type        : script
 #   Group       : SDK
@@ -17,14 +17,15 @@
 #
 #   The script:
 #     - Resolves project name and target folder
-#     - Creates a repository-shaped target-root structure
+#     - Creates a repository-shaped target-root structure (Bash) or www/ source tree (website)
 #     - Lists installed convenience templates and lets the user choose which to copy
 #     - Copies the selected convenience templates into the new project workspace
 #     - Optionally creates editable documentation preface and epilogue samples
 #     - Creates project-namespaced definitions in the SolidGroundUX globals folder
 #     - Optionally creates a simple 95-<project> MOTD identity entry
 #     - Generates a VS Code workspace file and standard .gitignore and .release-ignore
-#     - Optionally initializes Git and creates/pushes a GitHub repository using gh
+#   - Optionally initializes Git and creates/pushes a GitHub repository using gh
+#   - Uses centrally managed Bash and MCM Web Content workspace templates
 #
 # Design principles:
 #   - Workspace creation is deterministic and repeatable
@@ -57,6 +58,7 @@
 #
 #   Script-specific options:
 #   - `--project VALUE`, `-p`: Project name.
+#   - `--type VALUE`: Workspace type (`bash` or `website`).
 #   - `--prefix VALUE`: Project prefix.
 #   - `--description VALUE`: Project description.
 #   - `--product VALUE`: Product name.
@@ -105,9 +107,9 @@ set -uo pipefail
         #   helpers are not available until sgnd-exe-common.sh has been loaded.
         #
         # . Returns
-        #   0 when the framework root was resolved and executable common library loaded.
-        #   126 when the script path cannot be resolved, no canonical root component can
-        #   be found, or the executable common library is unreadable.
+        #   - 0 when the framework root was resolved and executable common library loaded.
+        #   - 126 when the script path cannot be resolved, no canonical root component can
+        #     be found, or the executable common library is unreadable.
         #
         # . Usage
         #   ```bash
@@ -197,21 +199,23 @@ set -uo pipefail
             # Optional: script-specific argument definitions.
             #
             # Each entry:
-            #   "name|short|type|var|help|choices"
+            #   "name|short|type|var|help|default|choices"
             #
             # Fields:
             #   name    Long option name without leading --
             #   short   Short option name without leading -
             #   type    flag | value | enum
-            # var: Shell variable to receive the parsed value
+            #   var     Shell variable to receive the parsed value
             #   help    Help text for auto-generated --help output
-            #   choices Comma-separated values for enum; empty otherwise
+            #   default Initial value when target variable is unset
+            #   choices Comma-separated enum choices; empty for other types
             #
             # Notes:
             #   - -h / --help is built in and does not need to be defined here.
             #   - Parsed values become available in the configured target variables.
         SGND_ARGS_SPEC=(
             "project|p|value|PROJECT_NAME|Project name|"
+            "type||enum|WORKSPACE_TYPE|Workspace type||bash,website"
             "prefix||value|PROJECT_PREFIX|Project prefix|"
             "description||value|PROJECT_DESCRIPTION|Project description|"
             "product||value|PRODUCT_NAME|Product name|"
@@ -222,7 +226,7 @@ set -uo pipefail
             "gitinit|g|flag|FLAG_GIT_INIT|Initialize a local Git repository|0|"
             "github||flag|FLAG_GITHUB_INIT|Create and push a GitHub repository using gh|0|"
             "github-repo||value|GITHUB_REPO_NAME|GitHub repository name|"
-            "github-visibility||enum|GITHUB_VISIBILITY|GitHub repository visibility|private,public"
+            "github-visibility||enum|GITHUB_VISIBILITY|GitHub repository visibility|private|private,public"
             "uncreate|u|flag|FLAG_UNCREATE|Remove items listed in workspace manifest|0|"
         )
         # SGND_SCRIPT_EXAMPLES
@@ -243,6 +247,9 @@ set -uo pipefail
             ""
             "Perform a dry run:"
             "  $SGND_SCRIPT_NAME --dryrun"
+            ""
+            "Create an MCM Web Content website workspace:"
+            "  $SGND_SCRIPT_NAME --type website --project ExampleWebsite"
         )
 
         # SGND_SCRIPT_GLOBALS
@@ -331,6 +338,8 @@ set -uo pipefail
 
 
 # - Workspace template selection ----------------------------------------------------
+    # `bash` preserves the traditional SolidGroundUX target-root layout; `website`
+    # creates an independent MCM Web Content source repository under www/.
     WORKSPACE_SELECTED_TEMPLATES=()
     FLAG_CREATE_STARTERS=0
     FLAG_CREATE_DOC_SAMPLES=0
@@ -766,9 +775,68 @@ set -uo pipefail
         return 0
     }
 
+    # fn: _bash_workspace_template_root - Locate SDK-owned Bash workspace starter files
+        # . Purpose
+        #   Resolve the central Bash workspace template, alongside the website template.
+        # . Returns
+        #   Prints the template directory.
+        # . Usage
+        #   ```bash
+        #   _bash_workspace_template_root
+        #   ```
+    _bash_workspace_template_root() {
+        printf '%s\n' "${SGND_SHARE_DIR%/}/workspace-templates/bash"
+    }
+
+    # fn: _render_bash_workspace_template - Create a project file from the Bash template
+        # . Purpose
+        #   Render a centrally maintained Bash starter file with project metadata.
+        # . Behavior
+        #   - Never overwrite an existing destination, including on workspace reruns.
+        #   - Render literal placeholders without evaluating template content as shell code.
+        #   - Respect dry-run and record new files for manifest-based uncreate.
+        # . Arguments
+        #   $1  SDK template file (optionally suffixed .in).
+        #   $2  Workspace destination file.
+        # . Returns
+        #   0 when rendered, kept, or previewed; nonzero on missing source or write error.
+        # . Usage
+        #   ```bash
+        #   _render_bash_workspace_template "$source" "$destination" || return $?
+        #   ```
+    _render_bash_workspace_template() {
+        local source="${1:?missing template file}" destination="${2:?missing destination file}"
+        local contents="" name="${PRODUCT_NAME:-$PROJECT_NAME}"
+        [[ -r "$source" ]] || { sayfail "Bash workspace template not found: $source"; return 1; }
+        if [[ -e "$destination" ]]; then
+            saywarning "Existing workspace file kept: $destination"
+            return 0
+        fi
+        if (( ${FLAG_DRYRUN:-0} )); then
+            sayinfo "Would create from Bash template: $source -> $destination"
+            return 0
+        fi
+
+        contents="$(cat -- "$source")" || return 1
+        contents="${contents//\{\{PROJECT_NAME\}\}/"$PROJECT_NAME"}"
+        contents="${contents//\{\{PRODUCT_NAME\}\}/"$name"}"
+        contents="${contents//\{\{PROJECT_VERSION\}\}/"${BASH_TEMPLATE_VERSION:-1.0}"}"
+        contents="${contents//\{\{PROJECT_BUILD\}\}/"${BASH_TEMPLATE_BUILD:--}"}"
+        contents="${contents//\{\{PROJECT_LOGO_CELL\}\}/"${BASH_TEMPLATE_LOGO_CELL:-}"}"
+        contents="${contents//\{\{PROJECT_COPYRIGHT_FRAGMENT\}\}/"${BASH_TEMPLATE_COPYRIGHT_FRAGMENT:-}"}"
+        contents="${contents//\{\{PROJECT_DOCUMENTATION_PATH\}\}/"${BASH_TEMPLATE_DOCUMENTATION_PATH:-}"}"
+        contents="${contents//\{\{PROJECT_ABOUT_SECTION\}\}/"${BASH_TEMPLATE_ABOUT_SECTION:-}"}"
+
+        mkdir -p -- "$(dirname -- "$destination")" || return 1
+        printf '%s\n' "$contents" > "$destination" || return 1
+        _manifest_record_file "$destination"
+        sayinfo "Created workspace file from template: $destination"
+        return 0
+    }
+
     # fn: _workspace_layout_file - Resolve the SDK-owned workspace layout configuration
         # . Purpose
-        #   Locate the readable workspace-layout configuration, preferring the staged copy.
+        #   Locate the Bash template's layout, with legacy workspace-layout fallback.
         # . Returns
         #   0 and the resolved path on stdout; 1 if neither staged nor installed layout is readable.
         # . Usage
@@ -781,7 +849,9 @@ set -uo pipefail
         local installed_share="${SGND_SHARE_DIR#"$root_prefix"}"
         # Prefer the staged shared directory, then fall back to the installed copy.
         local -a candidates=(
+            "${SGND_SHARE_DIR%/}/workspace-templates/bash/workspace-layout.cfg"
             "${SGND_SHARE_DIR%/}/workspace-layout.cfg"
+            "${installed_share%/}/workspace-templates/bash/workspace-layout.cfg"
             "${installed_share%/}/workspace-layout.cfg"
         )
         for candidate in "${candidates[@]}"; do
@@ -804,7 +874,7 @@ set -uo pipefail
     _get_project_directories() {
         local -n out_ref=$1
         local layout_file="" line="" slug=""
-        layout_file="$(_workspace_layout_file)" || { sayfail "Workspace layout configuration not found: workspace-layout.cfg"; return 1; }
+        layout_file="$(_workspace_layout_file)" || { sayfail "Bash workspace layout not found: workspace-templates/bash/workspace-layout.cfg"; return 1; }
         slug="$(_project_slug)"; out_ref=()
         while IFS= read -r line || [[ -n "$line" ]]; do
             line="${line%%#*}"; line="${line%${line##*[![:space:]]}}"; line="${line#${line%%[![:space:]]*}}"
@@ -999,6 +1069,199 @@ set -uo pipefail
         fi
     }
 
+ # -- Workspace selection and website scaffold
+    # fn: _resolve_workspace_type - Select between the Bash and website project layouts
+        # . Purpose
+        #   Select one of the two independently managed workspace layouts.
+        # . Returns
+        #   0 on a valid selection; 1 if the user cancels or the type is unknown.
+        # . Usage
+        #   ```bash
+        #   _resolve_workspace_type || return 1
+        #   ```
+    _resolve_workspace_type() {
+        local selection=""
+        if [[ -z "${WORKSPACE_TYPE:-}" ]]; then
+            if (( ${FLAG_AUTO:-0} )); then
+                WORKSPACE_TYPE="bash"
+            else
+                ask_selection --label "Workspace type" --var selection --items \
+                    "SolidGroundUX (Bash)" "Website (Web Content)" || return 1
+                case "$selection" in
+                    "SolidGroundUX (Bash)") WORKSPACE_TYPE="bash" ;;
+                    "Website (Web Content)") WORKSPACE_TYPE="website" ;;
+                    *) sayfail "Invalid workspace selection: $selection"; return 1 ;;
+                esac
+            fi
+        fi
+        case "$WORKSPACE_TYPE" in
+            bash|website) return 0 ;;
+            *) sayfail "Invalid workspace type: $WORKSPACE_TYPE"; return 1 ;;
+        esac
+    }
+
+    # fn: _website_template_root - Locate SDK-owned MCM Web Content starter files
+        # . Purpose
+        #   Find the central SDK website template, not a copy of Testadura-WWW.
+        # . Returns
+        #   Prints the canonical template directory.
+        # . Usage
+        #   ```bash
+        #   _website_template_root
+        #   ```
+    _website_template_root() {
+        printf '%s\n' "${SGND_SHARE_DIR%/}/workspace-templates/website"
+    }
+
+    # fn: _create_website_repository - Copy the website template with manifest support
+        # . Purpose
+        #   Create a lean, MCM-compatible website source tree without Bash runtime files.
+        # . Behavior
+        #   Preserves existing workspace files, records all created items for uncreate,
+        #   and honors dry-run. The SDK owns only the scaffold; MCM owns rendering.
+        # . Returns
+        #   0 on success; nonzero if template files cannot be installed.
+        # . Usage
+        #   ```bash
+        #   _create_website_repository || return $?
+        #   ```
+    _create_website_repository() {
+        local source="" path="" relative="" destination=""
+        source="$(_website_template_root)"
+        [[ -d "$source" ]] || { sayfail "Website workspace template not found: $source"; return 1; }
+
+        if [[ ! -d "$PROJECT_FOLDER" ]]; then
+            if (( ${FLAG_DRYRUN:-0} )); then
+                sayinfo "Would create website workspace: $PROJECT_FOLDER"
+            else
+                mkdir -p -- "$PROJECT_FOLDER" || return 1
+                _manifest_record_dir "$PROJECT_FOLDER"
+            fi
+        fi
+        while IFS= read -r -d '' path; do
+            relative="${path#"$source"/}"
+            destination="${PROJECT_FOLDER}/${relative}"
+            if [[ ! -d "$destination" ]]; then
+                if (( ${FLAG_DRYRUN:-0} )); then
+                    sayinfo "Would create directory: $destination"
+                else
+                    mkdir -p -- "$destination" || return 1
+                    _manifest_record_dir "$destination"
+                fi
+            fi
+        done < <(find "$source" -mindepth 1 -type d -print0 | sort -z)
+
+        while IFS= read -r -d '' path; do
+            relative="${path#"$source"/}"
+            destination="${PROJECT_FOLDER}/${relative}"
+            if [[ -e "$destination" ]]; then
+                saywarning "Existing website file kept: $destination"
+                continue
+            fi
+            _copy_template_file "$path" "$destination" || return 1
+        done < <(find "$source" -type f -print0 | sort -z)
+
+        # This directory contains authored content: never install an ignore-all
+        # rule (the source Testadura-WWW snapshot has such a legacy rule).
+        destination="${PROJECT_FOLDER}/www/content"
+        if [[ ! -d "$destination" ]]; then
+            if (( ${FLAG_DRYRUN:-0} )); then
+                sayinfo "Would create directory: $destination"
+            else
+                mkdir -p -- "$destination" || return 1
+                _manifest_record_dir "$destination"
+            fi
+        fi
+    }
+
+    # fn: _create_website_project_files - Write minimal website identity and documentation
+        # . Purpose
+        #   Create the website-specific README, changelog, site configuration and home page.
+        # . Behavior
+        #   Each file is created only if absent and recorded in the uncreate manifest.
+        #   The output directory is not seeded: MCM generates HTML separately.
+        # . Returns
+        #   0 when all starter files exist; nonzero on a write error.
+        # . Usage
+        #   ```bash
+        #   _create_website_project_files || return $?
+        #   ```
+    _create_website_project_files() {
+        local slug="" file="" description="" title=""
+        slug="$(_project_slug)"
+        title="${PROJECT_NAME}"
+        description="${PROJECT_DESCRIPTION:-A website managed by SolidGroundUX Web Content Management.}"
+
+        file="${PROJECT_FOLDER}/README.md"
+        if [[ ! -e "$file" ]]; then
+            if (( ${FLAG_DRYRUN:-0} )); then
+                sayinfo "Would create $file"
+            else
+                {
+                    printf '# %s\n\n' "$title"
+                    printf '%s\n\n' "$description"
+                    printf '## Project structure\n\n'
+                    printf '%s\n' '- `www/content/` — authored Markdown' '- `www/config/` — site configuration' \
+                        '- `www/templates/` — HTML templates' '- `www/css/` — stylesheets' \
+                        '- `www/images/` — images' '- `www/incoming/` — incoming content' \
+                        '- `www/ingested/` — archived incoming content'
+                    printf '\n## Build and publish\n\n'
+                    printf '%s\n' 'Use MCM 55 - Web Content Management to validate and generate the site.' \
+                        'Select the `www/` directory as the website source and a separate' \
+                        '`public/` directory in this workspace as generated HTML output.' \
+                        'Preview/draft builds must never be deployed publicly.' \
+                        'Use **Publish Website** to deploy the generated public output to Nginx.'
+                    printf '\nSee `AUTHORING.md` for starter content conventions.\n'
+                } > "$file" || return 1
+                _manifest_record_file "$file"
+            fi
+        fi
+
+        file="${PROJECT_FOLDER}/CHANGELOG.md"
+        if [[ ! -e "$file" ]]; then
+            if (( ${FLAG_DRYRUN:-0} )); then
+                sayinfo "Would create $file"
+            else
+                printf '# Changelog\n\n## Unreleased\n\n### Added\n\n' > "$file" || return 1
+                _manifest_record_file "$file"
+            fi
+        fi
+
+        file="${PROJECT_FOLDER}/www/config/site.cfg"
+        if [[ ! -e "$file" ]]; then
+            if (( ${FLAG_DRYRUN:-0} )); then
+                sayinfo "Would create $file"
+            else
+                {
+                    printf '[site]\n'
+                    printf 'title = %s\n' "$title"
+                    printf 'description = %s\n' "$description"
+                    printf 'base_url = \n'
+                    printf 'default_language = NL\n'
+                    printf 'content_style_prefix = td-\n\n'
+                    printf '[paths]\ncontent = content\ntemplates = templates\ncss = css\nimages = images\n'
+                } > "$file" || return 1
+                _manifest_record_file "$file"
+            fi
+        fi
+
+        file="${PROJECT_FOLDER}/www/content/${slug}_Index_NL.md"
+        if [[ ! -e "$file" ]]; then
+            if (( ${FLAG_DRYRUN:-0} )); then
+                sayinfo "Would create $file"
+            else
+                {
+                    printf '%s\n' '---'
+                    printf 'title: %s\n' "$title"
+                    printf 'summary: %s\n' "$description"
+                    printf '%s\n' 'template: home' 'nav_title: Home' 'nav_order: 10' 'draft: false' '---' ''
+                    printf 'Welcome to **%s**. Replace this text with your homepage content.\n' "$title"
+                } > "$file" || return 1
+                _manifest_record_file "$file"
+            fi
+        fi
+    }
+
  # -- Main sequence
     # fn: _resolve_project_settings - Collect and confirm workspace identity
         # . Purpose
@@ -1021,7 +1284,11 @@ set -uo pipefail
         local default_projectname="Project"
         local lw=25
         local mxw=60
+        _resolve_workspace_type || return 1
         FLAG_CREATE_MOTD="${FLAG_CREATE_MOTD:-1}"
+        if [[ "$WORKSPACE_TYPE" == "website" ]]; then
+            FLAG_CREATE_MOTD=0
+        fi
         FLAG_GIT_INIT="${FLAG_GIT_INIT:-0}"
         FLAG_GITHUB_INIT="${FLAG_GITHUB_INIT:-0}"
         GITHUB_VISIBILITY="${GITHUB_VISIBILITY:-private}"
@@ -1034,12 +1301,16 @@ set -uo pipefail
             PROJECT_PREFIX="${PROJECT_PREFIX:-$(_project_slug)}"
             PROJECT_GROUP="${PROJECT_GROUP:-}"
             PROJECT_SUBGROUP="${PROJECT_SUBGROUP:-}"
-            ask --label "Product name " --var PRODUCT_NAME --default "$PRODUCT_NAME" --labelwidth "$lw"
-            ask --label "Project prefix " --var PROJECT_PREFIX --default "$PROJECT_PREFIX" --labelwidth "$lw"
+            if [[ "$WORKSPACE_TYPE" == "bash" ]]; then
+                ask --label "Product name " --var PRODUCT_NAME --default "$PRODUCT_NAME" --labelwidth "$lw"
+                ask --label "Project prefix " --var PROJECT_PREFIX --default "$PROJECT_PREFIX" --labelwidth "$lw"
+            fi
             PROJECT_DESCRIPTION="${PROJECT_DESCRIPTION:-}"
             ask --label "Description " --var PROJECT_DESCRIPTION --default "$PROJECT_DESCRIPTION" --labelwidth "$lw"
-            ask --label "Group " --var PROJECT_GROUP --default "$PROJECT_GROUP" --labelwidth "$lw"
-            ask --label "Subgroup " --var PROJECT_SUBGROUP --default "$PROJECT_SUBGROUP" --labelwidth "$lw"
+            if [[ "$WORKSPACE_TYPE" == "bash" ]]; then
+                ask --label "Group " --var PROJECT_GROUP --default "$PROJECT_GROUP" --labelwidth "$lw"
+                ask --label "Subgroup " --var PROJECT_SUBGROUP --default "$PROJECT_SUBGROUP" --labelwidth "$lw"
+            fi
 
             slug="${PROJECT_NAME// /-}"
             slug="${slug,,}"
@@ -1060,17 +1331,18 @@ set -uo pipefail
                PROJECT_FOLDER="$(pwd)/$PROJECT_FOLDER"
             fi
 
-            default="Y"
-            (( FLAG_CREATE_MOTD )) || default="N"
-            ask --label "Create project MOTD entry (Y/N)" --var resp --default "$default" --choices "Y,Yes,N,No" --labelwidth "$lw"
-            resp="${resp^^}"
-            [[ "$resp" == "Y" || "$resp" == "YES" ]] && FLAG_CREATE_MOTD=1 || FLAG_CREATE_MOTD=0
+            if [[ "$WORKSPACE_TYPE" == "bash" ]]; then
+                default="Y"
+                (( FLAG_CREATE_MOTD )) || default="N"
+                ask --label "Create project MOTD entry (Y/N)" --var resp --default "$default" --choices "Y,Yes,N,No" --labelwidth "$lw"
+                resp="${resp^^}"
+                [[ "$resp" == "Y" || "$resp" == "YES" ]] && FLAG_CREATE_MOTD=1 || FLAG_CREATE_MOTD=0
 
-            # Select the installed convenience templates as part of the interactive
-            # workspace settings, so the selection is visible before confirmation.
-            _resolve_convenience_template_selection || return 1
-            _resolve_starter_scripts || return 1
-            _resolve_documentation_samples || return 1
+                # Bash workspaces alone receive executable templates and documentation samples.
+                _resolve_convenience_template_selection || return 1
+                _resolve_starter_scripts || return 1
+                _resolve_documentation_samples || return 1
+            fi
 
             saydebug "${slug}"
 
@@ -1102,22 +1374,32 @@ set -uo pipefail
             sgnd_print 
             sgnd_print_sectionheader "Summary" --maxwidth "$mxw"
 
+            sgnd_print_labeledvalue --label "Workspace type" --value "$WORKSPACE_TYPE"
             sgnd_print_labeledvalue --label "Project name"   --value "$PROJECT_NAME"
-            sgnd_print_labeledvalue --label "Product name"   --value "$PRODUCT_NAME"
-            sgnd_print_labeledvalue --label "Project prefix" --value "$PROJECT_PREFIX"
+            if [[ "$WORKSPACE_TYPE" == "bash" ]]; then
+                sgnd_print_labeledvalue --label "Product name"   --value "$PRODUCT_NAME"
+                sgnd_print_labeledvalue --label "Project prefix" --value "$PROJECT_PREFIX"
+            fi
             sgnd_print_labeledvalue --label "Description"    --value "${PROJECT_DESCRIPTION:--}"
-            sgnd_print_labeledvalue --label "Group"          --value "$PROJECT_GROUP"
-            sgnd_print_labeledvalue --label "Subgroup"       --value "${PROJECT_SUBGROUP:--}"
+            if [[ "$WORKSPACE_TYPE" == "bash" ]]; then
+                sgnd_print_labeledvalue --label "Group"    --value "$PROJECT_GROUP"
+                sgnd_print_labeledvalue --label "Subgroup" --value "${PROJECT_SUBGROUP:--}"
+            fi
             sgnd_print_labeledvalue --label "Project root"   --value "$PROJECT_ROOT"
             sgnd_print_labeledvalue --label "Project folder" --value "$PROJECT_FOLDER"
-            sgnd_print_labeledvalue --label "Project MOTD"    --value "$([[ ${FLAG_CREATE_MOTD:-1} -eq 1 ]] && printf yes || printf no)"
-            local template_text="none"
-            if (( ${#WORKSPACE_SELECTED_TEMPLATES[@]} > 0 )); then
-                template_text="$(IFS=', '; printf '%s' "${WORKSPACE_SELECTED_TEMPLATES[*]}")"
+            if [[ "$WORKSPACE_TYPE" == "bash" ]]; then
+                sgnd_print_labeledvalue --label "Project MOTD"    --value "$([[ ${FLAG_CREATE_MOTD:-1} -eq 1 ]] && printf yes || printf no)"
+                local template_text="none"
+                if (( ${#WORKSPACE_SELECTED_TEMPLATES[@]} > 0 )); then
+                    template_text="$(IFS=', '; printf '%s' "${WORKSPACE_SELECTED_TEMPLATES[*]}")"
+                fi
+                sgnd_print_labeledvalue --label "Templates"       --value "$template_text"
+                sgnd_print_labeledvalue --label "Starter scripts" --value "$([[ ${FLAG_CREATE_STARTERS:-0} -eq 1 ]] && printf yes || printf no)"
+                sgnd_print_labeledvalue --label "Documentation samples" --value "$([[ ${FLAG_CREATE_DOC_SAMPLES:-0} -eq 1 ]] && printf Yes || printf No)"
+            else
+                sgnd_print_labeledvalue --label "Website source" --value "${PROJECT_FOLDER}/www"
+                sgnd_print_labeledvalue --label "Generated HTML" --value "${PROJECT_FOLDER}/public"
             fi
-            sgnd_print_labeledvalue --label "Templates"       --value "$template_text"
-            sgnd_print_labeledvalue --label "Starter scripts" --value "$([[ ${FLAG_CREATE_STARTERS:-0} -eq 1 ]] && printf yes || printf no)"
-            sgnd_print_labeledvalue --label "Documentation samples" --value "$([[ ${FLAG_CREATE_DOC_SAMPLES:-0} -eq 1 ]] && printf Yes || printf No)"
             sgnd_print_labeledvalue --label "Initialize Git"  --value "$([[ ${FLAG_GIT_INIT:-0} -eq 1 ]] && printf yes || printf no)"
             sgnd_print_labeledvalue --label "Create GitHub"   --value "$([[ ${FLAG_GITHUB_INIT:-0} -eq 1 ]] && printf yes || printf no)"
             if (( ${FLAG_GITHUB_INIT:-0} )); then
@@ -1327,41 +1609,81 @@ set -uo pipefail
         awk '/^# Description:/{f=1;next} f && /^# ===/{exit} f && /^#   /{sub(/^#   /,""); if ($0!="-") print}' "$file"
     }
 
-    # fn: _create_workspace_project_files - Create README, CHANGELOG, LICENSE, and project logo
+    # fn: _create_workspace_project_files - Render Bash project identity files from templates
         # . Purpose
-        #   Create repository README, changelog, license and project logo.
+        #   Create the project README, changelog and license using the central Bash template.
+        # . Behavior
+        #   Uses the generated project definitions for version and title metadata, preserves
+        #   any existing workspace files, and adds the optional default logo when available.
         # . Returns
-        #   0 on success; nonzero on definition or filesystem errors.
+        #   0 on success or dry-run; nonzero on missing template or write failure.
         # . Usage
         #   ```bash
-        #   _create_workspace_project_files
+        #   _create_workspace_project_files || return $?
         #   ```
     _create_workspace_project_files() {
-        local readme_file="${PROJECT_FOLDER}/README.md" changelog_file="${PROJECT_FOLDER}/CHANGELOG.md" license_file="${PROJECT_FOLDER}/LICENSE"
-        local asset_dir="${PROJECT_FOLDER}/target-root/usr/local/assets" slug="" key="" definitions_file="" logo_source="" logo_name="" logo_target=""
-        local title="" version="" build="" copyright="" description="" documentation_path=""
-        local existed_readme=0 existed_changelog=0 existed_license=0 existed_logo=0
-        slug="$(_project_slug)"; key="$(_project_key)"; definitions_file="${PROJECT_FOLDER}/target-root/usr/local/lib/solidgroundux/globals/${slug}-definitions.sh"
-        logo_name="${PROJECT_PREFIX}-readmelogo.png"; logo_target="${asset_dir}/${logo_name}"; documentation_path="target-root/usr/local/share/doc/${PROJECT_NAME}/index.html"
-        [[ -r "$definitions_file" ]] || { sayfail "Project definitions not found: $definitions_file"; return 1; }
-        title="$(_definition_value "$definitions_file" "SGND_${key}_TITLE")" || return 1; version="$(_definition_value "$definitions_file" "SGND_${key}_VERSION")" || return 1
-        build="$(_definition_value "$definitions_file" "SGND_${key}_BUILD")" || return 1; copyright="$(_definition_value "$definitions_file" "SGND_${key}_COPYRIGHT")" || return 1
-        description="$(_definition_description "$definitions_file")" || return 1
-        [[ -e "$readme_file" ]] && existed_readme=1; [[ -e "$changelog_file" ]] && existed_changelog=1; [[ -e "$license_file" ]] && existed_license=1; [[ -e "$logo_target" ]] && existed_logo=1
-        if (( ${FLAG_DRYRUN:-0} )); then sayinfo "Would have created $readme_file"; sayinfo "Would have created $changelog_file"; sayinfo "Would have created $license_file"; return 0; fi
-        mkdir -p -- "$asset_dir" || return 1
-        if logo_source="$(_workspace_default_logo 2>/dev/null)"; then cp -- "$logo_source" "$logo_target" || return 1; (( existed_logo )) || _manifest_record_file "$logo_target"; else logo_name=""; saywarning "Default workspace logo not found; README created without a logo."; fi
-        {
-            printf '<table>\n<tr>\n'; [[ -n "$logo_name" ]] && printf '<td width="170" align="center" valign="middle">\n  <img width="96" height="96" alt="%s logo" src="target-root/usr/local/assets/%s" />\n</td>\n' "$title" "$logo_name"
-            printf '<td valign="middle">\n<h1>%s</h1>\n<strong>Version %s.%s</strong>' "$title" "$version" "$build"; [[ -n "$copyright" ]] && printf ' &middot; %s' "$copyright"; printf '\n</td>\n</tr>\n</table>\n\n'
-            printf '<table>\n<tr>\n<td width="33%%" align="center">\n  <a href="%s"><strong>Documentation</strong></a><br>\n  Project reference and guides\n</td>\n' "$documentation_path"
-            printf '<td width="33%%" align="center">\n  <a href="CHANGELOG.md"><strong>Changelog</strong></a><br>\n  Releases and development history\n</td>\n'
-            printf '<td width="33%%" align="center">\n  <a href="LICENSE"><strong>License</strong></a><br>\n  Terms of use and redistribution\n</td>\n</tr>\n</table>\n\n---\n\n'
-            [[ -n "$description" ]] && printf '## About %s\n\n%s\n' "$PROJECT_NAME" "$description"
-        } > "$readme_file" || return 1
-        { printf '# Changelog\n\nAll notable changes to %s are documented in this file.\n\n## Unreleased\n\n### Added\n\n### Changed\n\n### Deleted\n' "${PRODUCT_NAME:-$PROJECT_NAME}"; } > "$changelog_file" || return 1
-        if (( ! existed_license )); then printf 'LICENSE\n-------\n\nReplace this file with the license terms that apply to this project.\n' > "$license_file" || return 1; fi
-        (( existed_readme )) || _manifest_record_file "$readme_file"; (( existed_changelog )) || _manifest_record_file "$changelog_file"; (( existed_license )) || _manifest_record_file "$license_file"
+        local template_dir="" asset_dir="${PROJECT_FOLDER}/target-root/usr/local/assets"
+        local slug="" key="" definitions_file="" logo_source="" logo_name="" logo_target=""
+        local title="" version="" build="" copyright="" description=""
+
+        template_dir="$(_bash_workspace_template_root)"
+        slug="$(_project_slug)"
+        key="$(_project_key)"
+        definitions_file="${PROJECT_FOLDER}/target-root/usr/local/lib/solidgroundux/globals/${slug}-definitions.sh"
+        logo_name="${PROJECT_PREFIX}-readmelogo.png"
+        logo_target="${asset_dir}/${logo_name}"
+        [[ -r "$definitions_file" ]] || {
+            if (( ${FLAG_DRYRUN:-0} )); then
+                sayinfo "Would read project definitions: $definitions_file"
+            else
+                sayfail "Project definitions not found: $definitions_file"
+                return 1
+            fi
+        }
+
+        title="${PRODUCT_NAME:-$PROJECT_NAME}"
+        version="1.0"
+        build="-"
+        copyright="${SGND_COPYRIGHT:-}"
+        description="${PROJECT_DESCRIPTION:-}"
+        if [[ -r "$definitions_file" ]]; then
+            title="$(_definition_value "$definitions_file" "SGND_${key}_TITLE")" || return 1
+            version="$(_definition_value "$definitions_file" "SGND_${key}_VERSION")" || return 1
+            build="$(_definition_value "$definitions_file" "SGND_${key}_BUILD")" || return 1
+            copyright="$(_definition_value "$definitions_file" "SGND_${key}_COPYRIGHT")" || return 1
+            description="$(_definition_description "$definitions_file")" || return 1
+        fi
+
+        BASH_TEMPLATE_VERSION="$version"
+        BASH_TEMPLATE_BUILD="$build"
+        BASH_TEMPLATE_LOGO_CELL=""
+        BASH_TEMPLATE_COPYRIGHT_FRAGMENT=""
+        BASH_TEMPLATE_ABOUT_SECTION=""
+        BASH_TEMPLATE_DOCUMENTATION_PATH="target-root/usr/local/share/doc/${PROJECT_NAME}/index.html"
+        [[ -n "$copyright" ]] && BASH_TEMPLATE_COPYRIGHT_FRAGMENT=" &middot; ${copyright}"
+        [[ -n "$description" ]] && printf -v BASH_TEMPLATE_ABOUT_SECTION '## About %s\n\n%s' "$PROJECT_NAME" "$description"
+
+        if (( ${FLAG_DRYRUN:-0} )); then
+            sayinfo "Would create default logo when installed and missing: $logo_target"
+        else
+            mkdir -p -- "$asset_dir" || return 1
+            if [[ -f "$logo_target" ]]; then
+                logo_source="$logo_target"
+            elif logo_source="$(_workspace_default_logo 2>/dev/null)"; then
+                cp -- "$logo_source" "$logo_target" || return 1
+                _manifest_record_file "$logo_target"
+            else
+                logo_name=""
+                saywarning "Default workspace logo not found; README created without a logo."
+            fi
+        fi
+        if [[ -n "$logo_name" ]]; then
+            printf -v BASH_TEMPLATE_LOGO_CELL '<td width="170" align="center" valign="middle">\n  <img width="96" height="96" alt="%s logo" src="target-root/usr/local/assets/%s" />\n</td>' "$title" "$logo_name"
+        fi
+
+        _render_bash_workspace_template "${template_dir}/README.md.in" "${PROJECT_FOLDER}/README.md" || return 1
+        _render_bash_workspace_template "${template_dir}/CHANGELOG.md.in" "${PROJECT_FOLDER}/CHANGELOG.md" || return 1
+        _render_bash_workspace_template "${template_dir}/LICENSE" "${PROJECT_FOLDER}/LICENSE" || return 1
     }
 
     # _create_workspace_file
@@ -1471,140 +1793,30 @@ set -uo pipefail
         #
         # Notes:
         #   - The ignore rules are intentionally generic and safe for most script-based projects.
-    # fn: _create_gitignore_file - Create the workspace .gitignore file
+    # fn: _create_gitignore_file - Render the Bash project Git exclusion template
         # . Purpose
-        #   Create the workspace .gitignore file.
-        #
-        # . Behavior
-        #
+        #   Copy centrally maintained Git ignore rules without overwriting existing rules.
         # . Returns
-        #   0 when ignore rules are written (or dry-run completes); nonzero on write errors.
-        #
+        #   0 on success or dry-run; nonzero on missing source or write failure.
         # . Usage
         #   ```bash
-        #   _create_gitignore_file
+        #   _create_gitignore_file || return $?
         #   ```
-    _create_gitignore_file(){
-        local gitignore_file="${PROJECT_FOLDER}/.gitignore"
-        local existed=0
-
-        [[ -e "$gitignore_file" ]] && existed=1
-
-        if [[ "$FLAG_DRYRUN" -eq 1 ]]; then
-            sayinfo "Would have created .gitignore" 
-            return 0
-        fi
-
-        sayinfo "Creating .gitignore"
-        saydebug "$gitignore_file"
-
-        printf '%s\n' \
-        '# --------------------------------------------------' \
-        '# OS junk' \
-        '# --------------------------------------------------' \
-        '.DS_Store' \
-        'Thumbs.db' \
-        '*~' \
-        '' \
-        '# --------------------------------------------------' \
-        '# Editors / IDE' \
-        '# --------------------------------------------------' \
-        '.vscode/*' \
-        '!.vscode/settings.json' \
-        '!.vscode/extensions.json' \
-        '.idea/' \
-        '' \
-        '# --------------------------------------------------' \
-        '# Logs' \
-        '# --------------------------------------------------' \
-        '*.log' \
-        'logs/' \
-        '' \
-        '# --------------------------------------------------' \
-        '# Runtime / state' \
-        '# --------------------------------------------------' \
-        '*.state' \
-        '*.pid' \
-        '*.lock' \
-        'tmp/' \
-        'temp/' \
-        '' \
-        '# --------------------------------------------------' \
-        '# Build / packaging' \
-        '# --------------------------------------------------' \
-        'build/' \
-        'dist/' \
-        'release/' \
-        '' \
-        '# --------------------------------------------------' \
-        '# Archives' \
-        '# --------------------------------------------------' \
-        '*.zip' \
-        '*.tar' \
-        '*.tar.gz' \
-        '*.tgz' \
-        '' \
-        '# --------------------------------------------------' \
-        '# Environment / secrets' \
-        '# --------------------------------------------------' \
-        '.env' \
-        '.env.*' \
-        '' \
-        '# --------------------------------------------------' \
-        '# Misc' \
-        '# --------------------------------------------------' \
-        '*.bak' \
-        '*.swp' \
-        '*.swo' \
-        > "$gitignore_file" || return 1
-
-        if (( ! existed )); then
-            _manifest_record_file "$gitignore_file"
-        fi
+    _create_gitignore_file() {
+        _render_bash_workspace_template "$(_bash_workspace_template_root)/.gitignore" "${PROJECT_FOLDER}/.gitignore"
     }
 
-    # fn: _create_releaseignore_file - Create the workspace .release-ignore file
+    # fn: _create_releaseignore_file - Render the Bash project release exclusion template
         # . Purpose
-        #   Create the workspace release exclusion rules.
+        #   Copy centrally maintained release exclusions without overwriting existing rules.
         # . Returns
-        #   0 when the exclusion file is written or dry-run completes; nonzero on write errors.
+        #   0 on success or dry-run; nonzero on missing source or write failure.
         # . Usage
         #   ```bash
-        #   _create_releaseignore_file
+        #   _create_releaseignore_file || return $?
         #   ```
-    _create_releaseignore_file(){
-        local releaseignore_file="${PROJECT_FOLDER}/.release-ignore"
-        local existed=0
-
-        [[ -e "$releaseignore_file" ]] && existed=1
-
-        if [[ "$FLAG_DRYRUN" -eq 1 ]]; then
-            sayinfo "Would have created .release-ignore"
-            return 0
-        fi
-
-        sayinfo "Creating .release-ignore"
-        saydebug "$releaseignore_file"
-
-        printf '%s\n' \
-        '# SolidGroundUX release exclusions' \
-        '' \
-        '# Local/editor/runtime metadata' \
-        '.*' \
-        '*.state' \
-        '*.cfg' \
-        '*.code-workspace' \
-        '' \
-        '# Runtime data that must not be packaged' \
-        '/var/log/solidgroundux.log*' \
-        '/var/lib/solidgroundux/archive/' \
-        '/var/lib/solidgroundux/releases/' \
-        '/var/lib/solidgroundux/projects/' \
-        > "$releaseignore_file" || return 1
-
-        if (( ! existed )); then
-            _manifest_record_file "$releaseignore_file"
-        fi
+    _create_releaseignore_file() {
+        _render_bash_workspace_template "$(_bash_workspace_template_root)/.release-ignore" "${PROJECT_FOLDER}/.release-ignore"
     }
 
     # fn: _project_slug - Return the filesystem-safe project slug
@@ -1983,14 +2195,20 @@ set -uo pipefail
 
             # For 0 (OK) and 2 (skip template) we still create repo + workspace
             _manifest_init || exit $?
-            _create_repository || exit $?
-            _create_workspace_file || exit $?
-            _create_gitignore_file || exit $?
-            _create_releaseignore_file || exit $?
-            _create_project_definitions || exit $?
-            _create_workspace_project_files || exit $?
-            _create_project_motd || exit $?
-            _create_empty_directory_placeholders || exit $?
+            if [[ "$WORKSPACE_TYPE" == "website" ]]; then
+                _create_website_repository || exit $?
+                _create_workspace_file || exit $?
+                _create_website_project_files || exit $?
+            else
+                _create_repository || exit $?
+                _create_workspace_file || exit $?
+                _create_gitignore_file || exit $?
+                _create_releaseignore_file || exit $?
+                _create_project_definitions || exit $?
+                _create_workspace_project_files || exit $?
+                _create_project_motd || exit $?
+                _create_empty_directory_placeholders || exit $?
+            fi
 
             if [[ "$FLAG_DRYRUN" -eq 1 ]]; then
                 sayinfo "Would have fixed ownership and permissions"

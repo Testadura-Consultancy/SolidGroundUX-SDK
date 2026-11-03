@@ -1,0 +1,15 @@
+.site-shell { display: grid; min-height: 100vh; grid-template-columns: minmax(190px, 240px) minmax(0, 1fr); }
+.site-sidebar { padding: 2rem 1.25rem; background: var(--td-surface); border-right: 1px solid var(--td-border); }
+.site-brand { display: block; font-weight: 700; font-size: 1.25rem; margin-bottom: 2rem; text-decoration: none; }
+.site-navigation { display: grid; gap: .5rem; }
+.site-navigation a { display: block; padding: .35rem; }
+.site-sidebar-meta { margin-top: 2rem; }
+.site-main { min-width: 0; }
+.context-header { padding: 1rem 2rem; background: var(--td-surface); border-bottom: 1px solid var(--td-border); }
+.site-main-body { max-width: var(--td-content-width); padding: 2rem; margin: 0 auto; }
+.site-footer { color: var(--td-muted); border-top: 1px solid var(--td-border); padding: 1rem 2rem; }
+@media (max-width: 720px) {
+    .site-shell { grid-template-columns: 1fr; }
+    .site-sidebar { border-right: 0; border-bottom: 1px solid var(--td-border); }
+    .site-main-body { padding: 1.25rem; }
+}

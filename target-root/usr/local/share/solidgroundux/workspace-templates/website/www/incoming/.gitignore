@@ -1,0 +1,3 @@
+# Ignore incoming uploads; explicitly ingest content through MCM.
+*
+!.gitignore

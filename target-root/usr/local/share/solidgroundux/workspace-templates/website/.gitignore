@@ -1,0 +1,20 @@
+# Generated HTML (never commit published output)
+/public/
+/build/
+/dist/
+
+# Local authoring and runtime files
+.env
+.env.*
+*.log
+*.bak
+*.swp
+*.swo
+__pycache__/
+*.py[cod]
+
+# Editors and operating systems
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

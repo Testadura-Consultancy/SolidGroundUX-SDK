@@ -1,0 +1,30 @@
+<table>
+<tr>
+{{PROJECT_LOGO_CELL}}
+<td valign="middle">
+<h1>{{PRODUCT_NAME}}</h1>
+<strong>Version {{PROJECT_VERSION}}.{{PROJECT_BUILD}}</strong>{{PROJECT_COPYRIGHT_FRAGMENT}}
+</td>
+</tr>
+</table>
+
+<table>
+<tr>
+<td width="33%" align="center">
+  <a href="{{PROJECT_DOCUMENTATION_PATH}}"><strong>Documentation</strong></a><br>
+  Project reference and guides
+</td>
+<td width="33%" align="center">
+  <a href="CHANGELOG.md"><strong>Changelog</strong></a><br>
+  Releases and development history
+</td>
+<td width="33%" align="center">
+  <a href="LICENSE"><strong>License</strong></a><br>
+  Terms of use and redistribution
+</td>
+</tr>
+</table>
+
+---
+
+{{PROJECT_ABOUT_SECTION}}

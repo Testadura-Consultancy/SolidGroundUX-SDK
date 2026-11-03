@@ -1,0 +1,13 @@
+# SolidGroundUX release exclusions
+
+# Local/editor/runtime metadata
+.*
+*.state
+*.cfg
+*.code-workspace
+
+# Runtime data that must not be packaged
+/var/log/solidgroundux.log*
+/var/lib/solidgroundux/archive/
+/var/lib/solidgroundux/releases/
+/var/lib/solidgroundux/projects/

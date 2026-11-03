@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="{{ page.language }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ page.title }} | {{ site.title }}</title>
+    <meta name="description" content="{{ page.summary }}">
+    {{ seo_tags }}
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/components.css">
+</head>
+<body>
+    <div class="site-shell">
+        {% include "partials/sidebar.html" %}
+        <main class="site-main">
+            {{ context_header }}
+            <div class="site-main-body">{{ content }}</div>
+            {% include "partials/footer.html" %}
+        </main>
+    </div>
+</body>
+</html>
