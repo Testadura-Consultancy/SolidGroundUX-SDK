@@ -4,8 +4,8 @@
 # ------------------------------------------------------------------------------------
 # Metadata:
 #   Version     : 2.2
-#   Build       : 2630700
-#   Checksum    : c697fba95bdd87415c91107753f6d0898c0b1cb2e7fddf3928c85e57e5f80353
+#   Build       : 2630913
+#   Checksum    : 271da4d69f635254a67e4d602d447baf6cf2ee73a073eb43551e3f4ed0d8c63c
 #   Source      : prepare-template.sh
 #   Type        : script
 #   Group       : SDK
@@ -335,30 +335,160 @@ set -uo pipefail
         printf '%s\n' "$primary_iface"
     }
 
-    # fn: _reset_network_for_template - Replace netplan configuration with DHCP
-        # . Side effects
-        #   Deletes existing /etc/netplan/*.yaml files and writes
-        #   /etc/netplan/00-installer-config.yaml with DHCP enabled.
-        #
+    # fn: _reset_networkmanager_for_template - Reset only the active NetworkManager profile to DHCP.
         # . Purpose
-        #   Replace existing netplan YAML files with a DHCP configuration.
-        #   Uses the detected interface and creates a root-owned YAML file.
-        #
+        #   Keep the NetworkManager renderer and other connection profiles intact.
+        #   On current Ubuntu desktops NetworkManager persists profiles as Netplan YAML.
+        #   No connection reactivation is needed: the VM is about to shut down.
+        # . Arguments
+        #   - `$1`: Primary interface.
+        # . Usage
+        #   ```bash
+        #   _reset_networkmanager_for_template "ens18"
+        #   ```
+    _reset_networkmanager_for_template() {
+        local iface="${1:-}"
+        local connection=""
+        local uuid=""
+        local output=""
+
+        connection="$(nmcli -g GENERAL.CONNECTION device show "$iface" 2>/dev/null)" || return 1
+        if [[ -z "$connection" || "$connection" == "--" ]]; then
+            sayfail "No active NetworkManager profile on $iface; refusing to create a competing configuration."
+            return 1
+        fi
+        uuid="$(nmcli -g connection.uuid connection show "$connection" 2>/dev/null)" || return 1
+        [[ -n "$uuid" && "$uuid" != "--" ]] || return 1
+
+        sayinfo "Resetting the existing NetworkManager profile on $iface to DHCP."
+        if ! output="$(nmcli connection modify "$uuid" \
+            ipv4.method auto \
+            ipv4.addresses "" \
+            ipv4.gateway "" \
+            ipv4.dns "" \
+            ipv4.dns-search "" \
+            ipv4.ignore-auto-dns no 2>&1)"; then
+            sayfail "Failed to reset NetworkManager profile: $output"
+            return 1
+        fi
+        sayinfo "NetworkManager profile saved; other Netplan files and network profiles are unchanged."
+        return 0
+    }
+
+    # fn: _template_netplan_file_is_dedicated - Reject ambiguous networkd configurations.
+        # . Purpose
+        #   The networkd reset overwrites a single YAML file. Refuse files containing
+        #   unrelated interfaces or complex network definitions.
+        # . Arguments
+        #   - `$1`: Netplan file to inspect.
+        #   - `$2`: Interface that should be the only configured Ethernet device.
+        # . Usage
+        #   ```bash
+        #   _template_netplan_file_is_dedicated "/etc/netplan/50-cloud-init.yaml" "ens18"
+        #   ```
+    _template_netplan_file_is_dedicated() {
+        local file="${1:-}"
+        local iface="${2:-}"
+        [[ -f "$file" ]] || return 0
+        awk -v iface="$iface" '
+            /^  (wifis|bridges|bonds|vlans|tunnels|modems|vrfs|nm-devices|dummy-devices):/ { exit 1 }
+            /^  [^ #][^:]*:/ {
+                key=$0
+                sub(/^  /, "", key)
+                sub(/:.*/, "", key)
+                if (key != "version" && key != "renderer" && key != "ethernets") exit 1
+            }
+            /^    [^ #][^:]*:/ {
+                key=$0
+                sub(/^    /, "", key)
+                sub(/:.*/, "", key)
+                gsub(/["\047]/, "", key)
+                if (key != iface) exit 1
+            }
+        ' "$file"
+    }
+
+    # fn: _reset_network_for_template - Reset the selected interface to DHCP without deleting other profiles.
+        # . Purpose
+        #   Detect the active renderer and preserve NetworkManager connection profiles.
+        #   For simple networkd installations, replace only the YAML file belonging
+        #   to the selected interface, with backup and generation rollback.
         # . Returns
-        #   0 when netplan generation succeeds; nonzero on filesystem or netplan failures.
-        #
+        #   0 if the profile was saved or Netplan generation succeeds; nonzero on error.
         # . Usage
         #   ```bash
         #   _reset_network_for_template
         #   ```
     _reset_network_for_template() {
-        local primary_iface
-        local netplan_file='/etc/netplan/00-installer-config.yaml'
+        local primary_iface=""
+        local managed=""
+        local renderer=""
+        local netplan_file=""
+        local file=""
+        local backup_file=""
+        local candidate_file=""
+        local original_exists=0
 
         primary_iface="$(_detect_primary_iface)" || return $?
         sayinfo "Resetting network configuration to DHCP on $primary_iface"
 
-        rm -f /etc/netplan/*.yaml || return $?
+        if command -v nmcli >/dev/null 2>&1; then
+            managed="$(nmcli -g GENERAL.NM-MANAGED device show "$primary_iface" 2>/dev/null)" || managed=""
+            if [[ "${managed,,}" == "yes" || "${managed,,}" == "true" ]]; then
+                _reset_networkmanager_for_template "$primary_iface"
+                return $?
+            fi
+        fi
+
+        renderer="$(netplan get "network.ethernets.${primary_iface}.renderer" 2>/dev/null)" || renderer=""
+        if [[ -z "$renderer" || "$renderer" == "null" ]]; then
+            renderer="$(netplan get network.renderer 2>/dev/null)" || renderer=""
+        fi
+        case "${renderer,,}" in
+            ""|null|networkd) ;;
+            networkmanager)
+                sayfail "NetworkManager is the Netplan renderer, but $primary_iface has no active managed profile."
+                return 1
+                ;;
+            *)
+                sayfail "Unsupported Netplan renderer '$renderer'; refusing to change network configuration."
+                return 1
+                ;;
+        esac
+
+        # Select the networkd file defining this interface; never discard the others.
+        while IFS= read -r -d '' file; do
+            if grep -Eq "^    ['\"]?${primary_iface}['\"]?:" "$file"; then
+                if [[ -n "$netplan_file" ]]; then
+                    sayfail "Multiple Netplan files define $primary_iface; refusing an ambiguous template reset."
+                    return 1
+                fi
+                netplan_file="$file"
+            fi
+        done < <(find /etc/netplan -maxdepth 1 -type f -name '*.yaml' -print0 2>/dev/null)
+
+        if [[ -z "$netplan_file" ]]; then
+            netplan_file='/etc/netplan/90-solidgroundux-template.yaml'
+            if find /etc/netplan -maxdepth 1 -type f -name '*.yaml' -print -quit 2>/dev/null | grep -q .; then
+                sayfail "Cannot identify the primary interface in Netplan; refusing to create an overriding profile."
+                return 1
+            fi
+        fi
+
+        if ! _template_netplan_file_is_dedicated "$netplan_file" "$primary_iface"; then
+            sayfail "Netplan file '$netplan_file' includes other networks; refusing to replace it."
+            return 1
+        fi
+
+        candidate_file="$(mktemp)" || return 1
+        backup_file="$(mktemp)" || { rm -f -- "$candidate_file"; return 1; }
+        if [[ -f "$netplan_file" ]]; then
+            original_exists=1
+            cp -a -- "$netplan_file" "$backup_file" || {
+                rm -f -- "$candidate_file" "$backup_file"
+                return 1
+            }
+        fi
 
         {
             printf '%s\n' 'network:'
@@ -367,16 +497,37 @@ set -uo pipefail
             printf '%s\n' '  ethernets:'
             printf '    %s:\n' "$primary_iface"
             printf '%s\n' '      dhcp4: true'
-        } > "$netplan_file" || return $?
+        } > "$candidate_file" || {
+            rm -f -- "$candidate_file" "$backup_file"
+            return 1
+        }
 
-        chown root:root "$netplan_file" || return $?
-        chmod 600 "$netplan_file" || return $?
-        netplan generate || return $?
+        if ! install -o root -g root -m 600 -- "$candidate_file" "$netplan_file"; then
+            rm -f -- "$candidate_file" "$backup_file"
+            return 1
+        fi
+        rm -f -- "$candidate_file"
+
+        if ! netplan generate; then
+            sayfail "Netplan validation failed; restoring the original network configuration."
+            if (( original_exists == 1 )); then
+                cp -a -- "$backup_file" "$netplan_file" || saywarning "Failed to restore $netplan_file."
+            else
+                rm -f -- "$netplan_file" || saywarning "Failed to remove new Netplan configuration."
+            fi
+            netplan generate >/dev/null 2>&1 || true
+            rm -f -- "$backup_file"
+            return 1
+        fi
+
+        rm -f -- "$backup_file"
+        sayinfo "Networkd DHCP configuration saved; unrelated Netplan files preserved."
+        return 0
     }
 
     # fn: _prepare_template - Clear machine-specific state before cloning a VM
         # . Side effects
-        #   - Normal mode runs apt clean/autoremove and overwrites netplan configuration.
+        #   - Normal mode runs apt clean/autoremove and updates only the active network configuration.
         #   - Deletes SSH host keys, systemd journal history and temporary files.
         #   - Clears /etc/machine-id and links the D-Bus machine-id to it.
         #   - Invokes an auto-continue dialog, then requests shutdown.
