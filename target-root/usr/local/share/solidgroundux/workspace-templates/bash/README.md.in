@@ -10,15 +10,11 @@
 
 <table>
 <tr>
-<td width="33%" align="center">
-  <a href="{{PROJECT_DOCUMENTATION_PATH}}"><strong>Documentation</strong></a><br>
-  Project reference and guides
-</td>
-<td width="33%" align="center">
+<td width="50%" align="center">
   <a href="CHANGELOG.md"><strong>Changelog</strong></a><br>
   Releases and development history
 </td>
-<td width="33%" align="center">
+<td width="50%" align="center">
   <a href="LICENSE"><strong>License</strong></a><br>
   Terms of use and redistribution
 </td>

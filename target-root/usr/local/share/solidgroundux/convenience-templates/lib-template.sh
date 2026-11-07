@@ -3,7 +3,7 @@
 # ----------------------------------------------------------------------------------
 # Metadata:
 #   Version     : 2.2
-#   Build       : 2630700
+#   Build       : 2631102
 #   Checksum    : fa32485abd682b3f16bbe684b414e07cb8484aea96ea99351511ee126f583630
 #   Source      : lib-template.sh
 #   Type        : library

@@ -4,8 +4,8 @@
 # -------------------------------------------------------------------------------------
 # Metadata:
 #   Version     : 2.2
-#   Build       : 2630700
-#   Checksum    : a436bafc3bdeaffacd31629986c4cf9506e8314fbfd35a870063385e70f10c17
+#   Build       : 2631102
+#   Checksum    : f656a9379fe366ccb407bcd1d8173c108465927993d9ddd6706720ac0f89c7b3
 #   Source      : deploy-workspace.sh
 #   Type        : script
 #   Group       : SDK
@@ -18,6 +18,7 @@
 #
 # Design principles:
 #   - Selection and transport remain separate from destination-side installation policy
+#   - Machine-specific release-manager.state is not deployed from development workspaces
 #   - Local and remote deployment use the same receive-files.sh contract
 #   - Command-line values override saved defaults
 #   - Confirmed deployment settings are always saved; the success timestamp changes only after a successful receive operation
@@ -435,7 +436,7 @@ set -uo pipefail
         #
         # . Returns
         #   - 0 when the path is deployable.
-        #   - 1 when the path is top-level, hidden, private, or marked .old.
+        #   - 1 for excluded workspace paths, including host-specific setup state.
         #
         # . Usage
         #   ```bash
@@ -448,6 +449,8 @@ set -uo pipefail
         name="$(basename -- "$rel")"
 
         [[ "$rel" == */* ]] || return 1
+        # Setup runtime state belongs to the target machine, never to a workspace deploy.
+        [[ "$rel" != "var/lib/solidgroundux/release-manager.state" ]] || return 1
         [[ "$name" != _* ]] || return 1
         [[ "$name" != *.old ]] || return 1
         [[ "$rel" != .*/* ]] || return 1
@@ -1291,7 +1294,7 @@ set -uo pipefail
         #   main "$@"
         #   ```
     main() {
-        local reply=0
+        local reply=0 deploy_status=0 finish_message=""
 
         _capture_cli_parameters "$@"
         _framework_locator || exit $?
@@ -1303,25 +1306,41 @@ set -uo pipefail
 
         _getparameters || return $?
 
-        # Persist the confirmed interactive/CLI settings before deployment.
-        # Do not rely solely on exit-time autostate: a failed transfer should not
-        # force the operator to re-enter the deployment parameters next time.
-        sgnd_save_state || return $?
+        # Persist confirmed settings before deployment, even when transfer fails.
+        # Both state-save and deployment errors must reach the final dialog.
+        if sgnd_save_state; then
+            if _deploy; then
+                :
+            else
+                deploy_status=$?
+            fi
+        else
+            deploy_status=$?
+        fi
 
-        _deploy || return $?
         # A successful no-op is not a completed deployment and needs no follow-up prompt.
-        (( NO_DEPLOYABLE_FILES == 0 )) || return 0
+        if (( deploy_status == 0 && NO_DEPLOYABLE_FILES != 0 )); then
+            return 0
+        fi
 
+        if (( deploy_status == 0 )); then
+            finish_message="Deployment finished. Press Enter to exit, or R to deploy again."
+        else
+            finish_message="Deployment failed (status $deploy_status). Press Enter to exit, or R to retry."
+        fi
+
+        # Show the same end-of-run countdown after success or failure. In the
+        # failure case, exiting or timing out retains the original error status.
         ask_dlg_autocontinue \
             --seconds 15 \
-            --message "Deployment finished. Press Enter to exit, or R to deploy again." \
+            --message "$finish_message" \
             --redo \
             --pause
 
         reply=$?
         case "$reply" in
             0|1)
-                return 0
+                return "$deploy_status"
                 ;;
             3)
                 sgnd_save_state || return $?
