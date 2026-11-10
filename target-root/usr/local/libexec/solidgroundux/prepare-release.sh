@@ -4,8 +4,8 @@
 # -------------------------------------------------------------------------------------
 # Metadata:
 #   Version     : 2.2
-#   Build       : 2631102
-#   Checksum    : 79e0683f0019785fd448f10d33db1de8358e51d0b7a625fa28f5e50b89560788
+#   Build       : 2631103
+#   Checksum    : 66f1bb0548cd35cadee150913bc2cc22170e84b807a609f071ab05555ea94ce2
 #   Source      : prepare-release.sh
 #   Type        : script
 #   Group       : SDK
@@ -26,8 +26,9 @@
 #     - Reports the full output paths of product release ZIPs and the optional first-install ZIP
 #     - Writes release-package.info at ZIP root so the package identifies its project/release
 #     - Uses an explicit removal-baseline manifest from persistent manifest history
-#     - Builds a first-install ZIP containing sgnd-setup.sh plus selected product release ZIPs,
-#       using the SolidGroundUX/Setup version and the highest build number contained in the package
+#     - Builds a first-install ZIP containing sgnd-setup.sh, the packaged GitHub defaults,
+#       and selected product release ZIPs, using the SolidGroundUX/Setup version and the
+#       highest build number contained in the package
 #
 # Design principles:
 #   - Release preparation is deterministic and repeatable
@@ -1708,16 +1709,18 @@ set -uo pipefail
 
     # fn: _create_first_install_package - Create the bootstrap transport ZIP
         # . Purpose
-        #   Bundle standalone setup and prepared product ZIPs for first installation.
+        #   Bundle standalone setup, packaged repository defaults, and prepared product
+        #   ZIPs for first installation.
         # Purpose:
-        #   Create a first-install ZIP containing sgnd-setup.sh and the already-created
-        #   product release ZIPs for the selected products.
+        #   Create a first-install ZIP containing sgnd-setup.sh,
+        #   sgnd-setup.cfg.default, and the already-created product release ZIPs.
         # Behavior:
         #   - The first-install ZIP replaces the former bundled release concept.
         #   - It is transport/installer media, not an installable product release.
         #   - Its Version identity follows sgnd-setup.sh / SolidGroundUX.
         #   - Its Build identity is the highest numeric build of sgnd-setup.sh or any
         #     product release ZIP contained in the first-install package.
+        #   - Packaged repository defaults come from the selected Framework source.
         #   - Product ZIP identities remain unchanged and are installed by sgnd-setup
         #     after extraction.
         # Returns:
@@ -1732,12 +1735,18 @@ set -uo pipefail
         #   _create_first_install_package
         #   ```
     _create_first_install_package() {
-        local setup="" setup_version="" setup_build="" first_install_build="" package_dir="" output_zip=""
+        local setup="" setup_config="" framework_root="" setup_version="" setup_build="" first_install_build="" package_dir="" output_zip=""
         local index=0 product="" version="" build="" product_zip=""
-        local -a zip_items=("sgnd-setup.sh")
+        local -a zip_items=("sgnd-setup.sh" "sgnd-setup.cfg.default")
 
         _release_has_framework_product || return 0
         setup="$(_find_setup_source)" || { sayfail "Could not locate sgnd-setup.sh in the selected SolidGroundUX product."; return 1; }
+        framework_root="$(_release_framework_source_root)" || return 1
+        setup_config="${framework_root%/}/usr/local/share/solidgroundux/sgnd-setup.cfg.default"
+        [[ -r "$setup_config" && -f "$setup_config" ]] || {
+            sayfail "First-install package is missing the Framework repository defaults: $setup_config"
+            return 1
+        }
         setup_version="$(_setup_metadata_value "$setup" Version 2>/dev/null || true)"
         setup_build="$(_setup_metadata_value "$setup" Build 2>/dev/null || true)"
         [[ -n "$setup_version" && -n "$setup_build" ]] || {
@@ -1772,6 +1781,7 @@ set -uo pipefail
 
         package_dir="$(mktemp -d)" || return 1
         cp -f -- "$setup" "$package_dir/sgnd-setup.sh" || { rm -rf -- "$package_dir"; return 1; }
+        cp -f -- "$setup_config" "$package_dir/sgnd-setup.cfg.default" || { rm -rf -- "$package_dir"; return 1; }
         chmod 0755 "$package_dir/sgnd-setup.sh" 2>/dev/null || true
 
         for index in "${!RELEASE_PRODUCT_NAMES[@]}"; do
