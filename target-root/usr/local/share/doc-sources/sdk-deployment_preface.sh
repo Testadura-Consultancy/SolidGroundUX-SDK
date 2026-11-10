@@ -28,6 +28,28 @@
 # > The distinction matters. Development deployment optimizes the edit/test loop; Setup
 # > manages complete, identifiable releases.
 #
+# -- Reusable Development Deployment Profiles --------------------------------------
+#
+# > `sgnd-deploy-workspace` supports named deployment profiles. Each profile
+# > remembers the transport, workspace selection, target root and the date of its
+# > **last successful deployment** independently of other destinations.
+# > The existing local and SSH receiver workflows remain the transfer mechanism.
+# > Profile settings do not alter release-manager state or installed-release history.
+# >
+# > ```bash
+# > sgnd-deploy-workspace --manage-profiles
+# > sgnd-deploy-workspace --profile Development --dryrun
+# > sgnd-deploy-workspace --profile Testadura-HQ --since-last
+# > sgnd-deploy-workspace --profile Testadura-HQ --auto
+# > ```
+# >
+# > Explicit CLI options override profile defaults, so `--source`, `--target`,
+# > `--remote`, `--match` and existing selection filters remain usable. Dry-runs
+# > and unsuccessful transfers do not advance the profile's success timestamp.
+# > Legacy 2.2.2631102 deployment defaults and success date are migrated once;
+# > original state is retained. Profiles are versioned JSON stored under
+# > `~/.config/solidgroundux/deployment-profiles/sdk.json` by Framework.
+#
 # -- Release Preparation ------------------------------------------------------------
 #
 # > `prepare-release.sh` turns a project `target-root` into a distributable product

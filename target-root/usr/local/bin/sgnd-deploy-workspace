@@ -66,59 +66,74 @@ set -uo pipefail
         #   _framework_locator || return $?
         #   ```
     _framework_locator() {
-        local script_file=""
-        local path_without_root=""
-        local component=""
-        local framework_root=""
-        local exe_common=""
-        local index=0
-        local root_index=-1
-        local -a path_parts=()
+        local script_file="" suffix="" component="" script_root="" candidate=""
+        local exe_common="" discovered="" parent="" tree="" common_suffix="usr/local/lib/solidgroundux/common/sgnd-exe-common.sh"
+        local index=0 root_index=-1
+        local -a path_parts=() matches=()
 
         script_file="$(readlink -f "${BASH_SOURCE[0]}")" || {
             printf 'FATAL: Cannot resolve executable path: %s\n' "${BASH_SOURCE[0]}" >&2
             return 126
         }
-
-        path_without_root="${script_file#/}"
-        IFS='/' read -r -a path_parts <<< "$path_without_root"
-
+        suffix="${script_file#/}"
+        IFS='/' read -r -a path_parts <<< "$suffix"
         for index in "${!path_parts[@]}"; do
             component="${path_parts[$index]}"
-            case "$component" in
-                usr|etc|var)
-                    root_index=$index
-                    ;;
-            esac
+            case "$component" in usr|etc|var) root_index=$index ;; esac
         done
-
-        if (( root_index < 0 )); then
-            printf 'FATAL: Cannot determine SolidGroundUX framework root from: %s\n' "$script_file" >&2
+        (( root_index >= 0 )) || {
+            printf 'FATAL: Cannot determine product root from %s\n' "$script_file" >&2
             return 126
-        fi
-
-        if (( root_index == 0 )); then
-            framework_root="/"
-        else
-            framework_root=""
+        }
+        script_root="/"
+        if (( root_index > 0 )); then
+            script_root=""
             for (( index=0; index<root_index; index++ )); do
-                framework_root+="/${path_parts[$index]}"
+                script_root+="/${path_parts[$index]}"
             done
         fi
 
-        SGND_FRAMEWORK_ROOT="$framework_root"
-
-        if [[ "$SGND_FRAMEWORK_ROOT" == "/" ]]; then
-            exe_common="/usr/local/lib/solidgroundux/common/sgnd-exe-common.sh"
+        # A caller may explicitly select a separate Framework development tree.
+        # A wrong explicit root is an error rather than a silent fallback.
+        if [[ -n "${SGND_FRAMEWORK_ROOT:-}" ]]; then
+            candidate="${SGND_FRAMEWORK_ROOT%/}"
+            [[ -n "$candidate" ]] || candidate="/"
+            [[ -r "${candidate%/}/$common_suffix" ]] || {
+                printf 'FATAL: SGND_FRAMEWORK_ROOT is not a Framework tree: %s\n' "$candidate" >&2
+                return 126
+            }
+            discovered="$candidate"
+        elif [[ -r "${script_root%/}/$common_suffix" ]]; then
+            discovered="$script_root"
+        elif [[ "$script_root" != / ]]; then
+            # Separate development trees: search only immediate sibling product
+            # directories, optionally under their target-root. Never pick one of
+            # several Framework trees arbitrarily.
+            for parent in "$(dirname -- "$script_root")" "$(dirname -- "$(dirname -- "$script_root")")"; do
+                for tree in "$parent"/* "$parent"/*/target-root; do
+                    [[ -r "${tree%/}/$common_suffix" ]] || continue
+                    candidate="$(cd -- "$tree" && pwd -P)" || continue
+                    for component in "${matches[@]}"; do
+                        [[ "$component" == "$candidate" ]] && break
+                    done
+                    [[ "$component" == "$candidate" ]] || matches+=("$candidate")
+                done
+            done
+            case "${#matches[@]}" in
+                0) discovered="/" ;;
+                1) discovered="${matches[0]}" ;;
+                *) printf 'FATAL: Multiple Framework trees found; set SGND_FRAMEWORK_ROOT explicitly.\n' >&2; return 126 ;;
+            esac
         else
-            exe_common="${SGND_FRAMEWORK_ROOT%/}/usr/local/lib/solidgroundux/common/sgnd-exe-common.sh"
+            discovered="/"
         fi
 
+        exe_common="${discovered%/}/$common_suffix"
         [[ -r "$exe_common" ]] || {
-            printf 'FATAL: Cannot read executable common library: %s\n' "$exe_common" >&2
+            printf 'FATAL: Cannot read Framework executable library: %s\n' "$exe_common" >&2
             return 126
         }
-
+        SGND_FRAMEWORK_ROOT="$discovered"
         # shellcheck source=/dev/null
         source "$exe_common"
     }
@@ -129,11 +144,13 @@ set -uo pipefail
 # - Main -----------------------------------------------------------------------------
     _framework_locator || exit $?
 
-    if [[ "$SGND_FRAMEWORK_ROOT" == "/" ]]; then
-        target="/${SGND_WRAPPER_TARGET#/}"
-    else
-        target="${SGND_FRAMEWORK_ROOT%/}/${SGND_WRAPPER_TARGET#/}"
-    fi
+    # The wrapper and executable belong to SDK; the shared runtime belongs to
+    # Framework. They may be in completely separate development trees.
+    wrapper_path="$(readlink -f -- "${BASH_SOURCE[0]}")" || exit 126
+    sdk_root="${wrapper_path%/usr/local/bin/*}"
+    [[ -n "$sdk_root" ]] || sdk_root="/"
+    target="${sdk_root%/}/${SGND_WRAPPER_TARGET#/}"
+    export SGND_FRAMEWORK_ROOT
 
     [[ -f "$target" ]] || {
         printf 'FATAL: Wrapper target not found: %s\n' "$target" >&2

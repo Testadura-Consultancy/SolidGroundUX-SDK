@@ -99,63 +99,74 @@ set -uo pipefail
         #   _framework_locator || return $?
         #   ```
     _framework_locator() {
-        local script_file=""
-        local path_without_root=""
-        local component=""
-        local framework_root=""
-        local exe_common=""
-        local index=0
-        local root_index=-1
-        local -a path_parts=()
+        local script_file="" suffix="" component="" script_root="" candidate=""
+        local exe_common="" discovered="" parent="" tree="" common_suffix="usr/local/lib/solidgroundux/common/sgnd-exe-common.sh"
+        local index=0 root_index=-1
+        local -a path_parts=() matches=()
 
         script_file="$(readlink -f "${BASH_SOURCE[0]}")" || {
             printf 'FATAL: Cannot resolve executable path: %s\n' "${BASH_SOURCE[0]}" >&2
             return 126
         }
-
-        path_without_root="${script_file#/}"
-        IFS='/' read -r -a path_parts <<< "$path_without_root"
-
+        suffix="${script_file#/}"
+        IFS='/' read -r -a path_parts <<< "$suffix"
         for index in "${!path_parts[@]}"; do
             component="${path_parts[$index]}"
-            case "$component" in
-                usr|etc|var)
-                    root_index=$index
-                    ;;
-            esac
+            case "$component" in usr|etc|var) root_index=$index ;; esac
         done
-
-        if (( root_index < 0 )); then
-            printf 'FATAL: Cannot determine SolidGroundUX framework root from: %s\n' "$script_file" >&2
+        (( root_index >= 0 )) || {
+            printf 'FATAL: Cannot determine product root from %s\n' "$script_file" >&2
             return 126
-        fi
-
-        if (( root_index == 0 )); then
-            framework_root="/"
-        else
-            framework_root=""
+        }
+        script_root="/"
+        if (( root_index > 0 )); then
+            script_root=""
             for (( index=0; index<root_index; index++ )); do
-                framework_root+="/${path_parts[$index]}"
+                script_root+="/${path_parts[$index]}"
             done
         fi
 
-        SGND_FRAMEWORK_ROOT="$framework_root"
-
-        if [[ "$SGND_FRAMEWORK_ROOT" == "/" ]]; then
-            exe_common="/usr/local/lib/solidgroundux/common/sgnd-exe-common.sh"
+        # A caller may explicitly select a separate Framework development tree.
+        # A wrong explicit root is an error rather than a silent fallback.
+        if [[ -n "${SGND_FRAMEWORK_ROOT:-}" ]]; then
+            candidate="${SGND_FRAMEWORK_ROOT%/}"
+            [[ -n "$candidate" ]] || candidate="/"
+            [[ -r "${candidate%/}/$common_suffix" ]] || {
+                printf 'FATAL: SGND_FRAMEWORK_ROOT is not a Framework tree: %s\n' "$candidate" >&2
+                return 126
+            }
+            discovered="$candidate"
+        elif [[ -r "${script_root%/}/$common_suffix" ]]; then
+            discovered="$script_root"
+        elif [[ "$script_root" != / ]]; then
+            # Separate development trees: search only immediate sibling product
+            # directories, optionally under their target-root. Never pick one of
+            # several Framework trees arbitrarily.
+            for parent in "$(dirname -- "$script_root")" "$(dirname -- "$(dirname -- "$script_root")")"; do
+                for tree in "$parent"/* "$parent"/*/target-root; do
+                    [[ -r "${tree%/}/$common_suffix" ]] || continue
+                    candidate="$(cd -- "$tree" && pwd -P)" || continue
+                    for component in "${matches[@]}"; do
+                        [[ "$component" == "$candidate" ]] && break
+                    done
+                    [[ "$component" == "$candidate" ]] || matches+=("$candidate")
+                done
+            done
+            case "${#matches[@]}" in
+                0) discovered="/" ;;
+                1) discovered="${matches[0]}" ;;
+                *) printf 'FATAL: Multiple Framework trees found; set SGND_FRAMEWORK_ROOT explicitly.\n' >&2; return 126 ;;
+            esac
         else
-            exe_common="${SGND_FRAMEWORK_ROOT%/}/usr/local/lib/solidgroundux/common/sgnd-exe-common.sh"
-
-            if [[ ! -r "$exe_common" ]]; then
-                exe_common="/usr/local/lib/solidgroundux/common/sgnd-exe-common.sh"
-            fi
+            discovered="/"
         fi
 
+        exe_common="${discovered%/}/$common_suffix"
         [[ -r "$exe_common" ]] || {
-            printf 'FATAL: Cannot read executable common library: %s\n' "$exe_common" >&2
+            printf 'FATAL: Cannot read Framework executable library: %s\n' "$exe_common" >&2
             return 126
         }
-
+        SGND_FRAMEWORK_ROOT="$discovered"
         # shellcheck source=/dev/null
         source "$exe_common"
     }
@@ -190,6 +201,8 @@ set -uo pipefail
         "changed-after|c|value|CHANGED_AFTER|Only include files modified after this date, timestamp, or datetime shortcut|"
         "since-last||flag|FLAG_SINCE_LAST|Only include files changed since the last successful deployment|0|"
         "receiver||value|RECEIVER_PATH|Path to receive-files.sh on the destination|"
+        "profile||value|DEPLOY_PROFILE_NAME|Use a named SDK deployment profile|"
+        "manage-profiles||flag|FLAG_MANAGE_PROFILES|Manage named SDK deployment profiles|0|"
     )
 
     SGND_SCRIPT_EXAMPLES=(
@@ -201,6 +214,8 @@ set -uo pipefail
         ""
         "Deploy files changed since the last successful deployment:"
         "  $SGND_SCRIPT_NAME --remote sysadmin@192.168.0.253 --since-last"
+        "  $SGND_SCRIPT_NAME --profile Testadura-HQ --since-last"
+        "  $SGND_SCRIPT_NAME --manage-profiles"
     )
 
     SGND_SCRIPT_GLOBALS=(
@@ -238,6 +253,8 @@ set -uo pipefail
     CHANGED_AFTER="${CHANGED_AFTER:-}"
     RECEIVER_PATH="${RECEIVER_PATH:-}"
     LAST_DEPLOY_SUCCESS="${LAST_DEPLOY_SUCCESS:-}"
+    DEPLOY_PROFILE_NAME="${DEPLOY_PROFILE_NAME:-}"
+    DEPLOY_PROFILE_ACTIVE=""
 
     CLI_DEPLOY_TRANSPORT=0
     CLI_REMOTE_TARGET=0
@@ -259,6 +276,182 @@ set -uo pipefail
     DEPLOY_FINISHED_AT=""
     REMOTE_CONTROL_PATH=""
     NO_DEPLOYABLE_FILES=0
+
+# --- Named SDK deployment profiles -------------------------------------------------
+    # fn: _deploy_profiles_tool - Call the shared Framework profile storage.
+        # . Purpose
+        #   Access namespaced, validated deployment profiles in the Framework tree.
+        # . Usage
+        #   ```bash
+        #   _deploy_profiles_tool list
+        #   ```
+    _deploy_profiles_tool() {
+        local helper="${SGND_FRAMEWORK_ROOT%/}/usr/local/lib/solidgroundux/py/sgnd_deployment_profiles.py"
+        [[ -r "$helper" ]] || { sayfail "Framework deployment profile store missing: $helper"; return 127; }
+        if [[ -z "${XDG_CONFIG_HOME:-}" && -n "${SGND_USER_HOME:-}" ]]; then
+            SGND_PROFILE_HOME="$SGND_USER_HOME" python3 "$helper" sdk "$@"
+        else
+            python3 "$helper" sdk "$@"
+        fi
+    }
+
+    # fn: _deploy_profiles_migrate - Import the existing 2631102 deployment state once.
+        # . Purpose
+        #   Preserve the last used deployment settings in a new named profile.
+        # . Usage
+        #   ```bash
+        #   _deploy_profiles_migrate
+        #   ```
+    _deploy_profiles_migrate() {
+        local transport="${DEPLOY_TRANSPORT:-local}"
+        _deploy_profiles_tool migrate --migration-id sdk-state-2631102 \
+            --field "transport=$transport" \
+            --field "remote=${REMOTE_TARGET:-}" \
+            --field "product_root=${PRODUCT_ROOT:-}" \
+            --field "products=${PRODUCT_SELECTION:-A}" \
+            --field "source=${SRC_ROOT:-}" \
+            --field "target=${DEST_ROOT:-/}" \
+            --field "directory=${SELECT_DIRECTORY:-}" \
+            --field "match=${SELECT_MATCH:-*}" \
+            --field "changed_after=${CHANGED_AFTER:-1900-01-01}" \
+            --field "since_last=${FLAG_SINCE_LAST:-0}" \
+            --field "receiver=${RECEIVER_PATH:-/usr/local/libexec/solidgroundux/receive-files.sh}" \
+            --timestamp "${LAST_DEPLOY_SUCCESS:-}" >/dev/null
+    }
+
+    # fn: _deploy_profiles_load - Read selected settings and independent success date.
+        # . Purpose
+        #   Load one SDK profile without sourcing shell commands or replacing explicit CLI arguments.
+        # . Arguments
+        #   $1 Profile name.
+        # . Usage
+        #   ```bash
+        #   _deploy_profiles_load 'Testadura-HQ'
+        #   ```
+    _deploy_profiles_load() {
+        local name="$1" buffer="" key="" value="" i=0
+        local -a fields=()
+        buffer="$(mktemp)" || return 1
+        if ! _deploy_profiles_tool get --name "$name" > "$buffer"; then rm -f -- "$buffer"; return 1; fi
+        mapfile -d '' -t fields < "$buffer"
+        rm -f -- "$buffer"
+        (( ${#fields[@]} % 2 == 0 )) || return 1
+        # This profile owns the timestamp, even if the legacy state has another one.
+        LAST_DEPLOY_SUCCESS=""
+        for (( i=0; i<${#fields[@]}; i+=2 )); do
+            key="${fields[$i]}"; value="${fields[$((i+1))]}"
+            case "$key" in
+                transport) (( CLI_DEPLOY_TRANSPORT )) || DEPLOY_TRANSPORT="${value:-local}" ;;
+                remote) (( CLI_REMOTE_TARGET )) || REMOTE_TARGET="$value" ;;
+                product_root) (( CLI_PRODUCT_ROOT )) || PRODUCT_ROOT="$value" ;;
+                products) (( CLI_PRODUCT_SELECTION )) || PRODUCT_SELECTION="${value:-A}" ;;
+                source) (( CLI_SRC_ROOT )) || SRC_ROOT="$value" ;;
+                target) (( CLI_DEST_ROOT )) || DEST_ROOT="$value" ;;
+                directory) (( CLI_SELECT_DIRECTORY )) || SELECT_DIRECTORY="$value" ;;
+                match) (( CLI_SELECT_MATCH )) || SELECT_MATCH="$value" ;;
+                changed_after) (( CLI_CHANGED_AFTER )) || CHANGED_AFTER="$value" ;;
+                since_last)
+                    if (( ! CLI_SINCE_LAST && ! CLI_CHANGED_AFTER )); then
+                        FLAG_SINCE_LAST=0
+                        [[ "$value" != Yes ]] || FLAG_SINCE_LAST=1
+                    fi
+                    ;;
+                receiver) (( CLI_RECEIVER_PATH )) || RECEIVER_PATH="$value" ;;
+                last_success) LAST_DEPLOY_SUCCESS="$value" ;;
+            esac
+        done
+        DEPLOY_PROFILE_ACTIVE="$name"
+        return 0
+    }
+
+    # fn: _deploy_profiles_save - Save confirmed settings to the selected profile.
+        # . Purpose
+        #   Persist only non-secret deployment settings and select the named profile.
+        # . Arguments
+        #   $1 Profile name.
+        # . Usage
+        #   ```bash
+        #   _deploy_profiles_save 'Testadura-HQ'
+        #   ```
+    _deploy_profiles_save() {
+        local name="$1" since_last=No
+        [[ "${FLAG_SINCE_LAST:-0}" != 1 ]] || since_last=Yes
+        _deploy_profiles_tool save --name "$name" \
+            --field "transport=${DEPLOY_TRANSPORT:-local}" \
+            --field "remote=${REMOTE_TARGET:-}" \
+            --field "product_root=${PRODUCT_ROOT:-}" \
+            --field "products=${PRODUCT_SELECTION:-A}" \
+            --field "source=${SRC_ROOT:-}" \
+            --field "target=${DEST_ROOT:-/}" \
+            --field "directory=${SELECT_DIRECTORY:-}" \
+            --field "match=${SELECT_MATCH:-*}" \
+            --field "changed_after=${CHANGED_AFTER:-1900-01-01}" \
+            --field "since_last=$since_last" \
+            --field "receiver=${RECEIVER_PATH:-/usr/local/libexec/solidgroundux/receive-files.sh}" || return $?
+        _deploy_profiles_tool select --name "$name" || return $?
+        DEPLOY_PROFILE_ACTIVE="$name"
+    }
+
+    # fn: _deploy_profiles_choose - Select a saved reusable deployment profile.
+        # . Purpose
+        #   Present stored profiles through the standard selection dialog with Q to exit.
+        # . Usage
+        #   ```bash
+        #   _deploy_profiles_choose
+        #   ```
+    _deploy_profiles_choose() {
+        local buffer="" selected=""
+        local -a names=()
+        buffer="$(mktemp)" || return 1
+        if ! _deploy_profiles_tool list > "$buffer"; then rm -f -- "$buffer"; return 1; fi
+        mapfile -t names < "$buffer"
+        rm -f -- "$buffer"
+        (( ${#names[@]} )) || { saywarning 'No SDK deployment profiles found.'; return 2; }
+        ask_selection --label 'Deployment profile' --var selected --items "${names[@]}" || return 2
+        _deploy_profiles_load "$selected" || return $?
+        _deploy_profiles_tool select --name "$selected"
+    }
+
+    # fn: _deploy_profiles_manage - Manage SDK deployment profiles using Framework UI.
+        # . Purpose
+        #   Create, select, and delete SDK profiles without altering the deployment engine.
+        # . Usage
+        #   ```bash
+        #   _deploy_profiles_manage
+        #   ```
+    _deploy_profiles_manage() {
+        local action="" name="" decision="No" rc=0
+        while :; do
+            sgnd_print_sectionheader --text 'Manage Deployment Profiles'
+            if [[ -n "$DEPLOY_PROFILE_ACTIVE" ]]; then
+                sgnd_print_labeledvalue --label 'Active profile' --value "$DEPLOY_PROFILE_ACTIVE"
+                sgnd_print_labeledvalue --label 'Last deployed' --value "${LAST_DEPLOY_SUCCESS:-Not available}"
+            fi
+            ask_selection --label 'Profiles' --var action --items 'Create from current settings' Select Delete Exit || return 0
+            case "$action" in
+                'Create from current settings')
+                    name=''
+                    ask --label 'New profile name' --var name --default '' --back || continue
+                    [[ -n "$name" ]] || continue
+                    if _deploy_profiles_tool get --name "$name" >/dev/null 2>&1; then
+                        saywarning 'That profile name already exists; select it instead.'
+                        continue
+                    fi
+                    _deploy_profiles_save "$name" || return $?
+                    ;;
+                Select) _deploy_profiles_choose || true ;;
+                Delete)
+                    _deploy_profiles_choose || continue
+                    ask_decision --label "Delete profile $DEPLOY_PROFILE_ACTIVE" --choices 'Yes|Y,No|N' --default No --var decision || continue
+                    if [[ "$decision" == YES ]]; then
+                        _deploy_profiles_tool delete --name "$DEPLOY_PROFILE_ACTIVE" || return $?
+                        DEPLOY_PROFILE_ACTIVE=''
+                    fi
+                    ;;
+                Exit) return 0 ;;
+            esac
+        done
+    }
 
 # --- Product discovery ---------------------------------------------------------------
     # fn: _deploy_product_record - Read product metadata from one target-root
@@ -1058,7 +1251,7 @@ set -uo pipefail
         local -a receiver_args=("$RECEIVER_PATH" --target "$DEST_ROOT")
 
         if [[ "${FLAG_DRYRUN:-0}" -eq 1 ]]; then
-            receiver_args+=(--dry-run)
+            receiver_args+=(--dryrun)
         fi
 
         sudo -v || {
@@ -1177,7 +1370,7 @@ set -uo pipefail
         remote_command="sudo -n $(_quote_remote_arg "$RECEIVER_PATH") --target $(_quote_remote_arg "$DEST_ROOT")"
 
         if [[ "${FLAG_DRYRUN:-0}" -eq 1 ]]; then
-            remote_command+=" --dry-run"
+            remote_command+=" --dryrun"
         fi
 
         tar -C "$SRC_ROOT" -cf - -- "${SELECTED_PATHS[@]}" |
@@ -1303,12 +1496,27 @@ set -uo pipefail
         # Load this script's persisted inputs explicitly before building prompt defaults.
         # This keeps deploy-workspace deterministic instead of relying on implicit autostate load timing.
         sgnd_state_load_keys --array SGND_STATE_VARIABLES || return $?
+        _deploy_profiles_migrate || return $?
+        if [[ "${FLAG_MANAGE_PROFILES:-0}" == 1 ]]; then
+            _deploy_profiles_manage
+            return $?
+        fi
+        if [[ -n "${DEPLOY_PROFILE_NAME:-}" ]]; then
+            _deploy_profiles_load "$DEPLOY_PROFILE_NAME" || return $?
+        else
+            local selected_name=""
+            selected_name="$(_deploy_profiles_tool selected)" || return $?
+            [[ -z "$selected_name" ]] || _deploy_profiles_load "$selected_name" || return $?
+        fi
 
         _getparameters || return $?
 
         # Persist confirmed settings before deployment, even when transfer fails.
         # Both state-save and deployment errors must reach the final dialog.
         if sgnd_save_state; then
+            if [[ -n "$DEPLOY_PROFILE_ACTIVE" ]]; then
+                _deploy_profiles_save "$DEPLOY_PROFILE_ACTIVE" || return $?
+            fi
             if _deploy; then
                 :
             else
@@ -1316,6 +1524,10 @@ set -uo pipefail
             fi
         else
             deploy_status=$?
+        fi
+
+        if (( deploy_status == 0 && NO_DEPLOYABLE_FILES == 0 && ${FLAG_DRYRUN:-0} == 0 )) && [[ -n "$DEPLOY_PROFILE_ACTIVE" ]]; then
+            _deploy_profiles_tool success --name "$DEPLOY_PROFILE_ACTIVE" --timestamp "$LAST_DEPLOY_SUCCESS" || return $?
         fi
 
         # A successful no-op is not a completed deployment and needs no follow-up prompt.
@@ -1329,6 +1541,10 @@ set -uo pipefail
             finish_message="Deployment failed (status $deploy_status). Press Enter to exit, or R to retry."
         fi
 
+        # Unattended or redirected CLI deployments must never attempt /dev/tty.
+        if [[ "${FLAG_AUTO:-0}" == 1 || ! -t 0 ]]; then
+            return "$deploy_status"
+        fi
         # Show the same end-of-run countdown after success or failure. In the
         # failure case, exiting or timing out retains the original error status.
         ask_dlg_autocontinue \
